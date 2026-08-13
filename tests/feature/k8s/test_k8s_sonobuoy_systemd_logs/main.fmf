@@ -1,0 +1,11 @@
+summary: K8s systemd-logs plugin collection (Sonobuoy)
+test: ./test.sh
+tag:
+  - feature
+  - k8s
+  - sonobuoy
+duration: 10m
+tier: 2
+path: /tests/feature/k8s/test_k8s_sonobuoy_systemd_logs
+require:
+  - beakerlib

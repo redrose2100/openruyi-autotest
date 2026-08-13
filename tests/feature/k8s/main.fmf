@@ -1,70 +1,12 @@
-summary: K8s RISC-V feature verification — Sonobuoy-equivalent test suite
+summary: K8s feature tests via Sonobuoy (RISC-V)
 tag:
   - feature
   - k8s
-  - riscv
-  - sonobuoy-equivalent
-duration: 2h
+  - sonobuoy
+duration: 30m
 tier: 1
-
-# ── Tier 1 (P0+P1): Smoke, Core API, Pod, Workload, Network, Storage ──
-/k8s-smoke:
-  summary: K8s smoke tests — arch check, DNS, API reachability, DaemonSet
-  discover:
-    how: fmf
-    path: smoke/
-
-/k8s-api:
-  summary: K8s API tests — resource CRUD, namespace lifecycle
-  discover:
-    how: fmf
-    path: api/
-
-/k8s-pod:
-  summary: K8s Pod tests — basic lifecycle, multi-container
-  discover:
-    how: fmf
-    path: pod/
-
-/k8s-workload:
-  summary: K8s workload tests — Deployment, ReplicaSet
-  discover:
-    how: fmf
-    path: workload/
-
-/k8s-network:
-  summary: K8s network tests — ClusterIP, NodePort, DNS, cross-node
-  discover:
-    how: fmf
-    path: network/
-
-/k8s-storage:
-  summary: K8s storage tests — PVC binding, volume mount, data persistence
-  discover:
-    how: fmf
-    path: storage/
-
-# ── Tier 2 (P2): Scheduling, Auth, Config, Kata ──
-/k8s-scheduling:
-  summary: K8s scheduling tests — nodeSelector, affinity, taints, ResourceQuota
-  discover:
-    how: fmf
-    path: scheduling/
-
-/k8s-auth:
-  summary: K8s auth tests — ServiceAccount, token mount, API access
-  discover:
-    how: fmf
-    path: auth/
-
-/k8s-config:
-  summary: K8s config tests — Secret, ConfigMap, mount and env injection
-  discover:
-    how: fmf
-    path: config/
-
-/k8s-kata:
-  summary: K8s Kata Containers tests — RuntimeClass, pod scheduling (skips if unavailable)
-  discover:
-    how: fmf
-    path: kata/
+path: /tests/feature/k8s
+require:
+  - beakerlib
+extra-hardware-require:
+  server: 1
