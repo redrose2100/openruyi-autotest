@@ -24,15 +24,19 @@ rlJournalStart
             rlLogWarning "$PKG provides no .cmake files, skipping cmake verification"
         else
             # --- find_package(Flang) ---
+            # Flang depends on LLVM, Clang, and MLIR imported targets.
+            # Explicitly find them first so that FlangConfig.cmake can resolve
+            # clang-cpp, MLIR, and MLIRTestAnalysis targets.
             cat > "$TmpDir/CMakeLists.txt" << 'EOF'
 cmake_minimum_required(VERSION 3.13.4)
 project(cmake_verify
   VERSION "0.1"
   LANGUAGES C CXX)
 
-find_package(Flang REQUIRED CONFIG
-  PATHS /usr/lib64/llvm22/lib/cmake/flang
-  NO_DEFAULT_PATH)
+list(APPEND CMAKE_PREFIX_PATH "/usr/lib64/llvm22")
+find_package(Clang REQUIRED CONFIG)
+find_package(MLIR REQUIRED CONFIG)
+find_package(Flang REQUIRED CONFIG)
 
 message(STATUS "find_package(Flang) succeeded")
 EOF
