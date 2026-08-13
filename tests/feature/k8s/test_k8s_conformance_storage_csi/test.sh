@@ -3,7 +3,10 @@
 # K8s conformance - storage csi
 #   Run `sonobuoy run --mode non-disruptive-conformance`
 #   with an explicit --e2e-focus regex (10 tests).
-#   Threshold: pass rate >= 95% (design §6.3).
+#   Result judgement (design 6.3): every failed test item is
+#   classified individually - items matching KNOWN_UNSUPPORTED
+#   are reported as SKIP subresults, everything else FAILs the
+#   case. No pass-rate threshold is used.
 #
 # 脚本直证性: sonobuoy CLI 命令均在本文件中明文直接调用。
 # ============================================================
@@ -34,25 +37,44 @@ rlJournalStart
         # Retrieve results tarball
         rlRun "hwRunOnServer 1 'sudo sonobuoy retrieve -f /tmp/k8s-results.tar.gz --kubeconfig=/etc/kubernetes/admin.conf'" 0 "Retrieve sonobuoy results"
 
-        # Evaluate results
-        rlRun "hwRunOnServer 1 'sudo sonobuoy results /tmp/k8s-results.tar.gz --mode=detailed'" 0 "sonobuoy results detailed runs"
+        # Evaluate results: fetch detailed per-test items (one JSON object
+        # per line: {"name":"...","status":"...","meta":{...}}).
+        detailed=$(hwRunOnServer 1 "sudo sonobuoy results /tmp/k8s-results.tar.gz --mode=detailed" 2>/dev/null)
+        rlLogInfo "Sonobuoy detailed result items:"
+        rlLogInfo "$detailed"
 
-        # Parse pass/fail counts and assert >= 95% pass rate
-        summary=$(hwRunOnServer 1 "sudo sonobuoy results /tmp/k8s-results.tar.gz" 2>/dev/null)
-        rlLogInfo "Sonobuoy summary:"
-        rlLogInfo "$summary"
-        passed=$(echo "$summary" | awk -F': ' '/Passed:/{print $2}' | tr -d ' ')
-        failed=$(echo "$summary" | awk -F': ' '/Failed:/{print $2}' | tr -d ' ')
-        total=$(echo "$summary" | awk -F': ' '/Total:/{print $2}' | tr -d ' ')
-        if [ -z "$total" ]; then
-            rlFail "Cannot parse sonobuoy results summary"
+        # Per-item classification: a failed item matching a KNOWN_UNSUPPORTED
+        # pattern is a RISC-V unsupported test -> SKIP subresult (does not fail
+        # the case). Any other failed item is a real failure -> FAIL subresult.
+        # KNOWN_UNSUPPORTED: grep -E alternation (e.g. 'pattern1|pattern2'),
+        # overridable via the environment (populated from real runs, design 6.3).
+        : "${KNOWN_UNSUPPORTED:-}"
+        real_failures=0
+        if [ -z "$detailed" ]; then
+            rlFail "Cannot parse sonobuoy detailed results"
         else
-            pass_rate=$((100 * passed / total))
-            rlLogInfo "Pass rate: $passed/$total = $pass_rate% (threshold 95%)"
-            if [ "$pass_rate" -ge 95 ]; then
-                rlPass "Conformance focus group passed ($passed/$total = $pass_rate%)"
+            while IFS= read -r item; do
+                # Only failed/timeout items need classification; skip passed/skipped.
+                case "$item" in
+                    *'"status":"failed"'*|*'"status":"timeout"'*) : ;;
+                    *) continue ;;
+                esac
+                name=$(printf '%s' "$item" | sed -n 's/.*"name":"\([^"]*\)".*/\1/p')
+                [ -n "$name" ] || continue
+                safe_name=$(printf '%s' "$name" | tr "'" "_")
+                if [ -n "$KNOWN_UNSUPPORTED" ] && printf '%s' "$name" | grep -Eq -- "$KNOWN_UNSUPPORTED"; then
+                    rlLogInfo "Known unsupported on RISC-V, reporting SKIP: $name"
+                    rlRun "tmt-report-result '/$safe_name' SKIP" 0 "Report $safe_name as skipped (unsupported on RISC-V)"
+                else
+                    rlRun "tmt-report-result '/$safe_name' FAIL" 0 "Report $safe_name as failed"
+                    real_failures=$((real_failures + 1))
+                fi
+            done <<< "$detailed"
+            rlLogInfo "Real failures in focus group: $real_failures"
+            if [ "$real_failures" -eq 0 ]; then
+                rlPass "Conformance focus group passed (10 tests, no unsupported-classified failures)"
             else
-                rlFail "Conformance focus group pass rate below 95% ($passed/$total = $pass_rate%)"
+                rlFail "Conformance focus group has $real_failures real failure(s)"
             fi
         fi
     rlPhaseEnd
