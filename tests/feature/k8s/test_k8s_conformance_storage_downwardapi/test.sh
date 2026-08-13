@@ -22,11 +22,13 @@ rlJournalStart
         rlRun "hwRunOnServer 1 'sudo sonobuoy delete --wait --kubeconfig=/etc/kubernetes/admin.conf || true'" 0 "Delete previous sonobuoy resources"
 
         # Run non-disruptive conformance with the group focus regex and wait.
-        # focus is single-quoted so backslashes stay verbatim; the whole cmd
-        # string is expanded (SONOBUOY_IMAGE) and passed as ONE argument to
-        # hwRunOnServer so printf %q can round-trip it safely.
+        # NOTE: focus is single-quoted INSIDE cmd. rlRun evals its command
+        # string, so a literal " in $cmd would be re-parsed and split the
+        # argument (or even cause a syntax error with regex parens). Single
+        # quotes inside $cmd survive eval as literal chars and are re-parsed
+        # only on the remote side, keeping the regex intact.
         focus='\[sig-storage\].*Downward API'
-        cmd="sudo sonobuoy run --mode non-disruptive-conformance --e2e-focus=\"$focus\" --wait --kubeconfig=/etc/kubernetes/admin.conf --image=$SONOBUOY_IMAGE"
+        cmd="sudo sonobuoy run --mode non-disruptive-conformance --e2e-focus='$focus' --wait --kubeconfig=/etc/kubernetes/admin.conf --image=$SONOBUOY_IMAGE"
         rlRun "hwRunOnServer 1 \"$cmd\"" 0 "sonobuoy run completes for focus group"
 
         # Retrieve results tarball
