@@ -1,0 +1,11 @@
+summary: K8s feature tests - cluster ready precheck
+test: ./test.sh
+tag:
+ - feature
+ - k8s
+ - cluster
+duration: 5m
+tier: 1
+path: /tests/feature/k8s/cluster_ready
+require:
+ - beakerlib

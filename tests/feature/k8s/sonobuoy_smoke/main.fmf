@@ -1,0 +1,11 @@
+summary: K8s feature tests - sonobuoy smoke
+test: ./test.sh
+tag:
+ - feature
+ - k8s
+ - sonobuoy
+duration: 20m
+tier: 1
+path: /tests/feature/k8s/sonobuoy_smoke
+require:
+ - beakerlib

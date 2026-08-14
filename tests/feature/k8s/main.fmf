@@ -1,12 +1,8 @@
-summary: K8s feature tests via Sonobuoy (RISC-V)
+summary: K8s feature tests
 tag:
-  - feature
-  - k8s
-  - sonobuoy
+ - feature
 duration: 30m
 tier: 1
 path: /tests/feature/k8s
 require:
-  - beakerlib
-extra-hardware-require:
-  server: 1
+ - beakerlib
