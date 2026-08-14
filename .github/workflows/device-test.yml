@@ -1,0 +1,57 @@
+name: Device Test (Physical)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  device-test:
+    runs-on: self-hosted
+    timeout-minutes: 4320
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          sudo apt update -qq
+          sudo apt install -y sshpass rsync
+
+      - name: Parse params
+        run: |
+          IP="${{ secrets.DEVICE_IP }}"
+          USER="${{ secrets.USER }}"
+          PASS="${{ secrets.PASSWD }}"
+          PLAN="${{ vars.TEST_PLAN || '/plans/smoke' }}"
+          FILTER="${{ vars.TEST_FILTER || '' }}"
+          RESULT_DIR="/opt/openruyi-autotest/${{ github.run_number }}/results"
+
+          if [ -z "$IP" ]; then
+            echo "ERROR: DEVICE_IP not set"
+            echo "Set DEVICE_IP in Settings → Secrets and variables → Actions → Secrets"
+            exit 1
+          fi
+
+          sudo mkdir -p "$RESULT_DIR"
+          sudo chown -R $(whoami):$(whoami) "/opt/openruyi-autotest/${{ github.run_number }}"
+
+          echo "DEVICE_IP=$IP" >> $GITHUB_ENV
+          echo "USER=$USER" >> $GITHUB_ENV
+          echo "PASSWD=$PASS" >> $GITHUB_ENV
+          echo "TEST_PLAN=$PLAN" >> $GITHUB_ENV
+          echo "TEST_FILTER=$FILTER" >> $GITHUB_ENV
+          echo "RESULT_DIR=$RESULT_DIR" >> $GITHUB_ENV
+
+      - name: Run tests
+        timeout-minutes: 4320
+        uses: ./.github/actions/run-tests
+        with:
+          ssh_host: ${{ env.DEVICE_IP }}
+          ssh_port: 22
+          ssh_user: ${{ env.USER }}
+          ssh_pass: ${{ env.PASSWD }}
+          result_dir: ${{ env.RESULT_DIR }}
+          test_plan: ${{ env.TEST_PLAN }}
+          test_filter: ${{ env.TEST_FILTER }}
+          github_repo: ${{ github.repository }}
+          github_token: ${{ secrets.TOKEN }}

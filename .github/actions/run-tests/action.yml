@@ -1,0 +1,150 @@
+name: Run TMT Tests
+description: SSH to target, clone repo, install deps, run tmt, collect results
+
+inputs:
+  ssh_host:
+    description: 'SSH target host'
+    required: true
+  ssh_port:
+    description: 'SSH port'
+    required: true
+  ssh_user:
+    description: 'SSH user'
+    required: true
+  ssh_pass:
+    description: 'SSH password'
+    required: true
+  result_dir:
+    description: 'Local directory for results'
+    required: true
+  test_plan:
+    description: 'tmt plan name'
+    required: false
+    default: '/plans/smoke'
+  test_filter:
+    description: 'tmt test --name filter'
+    required: false
+    default: ''
+  github_repo:
+    description: 'GitHub repository (owner/name)'
+    required: true
+  github_token:
+    description: 'GitHub token for repo clone and API'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Wait for SSH
+      shell: bash
+      run: |
+        export SSHPASS="${{ inputs.ssh_pass }}"
+        echo "Connecting to ${{ inputs.ssh_user }}@${{ inputs.ssh_host }}:${{ inputs.ssh_port }} ..."
+        for i in $(seq 1 60); do
+          if sshpass -e ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 \
+            -p ${{ inputs.ssh_port }} ${{ inputs.ssh_user }}@${{ inputs.ssh_host }} "echo OK" 2>/dev/null; then
+            echo "SSH ready ($i/60)"
+            exit 0
+          fi
+          sleep 10
+        done
+        echo "ERROR: SSH timeout"
+        exit 1
+
+    - name: Setup target
+      shell: bash
+      run: |
+        REPO_NAME="${{ inputs.github_repo }}"
+        REPO_NAME="${REPO_NAME##*/}"
+        USER_HOME="/home/${{ inputs.ssh_user }}"
+
+        export SSHPASS="${{ inputs.ssh_pass }}"
+        SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -p ${{ inputs.ssh_port }}"
+        SSH_USER="${{ inputs.ssh_user }}"
+        SSH_HOST="${{ inputs.ssh_host }}"
+
+        # Persist for subsequent steps
+        SSHO="sshpass -e ssh ${SSH_OPTS} ${SSH_USER}@${SSH_HOST}"
+        cat >> "$GITHUB_ENV" << EOF
+        SSHPASS=${SSHPASS}
+        SSH_OPTS=${SSH_OPTS}
+        SSH_USER=${SSH_USER}
+        SSH_HOST=${SSH_HOST}
+        SSHO=${SSHO}
+        REPO_NAME=${REPO_NAME}
+        USER_HOME=${USER_HOME}
+        EOF
+
+        # One-time: configure sudo NOPASSWD so subsequent run_as_root never touches the password
+        ${SSHO} "sudo -S bash -c 'echo \"${SSH_USER} ALL=(ALL) NOPASSWD: ALL\" > /etc/sudoers.d/${SSH_USER} && chmod 440 /etc/sudoers.d/${SSH_USER}' <<< '${SSHPASS}'"
+
+        run_as_root() {
+          $SSHO "sudo -i bash -lc '$1'"
+        }
+
+        run_as_root "whoami && uname -a && free -h && df -lh"
+        run_as_root "dnf install -y --refresh git tmt beakerlib rsync python-six 2>&1"
+        run_as_root "tmt --version || echo 'tmt not installed'"
+        run_as_root "rm -rf '${USER_HOME}/${REPO_NAME}' '${USER_HOME}/results/${{ github.run_number }}'"
+
+    - name: Sync repo to target
+      shell: bash
+      run: |
+        export SSHPASS="${SSHPASS}"
+
+        ${SSHO} "mkdir -p ~/${REPO_NAME} ~/results/${{ github.run_number }}"
+        tar czf - -C "$GITHUB_WORKSPACE" --exclude='.git' . | ${SSHO} "tar xzf - -C ~/${REPO_NAME}"
+        ${SSHO} "cat > ~/${REPO_NAME}/topology.env <<EOF
+        TEST_SERVER_COUNT=1
+        TEST_SERVER_1_HOST=127.0.0.1
+        TEST_SERVER_1_PORT=22
+        TEST_SERVER_1_USER=${SSH_USER}
+        TEST_SERVER_1_PASSWORD=${SSHPASS}
+        EOF"
+
+    - name: Run tests on target
+      shell: bash
+      run: |
+        export SSHPASS="${SSHPASS}"
+
+        run_as_root() {
+          ${SSHO} "sudo -i bash -lc '$1'"
+        }
+
+        echo "Plan: ${{ inputs.test_plan }}  Filter: ${{ inputs.test_filter || 'none' }}"
+
+        TMT="cd /root/${REPO_NAME} && tmt run -i '${USER_HOME}/results/${{ github.run_number }}' --all --verbose"
+        [ -n "${{ inputs.test_plan }}" ] && TMT="${TMT} plan --name ${{ inputs.test_plan }}"
+        [ -n "${{ inputs.test_filter }}" ] && TMT="${TMT} test --name ${{ inputs.test_filter }}"
+        TMT="${TMT} provision --feeling-safe 2>&1"
+
+        echo "Executing: ${TMT}"
+        run_as_root "ln -sfn '${USER_HOME}/${REPO_NAME}' /root/${REPO_NAME}"
+
+        # tee gives real-time output; PIPESTATUS[0] captures ssh exit code (not tee's)
+        # Disable set -e temporarily: tmt exit code 1/2 is normal, handled below
+        set +e
+        run_as_root "${TMT}" 2>&1 | tee "${{ inputs.result_dir }}/tmt-output.txt"
+        TMT_EXIT=${PIPESTATUS[0]}
+        set -e
+
+        # Exit code 0 = all passed, 1 = failures, 2 = errors, 3+ = infrastructure error
+        if [ "${TMT_EXIT}" -gt 2 ]; then
+          echo "ERROR: tmt infrastructure failure (exit ${TMT_EXIT})"
+          exit "${TMT_EXIT}"
+        fi
+        echo "tmt completed (exit ${TMT_EXIT}), proceeding to collect results"
+
+    - name: Collect results
+      shell: bash
+      run: |
+        export SSHPASS="${SSHPASS}"
+        rsync -avz \
+          -e "sshpass -e ssh ${SSH_OPTS}" \
+          "${SSH_USER}@${SSH_HOST}:~/results/${{ github.run_number }}/" "${{ inputs.result_dir }}/"
+
+    - name: Summary
+      shell: bash
+      run: |
+        echo "=== Test Summary ==="
+        grep -E "pass|fail|error|skip|total|summary" "${{ inputs.result_dir }}/tmt-output.txt" || true

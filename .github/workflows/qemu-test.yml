@@ -1,0 +1,113 @@
+name: QEMU RISC-V Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  qemu-test:
+    runs-on: self-hosted
+    timeout-minutes: 4320
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          sudo apt update -qq
+          sudo apt install -y sshpass rsync curl xz-utils screen
+
+      - name: Download image and firmware
+        timeout-minutes: 30
+        run: |
+          set -x
+          IMG_URL="${{ secrets.QEMU_IMAGE_URL }}"
+          FW_URL="${{ secrets.QEMU_FIRMWARE_URL || '' }}"
+          USER="${{ secrets.USER }}"
+          PASS="${{ secrets.PASSWD }}"
+          PLAN="${{ vars.TEST_PLAN || '/plans/smoke' }}"
+          FILTER="${{ vars.TEST_FILTER || '' }}"
+          RUN_DIR="/opt/openruyi-autotest/${{ github.run_number }}"
+          QEMU_DIR="$RUN_DIR/qemu"
+          RESULT_DIR="$RUN_DIR/results"
+
+          sudo mkdir -p "$QEMU_DIR" "$RESULT_DIR"
+          sudo chown -R $(whoami):$(whoami) "$RUN_DIR"
+
+          # Download image
+          echo "Downloading image: $IMG_URL"
+          if [[ "$IMG_URL" == *.xz ]]; then
+            curl -L "$IMG_URL" -o "$QEMU_DIR/openruyi-virt_riscv64.qcow2.xz"
+            xz -d "$QEMU_DIR/openruyi-virt_riscv64.qcow2.xz"
+          else
+            curl -L "$IMG_URL" -o "$QEMU_DIR/openruyi-virt_riscv64.qcow2"
+          fi
+          echo "Image size: $(du -h "$QEMU_DIR/openruyi-virt_riscv64.qcow2" | cut -f1)"
+
+          # Resize image if QEMU image is smaller than 2G
+          VIRT_SIZE=$(qemu-img info --output=json "$QEMU_DIR/openruyi-virt_riscv64.qcow2" | awk -F': ' '/"virtual-size"/ {size=$2} END {gsub(/[^0-9]/,"",size); print size}')
+          if [ -n "$VIRT_SIZE" ] && [ "$VIRT_SIZE" -lt 2147483648 ]; then
+            echo "Image virtual size ($VIRT_SIZE bytes) < 2G, resizing +20G..."
+            qemu-img resize "$QEMU_DIR/openruyi-virt_riscv64.qcow2" +20G
+            NEW_SIZE=$(qemu-img info --output=json "$QEMU_DIR/openruyi-virt_riscv64.qcow2" | awk -F': ' '/"virtual-size"/ {size=$2} END {gsub(/[^0-9]/,"",size); print size}')
+            echo "After resize: $NEW_SIZE"
+          fi
+
+          # Download firmware from URL or use local files
+          if [ -n "$FW_URL" ]; then
+            echo "Downloading firmware: $FW_URL"
+            curl -L "$FW_URL/RISCV_VIRT_CODE.fd" -o "$QEMU_DIR/RISCV_VIRT_CODE.fd"
+            curl -L "$FW_URL/RISCV_VIRT_VARS.fd" -o "$QEMU_DIR/RISCV_VIRT_VARS.fd"
+          else
+            echo "Using local firmware"
+            cp ${{ github.workspace }}/.github/workflows/scripts/RISCV_VIRT_CODE.fd "$QEMU_DIR/"
+            cp ${{ github.workspace }}/.github/workflows/scripts/RISCV_VIRT_VARS.fd "$QEMU_DIR/"
+          fi
+
+          # Export params for subsequent steps
+          echo "USER=$USER" >> $GITHUB_ENV
+          echo "PASSWD=$PASS" >> $GITHUB_ENV
+          echo "TEST_PLAN=$PLAN" >> $GITHUB_ENV
+          echo "TEST_FILTER=$FILTER" >> $GITHUB_ENV
+          echo "QEMU_DIR=$QEMU_DIR" >> $GITHUB_ENV
+          echo "RESULT_DIR=$RESULT_DIR" >> $GITHUB_ENV
+
+      - name: Start QEMU
+        timeout-minutes: 15
+        run: |
+          # Start QEMU in a detached screen session (no pipe issues)
+          screen -dmS qemu-vm bash ${{ github.workspace }}/.github/workflows/scripts/qemu.sh \
+            "$QEMU_DIR/openruyi-virt_riscv64.qcow2" \
+            "$QEMU_DIR"
+
+          # Wait for SSH port to be written
+          for i in $(seq 1 30); do
+            if [ -f "$QEMU_DIR/ssh_port.txt" ]; then
+              SSH_PORT=$(cat "$QEMU_DIR/ssh_port.txt")
+              echo "SSH_PORT=$SSH_PORT"
+              echo "SSH_PORT=$SSH_PORT" >> $GITHUB_ENV
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "ERROR: ssh_port.txt not found"
+          exit 1
+
+      - name: Run tests
+        timeout-minutes: 4320
+        uses: ./.github/actions/run-tests
+        with:
+          ssh_host: localhost
+          ssh_port: ${{ env.SSH_PORT }}
+          ssh_user: ${{ env.USER }}
+          ssh_pass: ${{ env.PASSWD }}
+          result_dir: ${{ env.RESULT_DIR }}
+          test_plan: ${{ env.TEST_PLAN }}
+          test_filter: ${{ env.TEST_FILTER }}
+          github_repo: ${{ github.repository }}
+          github_token: ${{ secrets.TOKEN }}
+
+      - name: Cleanup
+        if: always()
+        run: |
+          screen -S qemu-vm -X quit 2>/dev/null || true
