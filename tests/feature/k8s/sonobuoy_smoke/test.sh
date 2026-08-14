@@ -52,8 +52,8 @@ rlJournalStart
         rlRun "$SUDO_PREFIX $SONOBUOY_CMD retrieve -f $(basename $RESULTS_TAR) --kubeconfig=$KUBECONFIG" 0 "Retrieve results archive"
         rlAssertExists "$RESULTS_TAR"
 
-        # 4. Parse results (detailed mode)
-        rlRun "$SUDO_PREFIX $SONOBUOY_CMD results $RESULTS_TAR --mode=detailed --kubeconfig=$KUBECONFIG 2>&1 | tee $RESULTS_LOG" 0 "Parse sonobuoy results (detailed)"
+        # 4. Parse results (report mode)
+        rlRun "set -o pipefail; $SUDO_PREFIX $SONOBUOY_CMD results $RESULTS_TAR --mode=report 2>&1 | tee $RESULTS_LOG" 0 "Parse sonobuoy results (report mode)"
 
         # 5. Assert summary counts
         rlAssertGrep "Passed: $EXPECT_PASSED" "$RESULTS_LOG"
@@ -61,7 +61,7 @@ rlJournalStart
         rlAssertGrep "Total: $EXPECT_TOTAL" "$RESULTS_LOG"
 
         # 6. Assert every node passed
-        rlAssertGrep "status: passed" "$RESULTS_LOG"
+        rlAssertGrep "Status: passed" "$RESULTS_LOG"
         rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"
