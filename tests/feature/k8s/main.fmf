@@ -1,0 +1,8 @@
+summary: K8s feature tests
+tag:
+ - feature
+duration: 30m
+tier: 1
+path: /tests/feature/k8s
+require:
+ - beakerlib
