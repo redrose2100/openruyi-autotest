@@ -459,3 +459,162 @@ cat "$BASE/tests/functional/pkgs/acl/test_acl_getfacl_basic-1/output.txt"
 | 11 | `test_acl_tool_installation` | ACL 工具安装检查 |
 
 > 共 11 个用例，全部通过即为 ACL 功能正常。此套件可作为其他软件包测试的参考模板。其他 `tests/functional/pkgs/<包名>/` 下的测试套执行方式与此完全相同，只需将 `test --name` 中的 `acl` 替换为目标包名即可。
+
+---
+
+## 10. 实战示例：K8s 特性测试（RISC-V）
+
+本节以 `feature/k8s` 测试套为例，展示如何在 RISC-V 架构的 K8s 集群上执行特性测试。
+
+### 10.1 前提条件
+
+- **2 台 RISC-V 服务器**（1 个 K8s master + 1 个 worker 节点）
+- 服务器已安装 K8s 集群（v1.35+），Calico CNI，containerd 运行时
+- 每台服务器最低配置：**8 核 CPU，8 GiB 内存，1 个网卡**
+- 每台服务器已安装 `beakerlib`、`sshpass`（参考第 1 节）
+
+> **K8s 环境说明**：RISC-V 服务器上 `/etc/kubernetes/admin.conf` 通常属于 root 用户（权限 600），测试脚本会自动通过 `sudo` 调用 `kubectl`。
+
+### 10.2 克隆仓库并安装依赖
+
+在 master 节点上执行：
+
+```bash
+git clone https://git.openruyi.cn/woqidaideshi/openruyi-autotest.git
+cd openruyi-autotest
+
+# 安装 beakerlib 和 sshpass
+sudo dnf install -y beakerlib sshpass
+
+# riscv64 架构如需安装 tmt（可选，直接 bash 执行不需要 tmt）
+sudo pip3 install --break-system-packages tmt
+```
+
+### 10.3 配置 topology.env
+
+K8s 测试需要 2 台服务器，**必须配置 `topology.env`**：
+
+```bash
+cp topology.env.example topology.env
+vim topology.env
+```
+
+写入内容（示例为 10.20.238.253 上的 2 节点 K8s 集群）：
+
+```ini
+TEST_SERVER_COUNT=2
+
+# Server 1: K8s master 节点
+TEST_SERVER_1_HOST=10.20.238.253
+TEST_SERVER_1_PORT=12055
+TEST_SERVER_1_USER=openruyi
+TEST_SERVER_1_PASSWORD=openruyi
+
+# Server 2: K8s worker 节点
+TEST_SERVER_2_HOST=10.20.238.253
+TEST_SERVER_2_PORT=12056
+TEST_SERVER_2_USER=openruyi
+TEST_SERVER_2_PASSWORD=openruyi
+```
+
+### 10.4 执行 K8s 快速健康检查
+
+K8s 测试套提供了 **6 个子分类**，建议先执行 `quick` 快速验证集群是否正常：
+
+```bash
+cd ~/openruyi-autotest
+
+# 方式一：使用 tmt 执行（单个用例）
+tmt run --all --verbose plan --name /plans/feature \
+    test --name /tests/feature/k8s/test_k8s_quick_health_check \
+    provision --feeling-safe
+
+# 方式二：直接 bash 执行（推荐，更快速）
+TMT_TEST_TOPOLOGY_FILE="$PWD/topology.env" \
+    bash tests/feature/k8s/test_k8s_quick_health_check.sh
+```
+
+**预期输出：**
+
+```
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::   Verify kubectl is available
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: [ ... ] :: [   PASS   ] :: kubectl client is installed
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::   Verify K8s cluster nodes status
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: [ ... ] :: [   PASS   ] :: List cluster nodes
+:: [ ... ] :: [   PASS   ] :: All nodes are in Ready state
+:: [ ... ] :: [   PASS   ] :: Cluster has 2 nodes (>= 2)
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::   Verify kube-system pods are running
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: [ ... ] :: [   PASS   ] :: At least N kube-system pods are Running
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::   Verify CoreDNS is running
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: [ ... ] :: [   PASS   ] :: CoreDNS has N Running pod(s)
+```
+
+### 10.5 执行全部 K8s 测试
+
+```bash
+cd ~/openruyi-autotest
+
+# 使用 tmt 一次性执行所有 k8s 测试
+tmt run --all --verbose plan --name /plans/feature \
+    test --name /tests/feature/k8s \
+    provision --feeling-safe
+```
+
+> **注意**：完整执行大约需要 **30 分钟**，具体时间取决于集群性能。
+
+### 10.6 K8s 测试分类说明
+
+| 分类 | 测试脚本 | 说明 | 预计耗时 |
+|------|----------|------|----------|
+| `quick` | `test_k8s_quick_health_check.sh` | 快速冒烟测试，验证集群基本健康 | ~5 分钟 |
+| `conformance` | `test_k8s_conformance_pod_lifecycle.sh` | Pod 生命周期管理（创建、删除、扩缩容） | ~8 分钟 |
+| `network` | `test_k8s_network_cross_node_communication.sh` | 跨节点网络通信（ClusterIP、NodePort、DNS） | ~5 分钟 |
+| `storage` | `test_k8s_storage_pvc_lifecycle.sh` | PVC 存储卷生命周期（挂载、写入、持久化） | ~5 分钟 |
+| `scheduling` | `test_k8s_scheduling_pod_affinity.sh` | Pod 调度策略（亲和性、nodeSelector、配额） | ~5 分钟 |
+| `workload` | `test_k8s_workload_config_primitives.sh` | 工作负载配置（ConfigMap、Secret、ServiceAccount） | ~5 分钟 |
+| `kata` | `test_k8s_kata_containers_runtime.sh` | Kata 安全容器运行时验证 | ~10 分钟 |
+
+每个测试脚本都可单独执行：
+
+```bash
+# 例如只执行网络测试
+TMT_TEST_TOPOLOGY_FILE="$PWD/topology.env" \
+    bash tests/feature/k8s/test_k8s_network_cross_node_communication.sh
+
+# 只执行存储测试
+TMT_TEST_TOPOLOGY_FILE="$PWD/topology.env" \
+    bash tests/feature/k8s/test_k8s_storage_pvc_lifecycle.sh
+```
+
+### 10.7 查看测试结果
+
+使用 `tmt run` 执行时，结果存放在 `/var/tmp/tmt/run-*` 目录下（参考第 5 节）。
+
+直接 bash 执行时，beakerlib 会在终端实时输出结果，最终显示汇总：
+
+```
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::   OVERALL RESULT: PASS (unknown)
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+```
+
+各阶段的详细日志临时存放在 `/var/tmp/beakerlib-*` 目录下。
+
+### 10.8 环境变量说明
+
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `TMT_TEST_TOPOLOGY_FILE` | 拓扑配置文件路径 | 未设置时本地执行 |
+| `K8S_KUBECONFIG` | kubectl 配置文件路径 | `/etc/kubernetes/admin.conf` |
+| `K8S_USE_SUDO` | 是否使用 sudo 执行 kubectl | `true` |
