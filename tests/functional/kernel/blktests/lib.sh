@@ -96,7 +96,7 @@ EOF" 2>/dev/null || true
 
  timeout --signal=KILL --kill-after=10 600 \
 
- bash./check "$test_name" 2>&1 | tee "$out"
+ bash ./check "$test_name" 2>&1 | tee "$out"
 
  local rc=${PIPESTATUS[0]}
 
