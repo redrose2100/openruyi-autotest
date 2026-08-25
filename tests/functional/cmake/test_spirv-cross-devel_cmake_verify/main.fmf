@@ -1,0 +1,16 @@
+summary: Functional test - spirv-cross-devel cmake verify
+test: ./test.sh
+tag:
+  - functional
+  - cmake
+  - spirv-cross
+duration: 10m
+tier: 2
+path: /tests/functional/cmake/test_spirv-cross-devel_cmake_verify
+require:
+  - spirv-cross-devel
+  - spirv-cross-static
+  - cmake
+  - gcc
+  - beakerlib
+  - gcc-c++

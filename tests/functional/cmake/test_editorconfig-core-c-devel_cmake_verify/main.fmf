@@ -1,0 +1,16 @@
+summary: Functional test - editorconfig-core-c-devel cmake verify
+test: ./test.sh
+tag:
+  - functional
+  - cmake
+  - editorconfig-core-c
+duration: 10m
+tier: 2
+path: /tests/functional/cmake/test_editorconfig-core-c-devel_cmake_verify
+require:
+  - editorconfig-core-c-devel
+  - editorconfig-core-c-static
+  - cmake
+  - gcc
+  - beakerlib
+  - gcc-c++
