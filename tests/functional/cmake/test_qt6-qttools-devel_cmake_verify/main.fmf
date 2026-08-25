@@ -6,7 +6,7 @@ tag:
   - qt6-qttools
 duration: 10m
 tier: 2
-path: /tests/functional/pkgs/cmake_batch/generated/test_qt6-qttools-devel_cmake_verify
+path: /tests/functional/cmake/test_qt6-qttools-devel_cmake_verify
 require:
   - qt6-qttools-devel
   - qt6-doctools

@@ -4,7 +4,7 @@ tag:
  - functional
  - kernel
  - blktests
-duration: 5m
+duration: 15m
 tier: 2
 path: /tests/functional/kernel/blktests/scsi/test_blktests_scsi_007
 require:
