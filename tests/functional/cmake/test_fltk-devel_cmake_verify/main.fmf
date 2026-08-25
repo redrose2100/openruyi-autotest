@@ -1,0 +1,17 @@
+summary: Functional test - fltk-devel cmake verify
+test: ./test.sh
+tag:
+  - functional
+  - cmake
+  - fltk
+duration: 10m
+tier: 2
+path: /tests/functional/cmake/test_fltk-devel_cmake_verify
+require:
+  - fltk-devel
+  - fltk-static
+  - fltk-fluid
+  - cmake
+  - gcc
+  - beakerlib
+  - gcc-c++
