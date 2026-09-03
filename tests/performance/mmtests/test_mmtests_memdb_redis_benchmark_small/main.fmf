@@ -4,7 +4,7 @@ tag:
  - performance
  - kernel
  - mmtests
-duration: 30m
+duration: 60m
 tier: 1
 path: /tests/performance/mmtests/test_mmtests_memdb_redis_benchmark_small
 require:

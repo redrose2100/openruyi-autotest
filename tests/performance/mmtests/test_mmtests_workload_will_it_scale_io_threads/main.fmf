@@ -4,7 +4,7 @@ tag:
  - performance
  - kernel
  - mmtests
-duration: 30m
+duration: 120m
 tier: 1
 path: /tests/performance/mmtests/test_mmtests_workload_will_it_scale_io_threads
 require:

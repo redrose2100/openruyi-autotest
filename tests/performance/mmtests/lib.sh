@@ -116,7 +116,7 @@ _mmtestsRunCase() {
 
     local exit_lines
 
-    exit_lines=$(grep "test exit:" "$out" 2>/dev/null)
+    exit_lines=$(grep '^test exit :: ' "$out" 2>/dev/null)
 
     if [ -z "$exit_lines" ]; then
 
