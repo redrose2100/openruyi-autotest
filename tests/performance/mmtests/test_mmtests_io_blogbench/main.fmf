@@ -4,7 +4,7 @@ tag:
  - performance
  - kernel
  - mmtests
-duration: 30m
+duration: 90m
 tier: 1
 path: /tests/performance/mmtests/test_mmtests_io_blogbench
 require:

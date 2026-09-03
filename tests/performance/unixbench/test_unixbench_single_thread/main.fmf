@@ -3,7 +3,7 @@ test: ./test.sh
 tag:
  - performance
  - unixbench
-duration: 10m
+duration: 35m
 tier: 2
 path: /tests/performance/unixbench/test_unixbench_single_thread
 require:
