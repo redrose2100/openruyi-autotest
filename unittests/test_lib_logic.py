@@ -96,9 +96,15 @@ rlPhaseStartSetup() {{ :; }}
 rlJournalEnd() {{ :; }}
 rpm() {{ return 0; }}
 sudo() {{ :; }}
-dnf() {{ return 1; }}
-yum() {{ return 1; }}
-apt-get() {{ return 1; }}
+# dnf/yum/apt-get 返回成功：让依赖 LTP 的库（ltp_posix/cve/ltp/realtime）
+# 走 "dnf install" 快路径，避免真实 git clone + make 编译（CI 上会超时）
+dnf() {{ return 0; }}
+yum() {{ return 0; }}
+apt-get() {{ return 0; }}
+# kirk/runltp 存在：cve/ltp 的 command -v kirk 成立 -> method="dnf"，
+# 不会落入源码编译分支
+kirk() {{ echo "kirk stub"; }}
+runltp() {{ echo "runltp stub"; }}
 hostname() {{ echo testhost; }}
 nproc() {{ echo 8; }}
 free() {{ echo "Mem: 1 2 3 4 5 6 7"; }}
@@ -120,6 +126,15 @@ curl() {{
 sha256sum() {{ echo "0f5642a5ecbecc79e79aa3a1ab015c2e77d0027c51938fee7d5ac9d8dfd166be  /tmp/sonobuoy"; }}
 install() {{ :; }}
 sonobuoy() {{ echo "sonobuoy v0.57.3"; }}
+# ---- 重活命令 stub：git clone / make / configure / tar / cmake ----
+# 确保万一落入编译分支时也立即返回，不真实构建
+git() {{ return 0; }}
+make() {{ return 0; }}
+autoconf() {{ return 0; }}
+automake() {{ return 0; }}
+cmake() {{ return 0; }}
+tar() {{ return 0; }}
+timeout() {{ shift; "$@"; }}
 
 # ---- source 真实库 ----
 source "{lib_path}"
