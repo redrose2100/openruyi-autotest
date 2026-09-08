@@ -1,7 +1,7 @@
 # 兼容性测试覆盖详情
 
 > 更新日期：2026-06-17
-> 测试环境：openEuler RISC-V（10.20.237.192:12055）
+> 测试环境：openRuyi RISC-V（10.20.237.192:12055）
 > 共 1 个测试套（ltp_posix），10 个 POSIX 分类，188 个接口测试用例
 > 最终结果：570 PASS / 36 FAIL / 20 SKIP（gcc 修复 + sudo 验证）
 > 旧模版测试已移除，每个 POSIX 接口独立为一个测试用例
@@ -26,7 +26,7 @@
 
 ## 测试原理
 
-本兼容性测试基于 [LTP (Linux Test Project)](https://github.com/linux-test-project/ltp) 的 `open_posix_testsuite`，验证 openEuler RISC-V 系统对 POSIX 1003.1-2001 标准的兼容性。
+本兼容性测试基于 [LTP (Linux Test Project)](https://github.com/linux-test-project/ltp) 的 `open_posix_testsuite`，验证 openRuyi RISC-V 系统对 POSIX 1003.1-2001 标准的兼容性。
 
 ### 测试方式
 

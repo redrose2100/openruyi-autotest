@@ -33,6 +33,22 @@ jobs:
       - name: Run fmf metadata tests
         run: python -m pytest unittests/test_fmf_metadata.py -q
 
+  docs-lint:
+    name: Docs check (no openEuler in docs/)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan docs for forbidden string
+        run: |
+          if grep -rin "openEuler" docs/; then
+            echo "::error::Found forbidden string 'openEuler' (case-insensitive) in docs/"
+            exit 1
+          fi
+          echo "OK: no 'openEuler' found in docs/"
+
   full:
     name: Full checks (lib logic + bash -n + static quality)
     runs-on: ubuntu-latest
