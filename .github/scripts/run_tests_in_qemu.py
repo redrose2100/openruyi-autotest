@@ -150,13 +150,13 @@ def remote_prepare_env(ssh: SSHClient, sudo_pw: str) -> bool:
     """在 QEMU 中安装 tmt + beakerlib"""
     # 确保 sudo 免密可用
     ssh.exec(f"echo '{sudo_pw}' | sudo -S true")
-    # 安装 pip 与 beakerlib
+    # 基础工具：tar 等（QEMU 最小系统可能缺失）
     code, out, err = ssh.exec(
-        f"echo '{sudo_pw}' | sudo -S dnf install -y python3-pip beakerlib python-six 2>&1 | tail -20",
+        f"echo '{sudo_pw}' | sudo -S dnf install -y tar gzip python3-pip beakerlib python-six 2>&1 | tail -20",
         timeout=1800,
     )
     if code != 0 and "Nothing to do" not in out:
-        print(f"[QEMU] dnf install python3-pip beakerlib failed: code={code}\n{out}\n{err}")
+        print(f"[QEMU] dnf install tar/pip/beakerlib failed: code={code}\n{out}\n{err}")
         return False
 
     # 安装 tmt（riscv64 仓库可能没有，用 pip）
@@ -321,7 +321,17 @@ def main() -> int:
                 continue
 
             try:
-                # 2. 上传并解压仓库
+                # 2. 先确保 tar 存在（QEMU 最小系统可能没有，解压依赖它）
+                ssh.exec(f"echo '{ssh_pw}' | sudo -S true")
+                code, out, err = ssh.exec(
+                    "command -v tar >/dev/null 2>&1 || "
+                    f"(echo '{ssh_pw}' | sudo -S dnf install -y tar gzip 2>&1 | tail -5)",
+                    timeout=600,
+                )
+                if code != 0:
+                    raise RuntimeError(f"ensure tar failed: {out} {err}")
+
+                # 3. 上传并解压仓库
                 remote_dir = "/home/openruyi/openruyi-autotest"
                 ssh.exec(f"rm -rf {remote_dir}")
                 ssh.exec("mkdir -p /home/openruyi")
@@ -332,14 +342,14 @@ def main() -> int:
                 if code != 0:
                     raise RuntimeError(f"extract failed: {out} {err}")
 
-                # 3. 准备环境（tmt/beakerlib）
+                # 4. 准备环境（tmt/beakerlib）
                 if not remote_prepare_env(ssh, ssh_pw):
                     raise RuntimeError("prepare env failed")
 
-                # 4. 配置 topology.env
+                # 5. 配置 topology.env
                 remote_setup_topology(ssh, ssh_pw, host_ip)
 
-                # 5. 运行 tmt
+                # 6. 运行 tmt
                 vm_results = run_tmt_tests(ssh, ssh_pw, test_paths, suite_paths)
                 for r in vm_results:
                     r["host_ip"] = host_ip
