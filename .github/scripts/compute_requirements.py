@@ -167,11 +167,43 @@ def parse_num(raw: str, default: int) -> int:
     return int(m.group(1)) if m else default
 
 
+# CloudPods 平台实际存在的规格（从 /serverskus 查询，2026-09-09）
+# cpu: [内存 GB 列表]
+AVAILABLE_SKU_MEM_BY_CPU = {
+    1: [1, 2, 4, 8],
+    2: [2, 4, 8, 12, 16],
+    4: [4, 12, 16, 24, 32],
+    8: [8, 16, 24, 32, 64, 96],
+    12: [12, 16, 24, 32, 64],
+    16: [16, 24, 32, 48, 64, 192],
+    24: [24, 32, 48, 64, 128],
+    32: [32, 48, 64, 128],
+    128: [256],
+}
+
+# 平台可用的 CPU 核数（升序）
+AVAILABLE_CPU = sorted(AVAILABLE_SKU_MEM_BY_CPU.keys())
+
+
 def pick_sku(cpu: int, memory: int) -> str:
-    """根据总 CPU/内存需求选择最合适的 SKU（ecs.g1.cXmY）"""
-    # 需要至少 ceil 到偶数核，内存对齐
-    sku_cpu = max(4, ((cpu + 3) // 4) * 4)
-    sku_mem = max(4, ((memory + 3) // 4) * 4)
+    """根据总 CPU/内存需求选择平台上真实存在的 SKU（ecs.g1.cXmY）"""
+    # 找 >= 需求的 CPU 核数（平台实际规格）
+    sku_cpu = None
+    for c in AVAILABLE_CPU:
+        if c >= cpu:
+            sku_cpu = c
+            break
+    if sku_cpu is None:
+        sku_cpu = AVAILABLE_CPU[-1]
+    # 找 >= 需求的内存（GB）的规格
+    mems = AVAILABLE_SKU_MEM_BY_CPU[sku_cpu]
+    sku_mem = None
+    for m in mems:
+        if m >= memory:
+            sku_mem = m
+            break
+    if sku_mem is None:
+        sku_mem = mems[-1]
     return f"ecs.g1.c{sku_cpu}m{sku_mem}"
 
 

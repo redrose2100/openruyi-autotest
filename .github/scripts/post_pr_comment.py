@@ -14,6 +14,7 @@ post_pr_comment.py
   PR_NUMBER           # PR 编号
 """
 
+import argparse
 import json
 import os
 import sys
@@ -88,12 +89,20 @@ def build_comment(results: dict) -> str:
 
 
 def main() -> int:
-    results_path = sys.argv[1] if len(sys.argv) > 1 else "test_results.json"
+    ap = argparse.ArgumentParser(description="Post test results as a PR comment")
+    ap.add_argument("--results", default="test_results.json",
+                    help="Path to test_results.json (default: test_results.json)")
+    args = ap.parse_args()
+    results_path = args.results
     token = os.environ.get("GITHUB_TOKEN", "")
     repo = os.environ.get("GITHUB_REPOSITORY", "")
     pr_number = os.environ.get("PR_NUMBER", "")
     if not token or not repo or not pr_number:
         print("Missing GITHUB_TOKEN / GITHUB_REPOSITORY / PR_NUMBER")
+        return 1
+
+    if not os.path.exists(results_path):
+        print(f"Results file not found: {results_path}, skip comment")
         return 1
 
     with open(results_path, encoding="utf-8") as f:
