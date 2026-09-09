@@ -58,6 +58,18 @@ rlJournalStart
 
     rlRun "getfacl -d testfile 2>&1 | grep -qE \"user::|default\"" 0 "use -d parameterview default ACL contains default entries"
 
+    # test 1.4.1: use -a parameter output must NOT contain default entries
+
+    if getfacl -a testfile 2>&1 | grep -q "default:"; then
+
+    rlFail "use -a parameter output contains default entries"
+
+    else
+
+    rlPass "use -a parameter output contains no default entries"
+
+    fi
+
 
 
     # test 1.5: use -c parameternodisplayheader
