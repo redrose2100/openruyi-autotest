@@ -45,6 +45,8 @@ def main() -> int:
         vm_info = json.load(f)
 
     server_ids = vm_info.get("server_ids", [])
+    # 防御：某些版本可能带引号（如 'uuid'），统一剥掉
+    server_ids = [str(s).strip().strip("'\"").strip() for s in server_ids if str(s).strip()]
     if not server_ids:
         print("No server_ids to clean up")
         return 0

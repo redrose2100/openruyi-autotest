@@ -111,11 +111,18 @@ def parse_hosts_from_log(log_text: str) -> dict:
         "raw_log_tail": log_text[-3000:],
     }
 
-    # server IDs
+    # server IDs（create_server.py 日志格式为 ['uuid1', 'uuid2']，含引号需剥掉）
     m = re.search(r"CloudPods Server ID\(s\):\s*\[([^\]]*)\]", log_text)
     if m:
-        ids = [x.strip() for x in m.group(1).split(",") if x.strip()]
+        ids = [x.strip().strip("'\"").strip() for x in m.group(1).split(",") if x.strip()]
         result["server_ids"] = ids
+    else:
+        # 失败路径：末尾不会打印 CloudPods Server ID(s):，回退到创建时的行
+        # "Created servers: ['uuid1', 'uuid2']"（create_server.py 在创建完成后打印）
+        m2 = re.search(r"Created servers:\s*\[([^\]]*)\]", log_text)
+        if m2:
+            ids = [x.strip().strip("'\"").strip() for x in m2.group(1).split(",") if x.strip()]
+            result["server_ids"] = ids
 
     # host blocks: "--- Host N: ip ---"
     host_blocks = list(re.finditer(r"--- Host \d+: ([0-9.]+) ---", log_text))
@@ -174,6 +181,25 @@ def main() -> int:
     # 动态加载 create_server.py
     mod = load_create_server_module(create_server_path)
     env_cls = mod.Env
+
+    # ------------------------------------------------------------
+    # 主机侧 yum 仓库修复（不修改 create_server.py）：
+    #   ISCAS 镜像的 EPOL 仓库路径 404（正确是 EPOL/main/），且
+    #   Everything 仓库极慢（~35KB/s），会导致 dnf makecache 失败。
+    #   通过 monkey-patch SSHClient.exec 拦截 iscas-mirror.repo 的
+    #   写入，将 enabled=1 全部改为 enabled=0（禁用 ISCAS 仓库），
+    #   makecache 走默认 openEuler.repo 的 baseurl
+    #   （repo.openeuler.org，已验证 200 且速度快）。
+    # ------------------------------------------------------------
+    orig_exec = mod.SSHClient.exec
+
+    def patched_exec(self, cmd, timeout=60):
+        if "iscas-mirror.repo" in cmd and "tee" in cmd:
+            cmd = cmd.replace("enabled=1", "enabled=0")
+            print("[launch_qemu_env] Disabled ISCAS mirror repos (EPOL 404 workaround)")
+        return orig_exec(self, cmd, timeout)
+
+    mod.SSHClient.exec = patched_exec
 
     # 环境变量优先（runner 机器上注入的 CloudPods 凭据）
     for env_key, attr in [
