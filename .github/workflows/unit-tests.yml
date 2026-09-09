@@ -1,0 +1,71 @@
+name: Unit Tests
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+permissions:
+  contents: read
+
+jobs:
+  quick:
+    name: Quick checks (fmf metadata)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pyyaml
+
+      - name: Run fmf metadata tests
+        run: python -m pytest unittests/test_fmf_metadata.py -q
+
+  docs-lint:
+    name: Docs check (no openEuler in docs/)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan docs for forbidden string
+        run: |
+          if grep -rin "openEuler" docs/; then
+            echo "::error::Found forbidden string 'openEuler' (case-insensitive) in docs/"
+            exit 1
+          fi
+          echo "OK: no 'openEuler' found in docs/"
+
+  full:
+    name: Full checks (lib logic + bash -n + static quality)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pyyaml
+
+      - name: Run lib logic + syntax + static quality tests
+        run: python -m pytest unittests/test_lib_logic.py unittests/test_sh_syntax.py unittests/test_tests_quality.py -q

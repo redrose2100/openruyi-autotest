@@ -1,0 +1,44 @@
+name: Commit Message Lint
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+permissions:
+  contents: read
+
+jobs:
+  commit-lint:
+    name: Commit message lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve commit range
+        id: range
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.event.after }}"
+            if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              echo "range=$AFTER" >> "$GITHUB_OUTPUT"
+            else
+              echo "range=$BEFORE..$AFTER" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "range=${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+
+      - name: Lint commit messages
+        shell: bash
+        run: |
+          bash .github/scripts/commit-lint.sh "${{ steps.range.outputs.range }}"
