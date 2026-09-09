@@ -98,7 +98,8 @@ jobs:
         run: |
           python3 .github/scripts/launch_qemu_env.py \
             --requirements vm_requirements.json \
-            --output vm_info.json 2>&1 | tee launch.log
+            --output vm_info.json \
+            --create-server "$GITHUB_WORKSPACE/tools/cloudpods/create_server.py" 2>&1 | tee launch.log
           echo "vm_info:"
           cat vm_info.json
 
@@ -137,7 +138,8 @@ jobs:
         if: always()
         run: |
           if [ -f vm_info.json ]; then
-            python3 .github/scripts/cleanup_cloudpods.py --vm-info vm_info.json || true
+            python3 .github/scripts/cleanup_cloudpods.py --vm-info vm_info.json \
+              --create-server "$GITHUB_WORKSPACE/tools/cloudpods/create_server.py" || true
           else
             echo "No vm_info.json, skip cleanup"
           fi

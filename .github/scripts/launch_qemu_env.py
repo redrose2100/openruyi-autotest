@@ -37,8 +37,20 @@ import re
 import sys
 from pathlib import Path
 
+
+def find_repo_root(start: Path) -> Path:
+    """向上查找包含 .git 的目录作为仓库根（兼容 _work/<repo>/<repo> 结构）"""
+    for p in [start, *start.parents]:
+        if (p / ".git").exists():
+            return p
+    # 兜底：.github/scripts/ 上溯三级
+    return start.parents[2] if len(start.parents) >= 3 else start
+
+
+REPO_ROOT = find_repo_root(Path(__file__).resolve().parent)
+
 # 保证可以 import tools 下的模块（如果 create_server.py 依赖同级模块）
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))  # 仓库根目录
+sys.path.insert(0, str(REPO_ROOT))
 
 
 def load_create_server_module(create_server_path: Path):
@@ -142,7 +154,7 @@ def main() -> int:
                     help="Path to create_server.py (default: tools/cloudpods/create_server.py)")
     args = ap.parse_args()
 
-    repo_root = Path(__file__).resolve().parents[3]
+    repo_root = REPO_ROOT
     req_path = Path(args.requirements)
     with open(req_path, encoding="utf-8") as f:
         req = json.load(f)

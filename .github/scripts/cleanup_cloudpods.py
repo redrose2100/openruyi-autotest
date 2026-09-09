@@ -15,7 +15,17 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+
+def find_repo_root(start: Path) -> Path:
+    """向上查找包含 .git 的目录作为仓库根（兼容 _work/<repo>/<repo> 结构）"""
+    for p in [start, *start.parents]:
+        if (p / ".git").exists():
+            return p
+    return start.parents[2] if len(start.parents) >= 3 else start
+
+
+REPO_ROOT = find_repo_root(Path(__file__).resolve().parent)
+sys.path.insert(0, str(REPO_ROOT))
 
 
 def load_create_server(create_server_path: Path):
@@ -39,7 +49,7 @@ def main() -> int:
         print("No server_ids to clean up")
         return 0
 
-    repo_root = Path(__file__).resolve().parents[3]
+    repo_root = REPO_ROOT
     create_server_path = Path(args.create_server) if args.create_server else (
         repo_root / "tools" / "cloudpods" / "create_server.py"
     )
