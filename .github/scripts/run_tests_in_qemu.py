@@ -90,6 +90,7 @@ class SSHClient:
                 if err:
                     stderr_buf.append(err.decode("utf-8", "ignore"))
             if channel.exit_status_ready():
+                # 命令已退出，排空剩余数据（recv 返回空即 EOF，必须 break 否则忙循环）
                 while True:
                     r2, _, _ = select.select([channel], [], [], 0.3)
                     if channel not in r2:
@@ -97,6 +98,8 @@ class SSHClient:
                     data = channel.recv(65536)
                     if data:
                         stdout_buf.append(data.decode("utf-8", "ignore"))
+                    else:
+                        break
                     err = channel.recv_stderr(65536)
                     if err:
                         stderr_buf.append(err.decode("utf-8", "ignore"))
