@@ -146,29 +146,138 @@ def package_repo(repo_root: Path) -> str:
 # QEMU 内准备与执行
 # ============================================================
 
-def remote_prepare_env(ssh: SSHClient, sudo_pw: str) -> bool:
-    """在 QEMU 中安装 tmt + beakerlib"""
+def remote_prepare_env(ssh: SSHClient, sudo_pw: str) -> str:
+    """在 QEMU 中安装测试执行环境。
+
+    返回安装方式：
+      - "tmt"   ：tmt 可用（dnf 或 pip 安装成功）
+      - "direct"：tmt 不可用，但 beakerlib 可用（改用直接执行测试脚本）
+      - ""      ：两者都失败
+    """
     # 确保 sudo 免密可用
     ssh.exec(f"echo '{sudo_pw}' | sudo -S true")
-    # 基础工具：tar 等（QEMU 最小系统可能缺失）
+
+    # 1. 基础工具：tar / beakerlib（QEMU 最小系统可能缺失）
     code, out, err = ssh.exec(
         f"echo '{sudo_pw}' | sudo -S dnf install -y tar gzip python3-pip beakerlib python-six 2>&1 | tail -20",
         timeout=1800,
     )
     if code != 0 and "Nothing to do" not in out:
         print(f"[QEMU] dnf install tar/pip/beakerlib failed: code={code}\n{out}\n{err}")
-        return False
+        # beakerlib 装不上，直接执行也做不了，返回空
+        return ""
 
-    # 安装 tmt（riscv64 仓库可能没有，用 pip）
+    # 2. 优先用 dnf 装 tmt（openruyi 仓库有 python-tmt + ruamel-yaml-clib rpm，
+    #    避免 pip 在 riscv64 上编译 C 扩展）
     code, out, err = ssh.exec(
-        "tmt --version 2>/dev/null || pip3 install --break-system-packages tmt 2>&1 | tail -5",
-        timeout=900,
+        f"echo '{sudo_pw}' | sudo -S dnf install -y tmt 2>&1 | tail -15",
+        timeout=1800,
     )
-    if code != 0:
-        print(f"[QEMU] tmt install failed: code={code}\n{out}\n{err}")
-        return False
-    print(f"[QEMU] tmt ready: {out.strip()[:200]}")
-    return True
+    if code == 0:
+        code2, out2, err2 = ssh.exec("tmt --version", timeout=60)
+        if code2 == 0:
+            print(f"[QEMU] tmt ready (dnf): {out2.strip()[:200]}")
+            return "tmt"
+
+    print(f"[QEMU] dnf tmt failed: code={code}\n{out[-1500:]}\n{err[-500:]}")
+
+    # 3. dnf 失败回退 pip：先装编译工具链，再 pip 装 tmt（完整输出，不截断）
+    code, out, err = ssh.exec(
+        f"echo '{sudo_pw}' | sudo -S dnf install -y gcc gcc-c++ python3-devel rust cargo 2>&1 | tail -10",
+        timeout=1800,
+    )
+    if code != 0 and "Nothing to do" not in out:
+        print(f"[QEMU] dnf install toolchain failed (non-fatal): code={code}")
+
+    code, out, err = ssh.exec(
+        f"echo '{sudo_pw}' | sudo -S pip3 install --break-system-packages tmt 2>&1 | tail -30",
+        timeout=1800,
+    )
+    if code == 0:
+        code2, out2, err2 = ssh.exec("tmt --version", timeout=60)
+        if code2 == 0:
+            print(f"[QEMU] tmt ready (pip): {out2.strip()[:200]}")
+            return "tmt"
+
+    print(f"[QEMU] pip tmt install failed: code={code}\n{out[-2000:]}\n{err[-500:]}")
+
+    # 4. tmt 彻底不可用：退化为直接执行 beakerlib 测试脚本
+    code, out, err = ssh.exec(
+        "test -f /usr/share/beakerlib/beakerlib.sh && echo ok", timeout=60)
+    if code == 0:
+        print("[QEMU] tmt unavailable, will run tests directly with beakerlib")
+        return "direct"
+    print("[QEMU] beakerlib not found either, tests cannot run")
+    return ""
+
+
+def run_tests_direct(ssh: SSHClient, sudo_pw: str, repo_dir: str,
+                     test_paths: List[str], suite_paths: List[str],
+                     timeout: int = 5400) -> List[Dict]:
+    """tmt 不可用时，直接在 QEMU 里以 beakerlib 方式执行测试脚本。
+
+    对于每个测试路径（/tests/functional/pkgs/acl/test_acl_getfacl_basic 形式），
+    转换为仓库内相对路径并 bash 执行其 test 脚本；用 beakerlib 的日志输出
+    判断 PASS/FAIL。
+    """
+    results: List[Dict] = []
+    # 优先执行具体用例，其次套件（套件只执行其目录下的 test.sh 若存在）
+    targets = list(test_paths) + list(suite_paths)
+    for target in targets:
+        # /tests/functional/... -> tests/functional/...
+        rel = target.lstrip("/")
+        test_dir = os.path.join(repo_dir, rel)
+        # 找到该目录下可执行的 test 脚本（main.fmf 里 test: 字段指向的文件）
+        script_rel = None
+        fmf_file = os.path.join(test_dir, "main.fmf")
+        if os.path.isfile(fmf_file):
+            try:
+                with open(fmf_file, encoding="utf-8", errors="replace") as f:
+                    for line in f:
+                        line = line.strip()
+                        if line.startswith("test:"):
+                            script_rel = line.split(":", 1)[1].strip().strip('"').strip("'")
+                            break
+            except Exception:
+                pass
+        if not script_rel:
+            # 套件目录没有 test: 时尝试 test.sh
+            for cand in ("test.sh", "runtest.sh", "test"):
+                if os.path.isfile(os.path.join(test_dir, cand)):
+                    script_rel = cand
+                    break
+        if not script_rel:
+            print(f"[QEMU] direct: no test script found for {target}, skip")
+            continue
+        script_path = os.path.join(test_dir, script_rel)
+        # 上传的仓库在 QEMU 里位于 ~/openruyi-autotest
+        remote_script = os.path.join(repo_dir, rel, script_rel).replace(os.sep, "/")
+        cmd = (
+            f"cd {os.path.dirname(remote_script)} && "
+            f"echo '{sudo_pw}' | sudo -S true && "
+            f"bash {remote_script} 2>&1"
+        )
+        print(f"[QEMU] direct running: {cmd[:200]}...")
+        code, out, err = ssh.exec(cmd, timeout=timeout)
+        output = out + ("\n[stderr]\n" + err if err else "")
+        # beakerlib 日志行: ::   PASS / FAIL
+        pass_n = len(re.findall(r"::\s+PASS\b", output))
+        fail_n = len(re.findall(r"::\s+FAIL\b", output))
+        # 也统计最后的整体结果（rlJournalEnd 打印的 Summary）
+        if fail_n or code != 0:
+            status = "fail"
+        elif pass_n:
+            status = "pass"
+        else:
+            status = "error"
+        results.append({
+            "test_path": target,
+            "status": status,
+            "output": output[-4000:],
+            "runner": "direct",
+        })
+        print(f"[QEMU] direct result for {target}: {status} (pass={pass_n} fail={fail_n} exit={code})")
+    return results
 
 
 def remote_setup_topology(ssh: SSHClient, sudo_pw: str, host_ip: str) -> bool:
@@ -343,14 +452,22 @@ def main() -> int:
                     raise RuntimeError(f"extract failed: {out} {err}")
 
                 # 4. 准备环境（tmt/beakerlib）
-                if not remote_prepare_env(ssh, ssh_pw):
+                exec_mode = remote_prepare_env(ssh, ssh_pw)
+                if not exec_mode:
                     raise RuntimeError("prepare env failed")
 
                 # 5. 配置 topology.env
                 remote_setup_topology(ssh, ssh_pw, host_ip)
 
-                # 6. 运行 tmt
-                vm_results = run_tmt_tests(ssh, ssh_pw, test_paths, suite_paths)
+                # 6. 运行测试（tmt 或直接 beakerlib）
+                if exec_mode == "tmt":
+                    vm_results = run_tmt_tests(ssh, ssh_pw, test_paths, suite_paths)
+                else:
+                    vm_results = run_tests_direct(
+                        ssh, ssh_pw,
+                        repo_dir="/home/openruyi/openruyi-autotest",
+                        test_paths=test_paths, suite_paths=suite_paths,
+                    )
                 for r in vm_results:
                     r["host_ip"] = host_ip
                     r["qemu_port"] = qemu_port
