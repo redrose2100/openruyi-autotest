@@ -246,8 +246,12 @@ def run_tests_direct(ssh: SSHClient, sudo_pw: str, repo_dir: str,
     """tmt 不可用时，直接在 QEMU 里以 beakerlib 方式执行测试脚本。
 
     对于每个测试路径（/tests/functional/pkgs/acl/test_acl_getfacl_basic 形式），
-    转换为仓库内相对路径并 bash 执行其 test 脚本；用 beakerlib 的日志输出
+    转换为仓库内相对路径，在 QEMU 内读取 main.fmf 的 test: 字段（或回退
+    test.sh/runtest.sh），然后用 bash 执行该脚本；用 beakerlib 的日志输出
     判断 PASS/FAIL。
+
+    注意：脚本运行在 runner 上，repo 文件在 QEMU VM 内，因此所有文件系统
+    操作都必须通过 ssh 在 QEMU 内完成，不能用本地的 os.path.isfile。
     """
     results: List[Dict] = []
     # 优先执行具体用例，其次套件（套件只执行其目录下的 test.sh 若存在）
@@ -255,32 +259,27 @@ def run_tests_direct(ssh: SSHClient, sudo_pw: str, repo_dir: str,
     for target in targets:
         # /tests/functional/... -> tests/functional/...
         rel = target.lstrip("/")
-        test_dir = os.path.join(repo_dir, rel)
-        # 找到该目录下可执行的 test 脚本（main.fmf 里 test: 字段指向的文件）
+        test_dir = os.path.join(repo_dir, rel).replace(os.sep, "/")
+        # 在 QEMU 内读取 main.fmf 的 test: 字段（或回退 test.sh/runtest.sh/test）
         script_rel = None
         fmf_file = os.path.join(test_dir, "main.fmf")
-        if os.path.isfile(fmf_file):
-            try:
-                with open(fmf_file, encoding="utf-8", errors="replace") as f:
-                    for line in f:
-                        line = line.strip()
-                        if line.startswith("test:"):
-                            script_rel = line.split(":", 1)[1].strip().strip('"').strip("'")
-                            break
-            except Exception:
-                pass
+        code, out, err = ssh.exec(
+            f"cat {fmf_file} 2>/dev/null | grep -E '^[[:space:]]*test:' | head -1",
+            timeout=30,
+        )
+        if code == 0 and out.strip():
+            script_rel = out.strip().split(":", 1)[1].strip().strip('"').strip("'")
         if not script_rel:
             # 套件目录没有 test: 时尝试 test.sh
             for cand in ("test.sh", "runtest.sh", "test"):
-                if os.path.isfile(os.path.join(test_dir, cand)):
+                c2, o2, e2 = ssh.exec(f"test -f {test_dir}/{cand} && echo ok", timeout=30)
+                if c2 == 0 and "ok" in o2:
                     script_rel = cand
                     break
         if not script_rel:
             print(f"[QEMU] direct: no test script found for {target}, skip")
             continue
-        script_path = os.path.join(test_dir, script_rel)
-        # 上传的仓库在 QEMU 里位于 ~/openruyi-autotest
-        remote_script = os.path.join(repo_dir, rel, script_rel).replace(os.sep, "/")
+        remote_script = os.path.join(test_dir, script_rel).replace(os.sep, "/")
         # source topology.env 提供 TEST_SERVER_* 环境变量（如 TEST_SERVER_1_PASSWORD），
         # 供 lib.sh 的 sudo dnf 使用；同时 export 兜底密码。
         cmd = (
