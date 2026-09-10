@@ -28,6 +28,10 @@ concurrency:
   group: pr-tests-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   verify-tests-changed:
     # 仅在 PR 改动 tests/ 目录时运行
