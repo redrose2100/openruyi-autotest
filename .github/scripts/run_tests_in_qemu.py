@@ -176,8 +176,24 @@ def remote_prepare_env(ssh: SSHClient, sudo_pw: str) -> str:
     if code == 0:
         code2, out2, err2 = ssh.exec("tmt --version", timeout=60)
         if code2 == 0:
-            print(f"[QEMU] tmt ready (dnf): {out2.strip()[:200]}")
-            return "tmt"
+            # tmt 可用，但还要自检 fmf 扫描：openruyi 的 python-fmf 1.7.0 在
+            # riscv64 上扫描 fmf 树可能死循环/极慢（tmt discover 依赖 fmf.Tree），
+            # 卡死会导致 tmt run 无限挂起。用 timeout 实测扫描仓库能否完成，
+            # 失败则判定 tmt 不可用，回退 direct。
+            print(f"[QEMU] tmt ready (dnf): {out2.strip()[:200]}, checking fmf scan...")
+            probe = (
+                "cd ~/openruyi-autotest && "
+                "timeout 60 python3 -c \"import fmf,time;t0=time.time();"
+                "t=fmf.Tree('.');print('FMF_SCAN_OK',round(time.time()-t0,1),"
+                "'tests',len(t.tests))\" 2>&1 | tail -3"
+            )
+            pcode, pout, perr = ssh.exec(probe, timeout=120)
+            if pcode == 0 and "FMF_SCAN_OK" in pout:
+                print(f"[QEMU] fmf scan OK: {pout.strip()[-120:]}")
+                return "tmt"
+            print(f"[QEMU] fmf scan failed/timeout, tmt unusable: code={pcode} "
+                  f"out={pout[-300:]!r} err={perr[-200:]!r}")
+            print("[QEMU] falling back to direct beakerlib execution")
 
     print(f"[QEMU] dnf tmt failed: code={code}\n{out[-1500:]}\n{err[-500:]}")
 
@@ -196,8 +212,21 @@ def remote_prepare_env(ssh: SSHClient, sudo_pw: str) -> str:
     if code == 0:
         code2, out2, err2 = ssh.exec("tmt --version", timeout=60)
         if code2 == 0:
-            print(f"[QEMU] tmt ready (pip): {out2.strip()[:200]}")
-            return "tmt"
+            # 同上：pip 装的 tmt 也依赖 fmf，同样需要自检
+            print(f"[QEMU] tmt ready (pip): {out2.strip()[:200]}, checking fmf scan...")
+            probe = (
+                "cd ~/openruyi-autotest && "
+                "timeout 60 python3 -c \"import fmf,time;t0=time.time();"
+                "t=fmf.Tree('.');print('FMF_SCAN_OK',round(time.time()-t0,1),"
+                "'tests',len(t.tests))\" 2>&1 | tail -3"
+            )
+            pcode, pout, perr = ssh.exec(probe, timeout=120)
+            if pcode == 0 and "FMF_SCAN_OK" in pout:
+                print(f"[QEMU] fmf scan OK: {pout.strip()[-120:]}")
+                return "tmt"
+            print(f"[QEMU] fmf scan failed/timeout, tmt unusable: code={pcode} "
+                  f"out={pout[-300:]!r} err={perr[-200:]!r}")
+            print("[QEMU] falling back to direct beakerlib execution")
 
     print(f"[QEMU] pip tmt install failed: code={code}\n{out[-2000:]}\n{err[-500:]}")
 
@@ -252,19 +281,33 @@ def run_tests_direct(ssh: SSHClient, sudo_pw: str, repo_dir: str,
         script_path = os.path.join(test_dir, script_rel)
         # 上传的仓库在 QEMU 里位于 ~/openruyi-autotest
         remote_script = os.path.join(repo_dir, rel, script_rel).replace(os.sep, "/")
+        # source topology.env 提供 TEST_SERVER_* 环境变量（如 TEST_SERVER_1_PASSWORD），
+        # 供 lib.sh 的 sudo dnf 使用；同时 export 兜底密码。
         cmd = (
             f"cd {os.path.dirname(remote_script)} && "
+            f"set -a && . {repo_dir}/topology.env 2>/dev/null; set +a; "
+            f"export TEST_SERVER_1_PASSWORD='{sudo_pw}'; "
             f"echo '{sudo_pw}' | sudo -S true && "
             f"bash {remote_script} 2>&1"
         )
         print(f"[QEMU] direct running: {cmd[:200]}...")
         code, out, err = ssh.exec(cmd, timeout=timeout)
         output = out + ("\n[stderr]\n" + err if err else "")
-        # beakerlib 日志行: ::   PASS / FAIL
-        pass_n = len(re.findall(r"::\s+PASS\b", output))
-        fail_n = len(re.findall(r"::\s+FAIL\b", output))
-        # 也统计最后的整体结果（rlJournalEnd 打印的 Summary）
-        if fail_n or code != 0:
+        # beakerlib 输出（1.30+ 带时间戳/方括号）：
+        #   :: [ 15:43:03 ] :: [   PASS   ] :: message
+        #   ::   RESULT: PASS
+        #   ::   OVERALL RESULT: PASS
+        # 以 OVERALL RESULT / RESULT 为准判断整体成败，PASS 行仅做参考。
+        overall_m = re.search(r"OVERALL RESULT:\s*(PASS|FAIL|WARN|ERROR)", output)
+        result_m = re.search(r"::\s+RESULT:\s*(PASS|FAIL|WARN|ERROR)", output)
+        final = (overall_m or result_m).group(1) if (overall_m or result_m) else None
+        pass_n = len(re.findall(r"::\s+\[[^\]]*\]\s*::\s*\[\s*PASS\s*\]", output))
+        fail_n = len(re.findall(r"::\s+\[[^\]]*\]\s*::\s*\[\s*FAIL\s*\]", output))
+        if final == "PASS":
+            status = "pass"
+        elif final in ("FAIL", "ERROR"):
+            status = "fail"
+        elif fail_n or code != 0:
             status = "fail"
         elif pass_n:
             status = "pass"
@@ -275,8 +318,12 @@ def run_tests_direct(ssh: SSHClient, sudo_pw: str, repo_dir: str,
             "status": status,
             "output": output[-4000:],
             "runner": "direct",
+            "final_result": final or "none",
+            "pass_lines": pass_n,
+            "fail_lines": fail_n,
         })
-        print(f"[QEMU] direct result for {target}: {status} (pass={pass_n} fail={fail_n} exit={code})")
+        print(f"[QEMU] direct result for {target}: {status} "
+              f"(final={final} pass={pass_n} fail={fail_n} exit={code})")
     return results
 
 
@@ -316,7 +363,7 @@ def run_tmt_tests(ssh: SSHClient, sudo_pw: str, test_paths: List[str],
     cmd = (
         f"cd ~/openruyi-autotest && "
         f"echo '{sudo_pw}' | sudo -S true && "
-        f"tmt run --all plan --name /plans/functional {name_args} "
+        f"timeout 1500 tmt run --all plan --name /plans/functional {name_args} "
         f"provision --feeling-safe 2>&1"
     )
     print(f"[QEMU] Running: {cmd[:300]}...")
