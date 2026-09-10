@@ -121,13 +121,17 @@ jobs:
           cat test_results.json || true
 
       # --------------------------------------------------------
-      # 步骤 5：发布 PR 评论
+      # 步骤 5：发布 PR 评论（无论 Run tests 成败都执行）
       # --------------------------------------------------------
       - name: Post PR comment with results
-        if: steps.changed.outputs.changed == 'true'
+        if: steps.changed.outputs.changed == 'true' && always()
         run: |
-          python3 .github/scripts/post_pr_comment.py \
-            --results test_results.json || true
+          if [ -f test_results.json ]; then
+            python3 .github/scripts/post_pr_comment.py \
+              --results test_results.json || true
+          else
+            echo "No test_results.json, skip comment"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
