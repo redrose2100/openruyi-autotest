@@ -67,6 +67,80 @@ def package_repo(repo_root: Path) -> str:
 # ============================================================
 # QEMU 内准备与执行
 # ============================================================
+def _setup_ruamel_pure_python(ssh: SSHClient, sudo_pw: str) -> bool:
+    """在 QEMU 内强制 ruamel.yaml 使用纯 Python 解析（禁用 C 扩展）。
+
+    背景：openruyi riscv64 仓库提供预编译 python-ruamel-yaml-clib（C 扩展），
+    fmf 1.7.0 的 grow() 用 YAML(typ="safe") 解析 main.fmf，safe 模式在 clib
+    存在时走 CParser（C 扩展）而非纯 Python Parser，而该 C 扩展在 riscv64 上
+    解析 YAML 会死循环/极慢（与上游 s390x 已知问题 fmf/issues/164 同族），
+    导致 fmf.Tree('.') 扫描卡死、tmt discover 无限挂起。
+
+    方案：写一个 sitecustomize.py 到 site-packages（Python 启动时自动加载），
+    把 ruamel.yaml 的 CParser/CEmitter 置为 None，使 YAML(typ="safe") 回退到
+    纯 Python Parser（本地 x86_64 纯 Python 实测扫描 4150 节点仅 ~10s）。
+    """
+    sitecustomize = r'''# -*- coding: utf-8 -*-
+"""Force ruamel.yaml to use pure-Python parser (riscv64 clib hang workaround).
+
+openruyi riscv64 python-ruamel-yaml-clib C extension hangs/slows down YAML
+parsing on riscv64 (same family as the s390x issue fmf/issues/164). Setting
+CParser/CEmitter to None makes YAML(typ="safe") fall back to the pure-Python
+parser which is known to work (local x86_64 scan of 4150 nodes ~10s).
+"""
+import sys
+
+# Block imports of the C extension modules so CParser/CEmitter stay None
+try:
+    import ruamel.yaml.main
+    import ruamel.yaml.cyaml
+    for module in (ruamel.yaml.main, ruamel.yaml.cyaml):
+        module.CParser = None
+        module.CEmitter = None
+    # In case YAML was already instantiated, patch module-level names too
+    sys.modules.setdefault('ruamel.yaml.main', ruamel.yaml.main)
+    sys.modules.setdefault('ruamel.yaml.cyaml', ruamel.yaml.cyaml)
+except Exception:
+    pass
+'''
+    # 找到 site-packages 路径。所有 sudo 命令都通过 `-S` 从管道读密码
+    # （不能用 heredoc 做 python3 stdin，因为 heredoc 会覆盖管道导致 sudo
+    # 读不到密码；也不能依赖 sudo 时间戳缓存，QEMU 里可能被禁用）。
+    code, out, err = _exec3(ssh,
+        f"echo '{sudo_pw}' | sudo -S python3 -c \"import site; "
+        "print(site.getsitepackages()[0])\" 2>&1",
+        timeout=60)
+    sp = out.strip().splitlines()[-1].strip() if out.strip() else ""
+    if code != 0 or not sp or not sp.startswith("/"):
+        logger.warning("[QEMU] cannot locate site-packages, skip ruamel fix: %r", out[-300:])
+        return False
+    # 写入 sitecustomize.py。sudo -S 从外部管道读密码，bash -c 内部
+    # echo->base64->重定向到文件，两条管道互不干扰。
+    import base64
+    b64 = base64.b64encode(sitecustomize.encode("utf-8")).decode("ascii")
+    write_cmd = (
+        f"echo '{sudo_pw}' | sudo -S bash -c "
+        f"'echo {b64} | base64 -d > {sp}/sitecustomize.py' 2>&1"
+    )
+    code2, out2, err2 = _exec3(ssh, write_cmd, timeout=60)
+    if code2 != 0:
+        logger.warning("[QEMU] failed to write sitecustomize.py: %s %s", out2[-300:], err2[-300:])
+        return False
+    # 验证纯 Python 生效：CParser 应为 None，且能正常 load YAML
+    verify = (
+        f"echo '{sudo_pw}' | sudo -S python3 -c \"import ruamel.yaml; "
+        "from ruamel.yaml.main import CParser; "
+        "print('RUAMEL_CPARSER_NONE' if CParser is None else 'RUAMEL_CPARSER_SET'); "
+        "from ruamel.yaml import YAML; data = YAML(typ='safe').load('a: 1'); "
+        "print('RUAMEL_LOAD_OK', data.get('a'))\" 2>&1"
+    )
+    code3, out3, err3 = _exec3(ssh, verify, timeout=60)
+    ok = code3 == 0 and "RUAMEL_CPARSER_NONE" in out3 and "RUAMEL_LOAD_OK" in out3
+    logger.info("[QEMU] ruamel pure-python fix: %s (out=%s)",
+                "ok" if ok else "failed", out3.strip()[-300:])
+    return ok
+
+
 def remote_prepare_env(ssh: SSHClient, sudo_pw: str) -> str:
     """在 QEMU 中安装测试执行环境。
 
@@ -97,16 +171,18 @@ def remote_prepare_env(ssh: SSHClient, sudo_pw: str) -> str:
     if code == 0:
         code2, out2, err2 = _exec3(ssh, "tmt --version", timeout=60)
         if code2 == 0:
-            # tmt 可用，但还要自检 fmf 扫描：openruyi 的 python-fmf 1.7.0 在
-            # riscv64 上扫描 fmf 树可能死循环/极慢（tmt discover 依赖 fmf.Tree），
-            # 卡死会导致 tmt run 无限挂起。用 timeout 实测扫描仓库能否完成，
-            # 失败则判定 tmt 不可用，回退 direct。
+            # tmt 可用。但在 riscv64 上 openruyi 的 python-ruamel-yaml-clib
+            # C 扩展会让 fmf 的 YAML(typ="safe") 走 CParser 并卡死（与 s390x
+            # 已知问题同族）。先强制 ruamel 纯 Python 解析，根治扫描卡死。
+            _setup_ruamel_pure_python(ssh, sudo_pw)
+            # 自检 fmf 扫描：fmf.Tree 没有 .tests 属性（那是 tmt 的 API），
+            # 用 climb() 统计节点数。扫描能完成即判定 tmt 可用。
             logger.info("[QEMU] tmt ready (dnf): %s, checking fmf scan...", out2.strip()[:200])
             probe = (
                 "cd ~/openruyi-autotest && "
                 "timeout 60 python3 -c \"import fmf,time;t0=time.time();"
-                "t=fmf.Tree('.');print('FMF_SCAN_OK',round(time.time()-t0,1),"
-                "'tests',len(t.tests))\" 2>&1 | tail -3"
+                "t=fmf.Tree('.');n=sum(1 for _ in t.climb());"
+                "print('FMF_SCAN_OK',round(time.time()-t0,1),'nodes',n)\" 2>&1 | tail -3"
             )
             pcode, pout, perr = _exec3(ssh, probe, timeout=120)
             if pcode == 0 and "FMF_SCAN_OK" in pout:
@@ -133,12 +209,14 @@ def remote_prepare_env(ssh: SSHClient, sudo_pw: str) -> str:
     if code == 0:
         code2, out2, err2 = _exec3(ssh, "tmt --version", timeout=60)
         if code2 == 0:
+            # 同 dnf 路径：先强制 ruamel 纯 Python，再自检 fmf 扫描
+            _setup_ruamel_pure_python(ssh, sudo_pw)
             logger.info("[QEMU] tmt ready (pip): %s, checking fmf scan...", out2.strip()[:200])
             probe = (
                 "cd ~/openruyi-autotest && "
                 "timeout 60 python3 -c \"import fmf,time;t0=time.time();"
-                "t=fmf.Tree('.');print('FMF_SCAN_OK',round(time.time()-t0,1),"
-                "'tests',len(t.tests))\" 2>&1 | tail -3"
+                "t=fmf.Tree('.');n=sum(1 for _ in t.climb());"
+                "print('FMF_SCAN_OK',round(time.time()-t0,1),'nodes',n)\" 2>&1 | tail -3"
             )
             pcode, pout, perr = _exec3(ssh, probe, timeout=120)
             if pcode == 0 and "FMF_SCAN_OK" in pout:
