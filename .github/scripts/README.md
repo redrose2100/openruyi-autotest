@@ -96,9 +96,11 @@ python3 .github/scripts/cli.py hello-world --who ci
 python3 .github/scripts/cli.py compute-requirements ...   # 1. 计算资源规格
 python3 .github/scripts/cli.py launch-qemu-env ...          # 2. 拉起 QEMU 环境
 python3 .github/scripts/cli.py run-tests-in-qemu ...        # 3. 执行测试
-python3 .github/scripts/cli.py post-pr-comment ...          # 4. 发布 PR 评论
-python3 .github/scripts/cli.py cleanup-cloudpods ...        # 5. 清理环境
+python3 .github/scripts/cli.py cleanup-cloudpods ...        # 4. 清理环境
 ```
+
+> 注：流水线不再自动发布 PR 评论（fork 仓库提交的 PR 中 `GITHUB_TOKEN` 为只读，
+> 评论 API 会 403 失败）。`post-pr-comment` 命令保留，可用于同仓库 PR 或手动场景。
 
 ## 测试
 

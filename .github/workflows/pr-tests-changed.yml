@@ -12,8 +12,11 @@
 #   3. 在 CloudPods 云平台创建 KVM 虚拟机，并在其中启动
 #      openRuyi RISC-V QEMU 虚拟机（复用 create_server.py 逻辑）
 #   4. 在 QEMU 中模拟手工测试方式执行被修改的脚本
-#   5. 结果汇总并发布 PR 评论
-#   6. 清理云平台虚拟机（无论成败）
+#   5. 清理云平台虚拟机（无论成败）
+#
+# 注意：不发布 PR 评论。fork 仓库提交的 PR 中 GITHUB_TOKEN 为只读，
+#   且自定义 secrets 不传递给 fork PR，调用评论 API 会 403 失败。
+#   结果以 workflow 日志 / check run 形式呈现。
 #
 # Runner: self-hosted (10.20.238.253, openruyi-github-runner)
 # ============================================================
@@ -30,7 +33,6 @@ concurrency:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   verify-tests-changed:
@@ -131,24 +133,7 @@ jobs:
           cat test_results.json || true
 
       # --------------------------------------------------------
-      # 步骤 5：发布 PR 评论（无论 Run tests 成败都执行）
-      # --------------------------------------------------------
-      - name: Post PR comment with results
-        if: steps.changed.outputs.changed == 'true' && always()
-        run: |
-          if [ -f test_results.json ]; then
-            python3 .github/scripts/cli.py post-pr-comment \
-              --results test_results.json || true
-          else
-            echo "No test_results.json, skip comment"
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-
-      # --------------------------------------------------------
-      # 步骤 6：清理云平台虚拟机（总是执行）
+      # 步骤 5：清理云平台虚拟机（总是执行）
       # --------------------------------------------------------
       - name: Cleanup CloudPods resources
         if: always()
