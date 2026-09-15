@@ -134,12 +134,20 @@ def run_suite_on_env(
     case_fmf_paths = [c["fmf_path"] for c in cases]
 
     # 3. 执行：tmt 或 direct
-    if exec_mode == "tmt":
-        suite_results = _run_tmt_suite(ssh, ssh_pw, suite_fmf_path,
-                                       case_fmf_paths, timeout)
-    else:
-        suite_results = _run_direct_suite(ssh, ssh_pw, suite_fmf_path,
-                                          case_fmf_paths, timeout)
+    suite_results: List[Dict] = []
+    try:
+        if exec_mode == "tmt":
+            suite_results = _run_tmt_suite(ssh, ssh_pw, suite_fmf_path,
+                                           case_fmf_paths, timeout)
+        else:
+            suite_results = _run_direct_suite(ssh, ssh_pw, suite_fmf_path,
+                                              case_fmf_paths, timeout)
+    except Exception as exc:  # noqa: BLE001
+        # 单个用例失败不应丢弃整套已执行结果：记录异常并继续归一化
+        logger.error("[exec] %s: suite execution raised, "
+                     "keeping %d partial result(s): %s",
+                     suite_name, len(suite_results), exc)
+        result["error"] = f"partial: {exc}"
 
     # 4. 归一化结果（补全 fail_reason / test_points）
     case_by_path = {c["fmf_path"]: c for c in cases}
@@ -265,21 +273,36 @@ def _parse_tmt_output(output: str, case_fmf_paths: List[str]) -> List[Dict]:
 
 def _run_direct_suite(ssh: SSHClient, ssh_pw: str, suite_fmf_path: str,
                       case_fmf_paths: List[str], timeout: int) -> List[Dict]:
-    """tmt 不可用时直接以 beakerlib 方式执行每个用例脚本。"""
-    results = run_tests_direct(
-        ssh, ssh_pw,
-        repo_dir=_REMOTE_DIR,
-        test_paths=case_fmf_paths,
-        suite_paths=[],
-        timeout=timeout,
-    )
-    # 归一化
-    normalized = []
-    for r in results:
-        normalized.append({
-            "fmf_path": r["test_path"],
-            "status": r["status"],
-            "fail_reason": "" if r["status"] == "pass" else (r.get("final_result") or "failed"),
-            "output": r.get("output", ""),
-        })
+    """tmt 不可用时直接以 beakerlib 方式执行每个用例脚本。
+
+    逐用例执行：单个用例超时/异常只标记该用例为 error，
+    不中断整个套，保证已完成的用例结果不会丢失。
+    """
+    normalized: List[Dict] = []
+    for path in case_fmf_paths:
+        try:
+            results = run_tests_direct(
+                ssh, ssh_pw,
+                repo_dir=_REMOTE_DIR,
+                test_paths=[path],
+                suite_paths=[],
+                timeout=timeout,
+            )
+            for r in results:
+                normalized.append({
+                    "fmf_path": r["test_path"],
+                    "status": r["status"],
+                    "fail_reason": "" if r["status"] == "pass"
+                    else (r.get("final_result") or "failed"),
+                    "output": r.get("output", ""),
+                })
+        except Exception as exc:  # noqa: BLE001
+            logger.error("[exec] %s: case %s failed with exception, "
+                         "marking as error: %s", suite_fmf_path, path, exc)
+            normalized.append({
+                "fmf_path": path,
+                "status": "error",
+                "fail_reason": f"execution raised: {exc}",
+                "output": "",
+            })
     return normalized

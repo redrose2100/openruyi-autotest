@@ -11,6 +11,7 @@ SSHClient，同时新增 put_file 等扩展方法。
 from __future__ import annotations
 
 import select
+import socket
 import time
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
@@ -68,13 +69,24 @@ class SSHClient:
         )
 
     def exec(self, cmd: str, timeout: int = 600) -> ExecResult:
-        """执行命令，返回 ExecResult(code, stdout, stderr)。"""
+        """执行命令，返回 ExecResult(code, stdout, stderr)。
+
+        超时（channel.settimeout 到期或调用方 timeout 到期）返回
+        ExecResult(124, 已收集输出, "[timeout]")，不抛异常，避免
+        上层（如 run_tests_direct）因单个用例超时丢失整套已执行结果。
+        """
         transport = self.ssh.get_transport()
+        if transport is None:
+            return ExecResult(255, "", "SSH transport closed")
         channel = transport.open_session()
         channel.settimeout(timeout)
         try:
             channel.exec_command(cmd)
         except Exception as exc:  # noqa: BLE001
+            try:
+                channel.close()
+            except Exception:  # noqa: BLE001
+                pass
             return ExecResult(255, "", str(exc))
 
         stdout_buf: List[str] = []
@@ -82,35 +94,95 @@ class SSHClient:
         start = time.time()
         while True:
             if time.time() - start > timeout:
-                channel.close()
+                try:
+                    channel.close()
+                except Exception:  # noqa: BLE001
+                    pass
                 return ExecResult(
                     124,
                     "".join(stdout_buf),
                     "".join(stderr_buf) + "\n[timeout]",
                 )
-            r, _, _ = select.select([channel], [], [], 1.0)
-            if channel in r:
-                data = channel.recv(65536)
-                if data:
-                    stdout_buf.append(data.decode("utf-8", "ignore"))
-                err = channel.recv_stderr(65536)
-                if err:
-                    stderr_buf.append(err.decode("utf-8", "ignore"))
-            if channel.exit_status_ready():
-                while True:
-                    r2, _, _ = select.select([channel], [], [], 0.3)
-                    if channel not in r2:
-                        break
-                    data = channel.recv(65536)
+            try:
+                r, _, _ = select.select([channel], [], [], 1.0)
+                if channel in r:
+                    try:
+                        data = channel.recv(65536)
+                    except socket.timeout:
+                        # channel.settimeout 到期：返回已收集输出（124 = timeout）
+                        try:
+                            channel.close()
+                        except Exception:  # noqa: BLE001
+                            pass
+                        return ExecResult(
+                            124,
+                            "".join(stdout_buf),
+                            "".join(stderr_buf) + "\n[timeout]",
+                        )
                     if data:
                         stdout_buf.append(data.decode("utf-8", "ignore"))
-                    else:
-                        break
-                    err = channel.recv_stderr(65536)
+                    try:
+                        err = channel.recv_stderr(65536)
+                    except socket.timeout:
+                        try:
+                            channel.close()
+                        except Exception:  # noqa: BLE001
+                            pass
+                        return ExecResult(
+                            124,
+                            "".join(stdout_buf),
+                            "".join(stderr_buf) + "\n[timeout]",
+                        )
                     if err:
                         stderr_buf.append(err.decode("utf-8", "ignore"))
-                break
-        code = channel.recv_exit_status()
+                if channel.exit_status_ready():
+                    while True:
+                        r2, _, _ = select.select([channel], [], [], 0.3)
+                        if channel not in r2:
+                            break
+                        try:
+                            data = channel.recv(65536)
+                        except socket.timeout:
+                            break
+                        if data:
+                            stdout_buf.append(data.decode("utf-8", "ignore"))
+                        else:
+                            break
+                        try:
+                            err = channel.recv_stderr(65536)
+                        except socket.timeout:
+                            break
+                        if err:
+                            stderr_buf.append(err.decode("utf-8", "ignore"))
+                    break
+            except socket.timeout:
+                # select 或 recv 期间 channel.settimeout 到期
+                try:
+                    channel.close()
+                except Exception:  # noqa: BLE001
+                    pass
+                return ExecResult(
+                    124,
+                    "".join(stdout_buf),
+                    "".join(stderr_buf) + "\n[timeout]",
+                )
+            except (EOFError, OSError) as exc:
+                # 连接中断：返回已收集输出（255 = 连接错误）
+                try:
+                    channel.close()
+                except Exception:  # noqa: BLE001
+                    pass
+                return ExecResult(255, "".join(stdout_buf),
+                                  "".join(stderr_buf) + f"\n[connection lost: {exc}]")
+        try:
+            code = channel.recv_exit_status()
+        except (socket.timeout, EOFError, OSError) as exc:
+            try:
+                channel.close()
+            except Exception:  # noqa: BLE001
+                pass
+            return ExecResult(255, "".join(stdout_buf),
+                              "".join(stderr_buf) + f"\n[connection lost: {exc}]")
         return ExecResult(code, "".join(stdout_buf), "".join(stderr_buf))
 
     def put_file(self, local: str, remote: str) -> bool:
