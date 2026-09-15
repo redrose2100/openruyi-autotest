@@ -25,13 +25,30 @@ from core.config import get_env
 
 logger = logging.getLogger("ci_cli.functional.resource_pool")
 
-# CloudPods 凭据：环境变量优先，其次显式传入
+# CloudPods 凭据：环境变量优先 -> 显式传入 -> create_server.Env 默认值
+def _default_credentials() -> Dict[str, str]:
+    """读取 create_server.Env 的默认凭据（与 launch_env 创建时保持一致）。"""
+    try:
+        from cloudpods import create_server as cs
+        env = cs.Env
+        return {
+            "keystone_url": getattr(env, "cloudpods_keystone_url", ""),
+            "username": getattr(env, "cloudpods_user", ""),
+            "password": getattr(env, "cloudpods_password", ""),
+        }
+    except Exception:  # noqa: BLE001
+        return {"keystone_url": "", "username": "", "password": ""}
+
+
 def _get_credentials(vm_info: Optional[Dict] = None) -> Dict[str, str]:
     keystone_url = get_env("CLOUDPODS_KEYSTONE_URL") or (
         vm_info or {}).get("cloudpods_keystone_url", "")
     username = get_env("CLOUDPODS_USER") or (vm_info or {}).get("cloudpods_user", "")
     password = get_env("CLOUDPODS_PASSWORD") or (vm_info or {}).get("cloudpods_password", "")
-    return {"keystone_url": keystone_url, "username": username, "password": password}
+    if keystone_url and username and password:
+        return {"keystone_url": keystone_url, "username": username, "password": password}
+    # 回退到 create_server.Env 默认凭据（如 secrets 未配置时）
+    return _default_credentials()
 
 
 class EnvPool:
@@ -71,15 +88,17 @@ class EnvPool:
             return self._cp
         creds = _get_credentials()
         if not creds["keystone_url"] or not creds["username"] or not creds["password"]:
-            # 尝试解密密码（可能为加密串）
-            try:
-                from core.cloudpods import decrypt_password
-                creds["password"] = decrypt_password(creds["password"])
-            except Exception:  # noqa: BLE001
-                pass
-        if not creds["keystone_url"] or not creds["username"] or not creds["password"]:
             logger.error("Missing CloudPods credentials")
             return None
+        # 密码可能是 XOR+Base64 加密串（create_server.Env 默认值等），
+        # 先尝试解密；解密失败则视为明文原样使用。
+        try:
+            from core.cloudpods import decrypt_password
+            decrypted = decrypt_password(creds["password"])
+            if decrypted:
+                creds["password"] = decrypted
+        except Exception:  # noqa: BLE001
+            pass
         self._credentials = creds
         self._cp = CloudPodsClient(
             keystone_url=creds["keystone_url"],
