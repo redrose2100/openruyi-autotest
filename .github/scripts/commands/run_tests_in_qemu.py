@@ -152,9 +152,11 @@ def remote_prepare_env(ssh: SSHClient, sudo_pw: str) -> str:
     # 确保 sudo 免密可用
     ssh.exec(f"echo '{sudo_pw}' | sudo -S true")
 
-    # 1. 基础工具：tar / beakerlib（QEMU 最小系统可能缺失）
+    # 1. 基础工具：tar / beakerlib（QEMU 最小系统可能缺失）。注意 openruyi 的
+    #    https repo 有 SSL 证书问题，dnf 必须 --nogpgcheck --setopt=sslverify=0。
     code, out, err = _exec3(ssh,
-        f"echo '{sudo_pw}' | sudo -S dnf install -y tar gzip python3-pip beakerlib python-six 2>&1 | tail -20",
+        f"echo '{sudo_pw}' | sudo -S dnf install -y --nogpgcheck "
+        "--setopt=sslverify=0 tar gzip python3-pip beakerlib python-six 2>&1 | tail -20",
         timeout=1800,
     )
     if code != 0 and "Nothing to do" not in out:
@@ -165,7 +167,8 @@ def remote_prepare_env(ssh: SSHClient, sudo_pw: str) -> str:
     # 2. 优先用 dnf 装 tmt（openruyi 仓库有 python-tmt + ruamel-yaml-clib rpm，
     #    避免 pip 在 riscv64 上编译 C 扩展）
     code, out, err = _exec3(ssh,
-        f"echo '{sudo_pw}' | sudo -S dnf install -y tmt 2>&1 | tail -15",
+        f"echo '{sudo_pw}' | sudo -S dnf install -y --nogpgcheck "
+        "--setopt=sslverify=0 tmt 2>&1 | tail -15",
         timeout=1800,
     )
     if code == 0:
@@ -196,7 +199,8 @@ def remote_prepare_env(ssh: SSHClient, sudo_pw: str) -> str:
 
     # 3. dnf 失败回退 pip：先装编译工具链，再 pip 装 tmt
     code, out, err = _exec3(ssh,
-        f"echo '{sudo_pw}' | sudo -S dnf install -y gcc gcc-c++ python3-devel rust cargo 2>&1 | tail -10",
+        f"echo '{sudo_pw}' | sudo -S dnf install -y --nogpgcheck "
+        "--setopt=sslverify=0 gcc gcc-c++ python3-devel rust cargo 2>&1 | tail -10",
         timeout=1800,
     )
     if code != 0 and "Nothing to do" not in out:
@@ -474,13 +478,20 @@ class RunTestsInQemuCommand(BaseCommand):
                 try:
                     # 2. 先确保 tar 存在（QEMU 最小系统可能没有，解压依赖它）
                     ssh.exec(f"echo '{ssh_pw}' | sudo -S true")
-                    code, out, err = _exec3(ssh,
-                        "command -v tar >/dev/null 2>&1 || "
-                        f"(echo '{ssh_pw}' | sudo -S dnf install -y tar gzip 2>&1 | tail -5)",
-                        timeout=600,
-                    )
+                    code, out, err = _exec3(ssh, "command -v tar", timeout=30)
                     if code != 0:
-                        raise RuntimeError(f"ensure tar failed: {out} {err}")
+                        # 注意：安装命令不能用 "| tail" 收尾（管道会吞掉 dnf
+                        # 的退出码导致误判成功），且 openruyi 的 https repo 有
+                        # SSL 证书问题，必须 --setopt=sslverify=0；安装完成后
+                        # 必须重新验证 command -v tar。
+                        code, out, err = _exec3(ssh,
+                            f"echo '{ssh_pw}' | sudo -S dnf install -y "
+                            "--nogpgcheck --setopt=sslverify=0 tar gzip 2>&1 | tail -5",
+                            timeout=600,
+                        )
+                        code, out, err = _exec3(ssh, "command -v tar", timeout=30)
+                        if code != 0:
+                            raise RuntimeError(f"install tar failed: {out} {err}")
 
                     # 3. 上传并解压仓库
                     remote_dir = "/home/openruyi/openruyi-autotest"
