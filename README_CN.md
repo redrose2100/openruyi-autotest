@@ -116,3 +116,12 @@ openruyi-autotest/
 ## 四、openruyi-autotest 测试报告模版
 
 参见 [测试报告模版](docs/test_reports_zh.md) — 涵盖测试概述、各类型测试的套数/用例数/通过/失败/跳过统计表格。
+
+---
+
+## 五、许可证
+
+openruyi-autotest 采用 [木兰宽松许可证，第2版（Mulan PSL v2）](LICENSE)。
+
+CopyrightText (C) 2026 Institute of Software, Chinese Academy of Sciences (ISCAS)
+CopyrightText (C) 2026 openRuyi Project Contributors

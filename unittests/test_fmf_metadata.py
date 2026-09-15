@@ -308,8 +308,10 @@ class TestFmfNoBom(unittest.TestCase):
                 violations.append(f"{rel}/main.fmf: test 脚本 '{script_rel}' 带 UTF-8 BOM")
         if violations:
             # 报告但不失败：历史遗留问题，修复工作量大
+            # 注意：避免使用 ⚠ 等非 ASCII 符号，Windows GBK 控制台 print 会抛
+            # UnicodeEncodeError（pytest 内部重编码为 UTF-8 不受影响）
             print(
-                f"⚠ 发现 {len(violations)} 个 test 脚本带 UTF-8 BOM（已知遗留问题，不阻塞）:\n"
+                f"[!] 发现 {len(violations)} 个 test 脚本带 UTF-8 BOM（已知遗留问题，不阻塞）:\n"
                 + "\n".join(f"  - {v}" for v in violations[:10])
                 + "\n\n修复方法: 以 UTF-8 无 BOM 重新保存（如 PowerShell: "
                 + "[IO.File]::WriteAllText($p, [IO.File]::ReadAllText($p), (New-Object Text.UTF8Encoding $false))）"

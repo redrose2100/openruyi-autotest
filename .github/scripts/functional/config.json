@@ -1,0 +1,28 @@
+{
+  "concurrency": 20,
+  "env_create_concurrency": 3,
+  "env_prefix": "openruyi-func",
+  "suite_root": "tests/functional/pkgs",
+  "plans_root": "plans",
+  "repo_archive_excludes": [],
+  "default_spec": {
+    "cloudpods_server_num": 1,
+    "riscv_qemu_num": 1,
+    "riscv_qemu_cpu": 4,
+    "riscv_qemu_memory": 8,
+    "riscv_qemu_net_num": 1,
+    "riscv_qemu_disks": "[]",
+    "server_sku": "ecs.g1.c8m8"
+  },
+  "qemu_ssh_user": "openruyi",
+  "qemu_ssh_password": "openruyi",
+  "qemu_ssh_port_base": 12055,
+  "host_ssh_user": "root",
+  "host_ssh_password": "ISRCpassword@123",
+  "ssh_connect_timeout": 30,
+  "case_timeout": 5400,
+  "env_verify_retries": 2,
+  "reports_root": "reports/functional",
+  "suite_include": [],
+  "suite_exclude": []
+}

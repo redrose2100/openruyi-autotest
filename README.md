@@ -116,3 +116,12 @@ See [Development Guide](docs/development-guide.md) -- covers how to add new test
 ## 4. Test Report Templates
 
 See [Test Report Templates](docs/test_reports.md) -- covers test overview, suite/case/pass/fail/skip statistics tables for each test type.
+
+---
+
+## 5. License
+
+openruyi-autotest is licensed under [Mulan Permissive Software License, Version 2 (Mulan PSL v2)](LICENSE).
+
+CopyrightText (C) 2026 Institute of Software, Chinese Academy of Sciences (ISCAS)
+CopyrightText (C) 2026 openRuyi Project Contributors

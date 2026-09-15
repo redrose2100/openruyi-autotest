@@ -33,6 +33,27 @@ jobs:
       - name: Run fmf metadata tests
         run: python -m pytest unittests/test_fmf_metadata.py -q
 
+  ci-cli:
+    name: CI CLI checks (commands registry + logic)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pyyaml requests paramiko
+
+      - name: Run CI CLI tests
+        run: python -m pytest unittests/test_ci_cli.py -q
+
   docs-lint:
     name: Docs check (no openEuler in docs/)
     runs-on: ubuntu-latest

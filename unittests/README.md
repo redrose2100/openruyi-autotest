@@ -14,6 +14,8 @@
    打桩（stub）方式加载真实的 `lib.sh` / `hw_check.sh`，验证 flag-file +
    引用计数算法与纯函数行为。
 4. **静态质量检查**（`test_tests_quality.py`）：中文字符、乱码、tmt 规范、可执行位。
+5. **CI CLI 框架测试**（`test_ci_cli.py`）：校验 `.github/scripts/` 下基于类的命令
+   行框架——命令自动发现、基类约定、资源规格计算、PR 评论生成等。
 
 > 说明：分组目录（如 `smoke/`、`compatibility/ltp_posix/aio/`）的 `main.fmf`
 > 只提供 tmt 继承配置、没有 `test:` 字段，是合法结构，**不视为用例目录**，
@@ -89,6 +91,24 @@ python -m unittest discover -s unittests -p "test_*.py" -v
 | `test_sh_tmt_compliance` | 所有 `.sh` 符合 tmt 测试框架规范 |
 | `test_sh_executable` | 所有 `.sh` 具有可执行权限（Windows 上按 git 模式位 100755 判定） |
 
+### test_ci_cli.py（CI CLI 框架）
+
+针对 `.github/scripts/` 的基于类命令行框架（`core/base.py` 的 `BaseCommand` +
+`CommandRegistry` 自动注册）。命令实现位于 `commands/*.py`，每个 CI 检查一个命令：
+`compute-requirements`、`launch-qemu-env`、`run-tests-in-qemu`、`post-pr-comment`、
+`cleanup-cloudpods`。
+
+| 用例 | 描述 |
+|------|------|
+| `TestCommandRegistry::test_discover_all_commands` | 能发现全部 5 个命令，且均为 `BaseCommand` 子类 |
+| `TestCommandRegistry::test_cli_help_runs` | 子进程运行 `cli.py --help` 退出码为 0 |
+| `TestComputeRequirements::test_find_fmf_ancestors` | 沿目录向上回溯 FMF 元数据继承链 |
+| `TestComputeRequirements::test_unixbench_performance_rule` | `performance/unixbench` 触发性能规则（cpu≥8/mem≥8） |
+| `TestComputeRequirements::test_pick_sku` | CPU/内存 → SKU 映射（含就近取整） |
+| `TestPostPrComment::test_build_comment` | PR 评论 Markdown 生成（汇总/详情表格） |
+
+> 运行依赖 `requests`/`paramiko`（仅 import 级，不发起真实网络/SSH 调用）。
+
 ## 公共工具（tmt_utils.py）
 
 `unittests/tmt_utils.py` 提供共享工具：用例目录收集（`collect_real_test_dirs` 自动
@@ -109,8 +129,9 @@ GitHub Actions 工作流 `.github/workflows/unit-tests.yml` 在每次 push/PR �
 | Job | 内容 | 预计耗时 |
 |-----|------|----------|
 | `quick` | `test_fmf_metadata.py`（fmf 元数据） | ~1 分钟 |
+| `ci-cli` | `test_ci_cli.py`（CI CLI 框架） | ~1 分钟 |
 | `full` | `test_lib_logic.py` + `test_sh_syntax.py` + `test_tests_quality.py` | ~25 分钟 |
 
-两个 job 并行执行，任一失败即阻断合并。本地可分别用
+各 job 并行执行，任一失败即阻断合并。本地可分别用
 `python -m pytest unittests/test_fmf_metadata.py -q` 与
 `python -m pytest unittests/ -q` 复现。
