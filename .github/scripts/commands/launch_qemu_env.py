@@ -27,6 +27,8 @@ from typing import Optional
 
 from core.base import BaseCommand
 
+logger = logging.getLogger("ci_cli.commands.launch_qemu_env")
+
 
 def apply_spec_to_env(env_cls, spec: dict) -> list:
     """把规格 JSON 覆盖到 Env 类属性上，返回实际生效的字段列表。"""
@@ -112,6 +114,112 @@ def parse_hosts_from_log(log_text: str) -> dict:
     return result
 
 
+def launch_env(spec: dict, logger=None, iscas_disable: bool = True) -> dict:
+    """在 CloudPods 上创建一套 QEMU 环境（1 host + 若干 QEMU VM）。
+
+    可直接被 CLI 命令或 functional 模块复用。返回 vm_info 字典：
+      {
+        "hosts": [{"host_ip", "server_id", "qemu_ports", "qemu_bridge_ips",
+                   "ssh_user", "ssh_password", "host_ssh_user", "host_ssh_password"}],
+        "server_ids": [...],
+        "spec": {...},
+        "ok": bool,
+      }
+    """
+    # 直接 import 复制进来的 create_server 库（不再动态加载）
+    from cloudpods import create_server as cs
+
+    env_cls = cs.Env
+
+    # ------------------------------------------------------------
+    # 主机侧 yum 仓库修复（不修改 create_server.py）：
+    #   ISCAS 镜像的 EPOL 仓库路径 404（正确是 EPOL/main/），且
+    #   Everything 仓库极慢（~35KB/s），会导致 dnf makecache 失败。
+    #   通过 monkey-patch SSHClient.exec 拦截 iscas-mirror.repo 的
+    #   写入，将 enabled=1 全部改为 enabled=0（禁用 ISCAS 仓库），
+    #   makecache 走默认 openEuler.repo 的 baseurl
+    #   （repo.openeuler.org，已验证 200 且速度快）。
+    # ------------------------------------------------------------
+    if iscas_disable:
+        orig_exec = cs.SSHClient.exec
+
+        def patched_exec(self, cmd, timeout=60):
+            if "iscas-mirror.repo" in cmd and "tee" in cmd:
+                cmd = cmd.replace("enabled=1", "enabled=0")
+                print("[launch-qemu-env] Disabled ISCAS mirror repos (EPOL 404 workaround)")
+            return orig_exec(self, cmd, timeout)
+
+        cs.SSHClient.exec = patched_exec
+
+    # 环境变量优先（runner 机器上注入的 CloudPods 凭据）
+    for env_key, attr in [
+        ("CLOUDPODS_KEYSTONE_URL", "cloudpods_keystone_url"),
+        ("CLOUDPODS_USER", "cloudpods_user"),
+        ("CLOUDPODS_PASSWORD", "cloudpods_password"),
+    ]:
+        if os.environ.get(env_key):
+            setattr(env_cls, attr, os.environ[env_key])
+
+    applied = apply_spec_to_env(env_cls, spec)
+    if logger:
+        logger.info(f"Applied spec fields to Env: {applied}")
+
+    # 捕获 create_server 的日志输出
+    log_capture = io.StringIO()
+    log_handler = logging.StreamHandler(log_capture)
+    log_handler.setFormatter(logging.Formatter("%(asctime)s | %(levelname)s | %(message)s"))
+    cs.log.addHandler(log_handler)
+
+    # 同时让原 logger 输出到控制台
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(logging.Formatter("%(asctime)s | %(levelname)s | %(message)s"))
+    cs.log.addHandler(console_handler)
+
+    ok = cs.create_qemu_server(env_cls)
+
+    # 获取捕获的日志
+    captured = log_capture.getvalue()
+    cs.log.removeHandler(log_handler)
+    cs.log.removeHandler(console_handler)
+
+    if not ok:
+        if logger:
+            logger.error(f"create_qemu_server FAILED, tail of log:\n{captured[-3000:]}")
+        # 仍然尝试解析已创建的服务器用于清理
+        info = parse_hosts_from_log(captured)
+        return {**info, "spec": spec, "ok": False}
+
+    info = parse_hosts_from_log(captured)
+    if not info["hosts"]:
+        if logger:
+            logger.error("No hosts parsed from log, parsing failed")
+            logger.error(captured[-5000:])
+        return {**info, "spec": spec, "ok": False}
+
+    # 补充凭据信息（从 Env）
+    for host in info["hosts"]:
+        host["ssh_user"] = env_cls.riscv_default_username
+        host["ssh_password"] = env_cls.riscv_default_password
+        host["host_ssh_user"] = env_cls.cloudpods_server_user
+        host["host_ssh_password"] = env_cls.cloudpods_server_password
+
+    vm_info = {**info, "spec": spec, "ok": True}
+
+    # 补充 CloudPods 凭据（供 cleanup-cloudpods 无环境变量时回退）
+    vm_info["cloudpods_keystone_url"] = env_cls.cloudpods_keystone_url
+    vm_info["cloudpods_user"] = env_cls.cloudpods_user
+    vm_info["cloudpods_password"] = env_cls.cloudpods_password
+
+    if logger:
+        logger.info("=" * 60)
+        logger.info(f"Launched {len(info['hosts'])} host(s), total QEMU VMs: "
+                    f"{sum(len(h['qemu_ports']) for h in info['hosts'])}")
+        for h in info["hosts"]:
+            logger.info(f"  Host {h['host_ip']}: QEMU ports={h['qemu_ports']}")
+        logger.info("=" * 60)
+    return vm_info
+
+
 class LaunchQemuEnvCommand(BaseCommand):
     """创建 CloudPods 主机并在其中启动 QEMU 虚拟机"""
 
@@ -123,9 +231,6 @@ class LaunchQemuEnvCommand(BaseCommand):
         parser.add_argument("--output", required=True, help="Output vm_info.json path")
 
     def run(self, args) -> int:
-        # 直接 import 复制进来的 create_server 库（不再动态加载）
-        from cloudpods import create_server as cs
-
         req_path = Path(args.requirements)
         with open(req_path, encoding="utf-8") as f:
             req = json.load(f)
@@ -135,96 +240,7 @@ class LaunchQemuEnvCommand(BaseCommand):
             self.log_info("Empty spec, nothing to launch")
             return 0
 
-        env_cls = cs.Env
-
-        # ------------------------------------------------------------
-        # 主机侧 yum 仓库修复（不修改 create_server.py）：
-        #   ISCAS 镜像的 EPOL 仓库路径 404（正确是 EPOL/main/），且
-        #   Everything 仓库极慢（~35KB/s），会导致 dnf makecache 失败。
-        #   通过 monkey-patch SSHClient.exec 拦截 iscas-mirror.repo 的
-        #   写入，将 enabled=1 全部改为 enabled=0（禁用 ISCAS 仓库），
-        #   makecache 走默认 openEuler.repo 的 baseurl
-        #   （repo.openeuler.org，已验证 200 且速度快）。
-        # ------------------------------------------------------------
-        orig_exec = cs.SSHClient.exec
-
-        def patched_exec(self, cmd, timeout=60):
-            if "iscas-mirror.repo" in cmd and "tee" in cmd:
-                cmd = cmd.replace("enabled=1", "enabled=0")
-                print("[launch-qemu-env] Disabled ISCAS mirror repos (EPOL 404 workaround)")
-            return orig_exec(self, cmd, timeout)
-
-        cs.SSHClient.exec = patched_exec
-
-        # 环境变量优先（runner 机器上注入的 CloudPods 凭据）
-        for env_key, attr in [
-            ("CLOUDPODS_KEYSTONE_URL", "cloudpods_keystone_url"),
-            ("CLOUDPODS_USER", "cloudpods_user"),
-            ("CLOUDPODS_PASSWORD", "cloudpods_password"),
-        ]:
-            if os.environ.get(env_key):
-                setattr(env_cls, attr, os.environ[env_key])
-
-        applied = apply_spec_to_env(env_cls, spec)
-        self.log_info(f"Applied spec fields to Env: {applied}")
-
-        # 捕获 create_server 的日志输出
-        log_capture = io.StringIO()
-        log_handler = logging.StreamHandler(log_capture)
-        log_handler.setFormatter(logging.Formatter("%(asctime)s | %(levelname)s | %(message)s"))
-        cs.log.addHandler(log_handler)
-
-        # 同时让原 logger 输出到控制台
-        console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setFormatter(logging.Formatter("%(asctime)s | %(levelname)s | %(message)s"))
-        cs.log.addHandler(console_handler)
-
-        ok = cs.create_qemu_server(env_cls)
-
-        # 获取捕获的日志
-        captured = log_capture.getvalue()
-        cs.log.removeHandler(log_handler)
-        cs.log.removeHandler(console_handler)
-
-        if not ok:
-            self.log_error(f"create_qemu_server FAILED, tail of log:\n{captured[-3000:]}")
-            # 仍然尝试解析已创建的服务器用于清理
-            info = parse_hosts_from_log(captured)
-            with open(args.output, "w", encoding="utf-8") as f:
-                json.dump({**info, "spec": spec, "ok": False}, f, ensure_ascii=False, indent=2)
-            return 1
-
-        info = parse_hosts_from_log(captured)
-        if not info["hosts"]:
-            self.log_error("No hosts parsed from log, parsing failed")
-            self.log_error(captured[-5000:])
-            with open(args.output, "w", encoding="utf-8") as f:
-                json.dump({**info, "spec": spec, "ok": False}, f, ensure_ascii=False, indent=2)
-            return 1
-
-        # 补充凭据信息（从 Env）
-        for host in info["hosts"]:
-            host["ssh_user"] = env_cls.riscv_default_username
-            host["ssh_password"] = env_cls.riscv_default_password
-            host["host_ssh_user"] = env_cls.cloudpods_server_user
-            host["host_ssh_password"] = env_cls.cloudpods_server_password
-
-        with open(args.output, "w", encoding="utf-8") as f:
-            json.dump({**info, "spec": spec, "ok": True}, f, ensure_ascii=False, indent=2)
-
-        # 补充 CloudPods 凭据（供 cleanup-cloudpods 无环境变量时回退）
-        with open(args.output, "r", encoding="utf-8") as f:
-            vm_info = json.load(f)
-        vm_info["cloudpods_keystone_url"] = env_cls.cloudpods_keystone_url
-        vm_info["cloudpods_user"] = env_cls.cloudpods_user
-        vm_info["cloudpods_password"] = env_cls.cloudpods_password
+        vm_info = launch_env(spec, logger=logger)
         with open(args.output, "w", encoding="utf-8") as f:
             json.dump(vm_info, f, ensure_ascii=False, indent=2)
-
-        self.log_info("=" * 60)
-        self.log_info(f"Launched {len(info['hosts'])} host(s), total QEMU VMs: "
-                      f"{sum(len(h['qemu_ports']) for h in info['hosts'])}")
-        for h in info["hosts"]:
-            self.log_info(f"  Host {h['host_ip']}: QEMU ports={h['qemu_ports']}")
-        self.log_info("=" * 60)
-        return 0
+        return 0 if vm_info.get("ok") else 1

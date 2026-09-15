@@ -50,15 +50,21 @@ logger = logging.getLogger("ci_cli.commands.run_tests_in_qemu")
 # ============================================================
 # 打包仓库（排除 .git 等）
 # ============================================================
-def package_repo(repo_root: Path) -> str:
-    """把仓库打包为 tar.gz（排除 .git 与无关大目录），返回临时文件路径"""
+def package_repo(repo_root: Path, excludes=None) -> str:
+    """把仓库打包为 tar.gz（排除 .git 与无关大目录），返回临时文件路径
+
+    excludes 可传入额外排除的目录名列表（例如 functional 全量测试需要
+    排除 performance/ 等非 functional 测试目录以缩小包体）。
+    """
     fd, tmp = tempfile.mkstemp(suffix=".tar.gz")
     os.close(fd)
 
-    excludes = [".git", "docs", ".github", "unittests"]
+    base_excludes = [".git", "docs", ".github", "unittests"]
+    if excludes:
+        base_excludes = list(dict.fromkeys(base_excludes + list(excludes)))
     with tarfile.open(tmp, "w:gz") as tar:
         for child in sorted(repo_root.iterdir()):
-            if child.name in excludes:
+            if child.name in base_excludes:
                 continue
             tar.add(child, arcname=f"openruyi-autotest/{child.name}")
     return tmp

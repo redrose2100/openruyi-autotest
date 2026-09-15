@@ -216,6 +216,36 @@ class CloudPodsClient:
             return rs.json()
         return None
 
+    def list_servers(self, name_prefix: str = "", limit: int = 0) -> List[Dict]:
+        """按名称前缀列出 CloudPods 服务器（精简字段）。
+
+        返回 list，每项含 id / name / status / ips 等关键字段；
+        查询失败返回空列表。
+        """
+        params: Dict = {"scope": "system", "details": "false"}
+        if name_prefix:
+            params["name"] = name_prefix
+        if limit:
+            params["limit"] = limit
+        rs = self._request("GET", "/servers", params=params)
+        if rs is None or rs.status_code != 200:
+            logger.error("List servers failed: status=%s",
+                         rs.status_code if rs else "None")
+            return []
+        data = rs.json()
+        servers = data.get("servers", [])
+        result: List[Dict] = []
+        for s in servers:
+            result.append({
+                "id": s.get("id", ""),
+                "name": s.get("name", ""),
+                "status": s.get("status", ""),
+                "ips": s.get("ips", []),
+            })
+        logger.info("List servers(name_prefix=%r) -> %d server(s)",
+                    name_prefix, len(result))
+        return result
+
     def get_server_ip(self, server_id: str, network_id: str = "") -> Optional[str]:
         detail = self.get_server_detail(server_id)
         if not detail:

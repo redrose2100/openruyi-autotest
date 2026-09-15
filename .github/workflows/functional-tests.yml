@@ -1,0 +1,106 @@
+# ============================================================
+# Functional 全量测试流水线（手动触发）
+#
+# 触发条件：GitHub 页面手动触发（workflow_dispatch）
+#
+# 流程：
+#   1. 检出代码
+#   2. 安装依赖（paramiko/requests）
+#   3. 执行 .github/scripts/cli.py run-functional：
+#        - 发现 tests/functional 下全部测试套
+#        - 并发执行（默认 20，可在配置文件中调整）
+#        - 每个测试套从 CloudPods 资源池申请环境（无则创建）
+#        - 执行完成后释放（不删除）
+#        - 全部完成后统一清理资源池中的虚拟机
+#   4. 生成报告到 reports/functional/<YYYY-MM-DD>/
+#   5. 上传报告为 workflow artifact
+#
+# 手动触发参数（可选）：
+#   suite    - 只执行指定的测试套（逗号分隔，空=全部）
+#   no_cleanup - 执行完成后保留资源池中的虚拟机（调试用）
+#
+# Runner: self-hosted (10.20.238.253, openruyi-github-runner)
+# ============================================================
+name: Functional Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: '只执行指定的测试套（逗号分隔，留空=全部）'
+        required: false
+        default: ''
+        type: string
+      no_cleanup:
+        description: '执行完成后保留资源池中的虚拟机（调试用）'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: functional-tests-${{ github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  functional-test:
+    runs-on: [self-hosted, Linux, X64, openEuler]
+    timeout-minutes: 4320
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_REPOSITORY: ${{ github.repository }}
+      WORKSPACE: ${{ github.workspace }}
+      CLOUDPODS_KEYSTONE_URL: ${{ secrets.CLOUDPODS_KEYSTONE_URL }}
+      CLOUDPODS_USER: ${{ secrets.CLOUDPODS_USER }}
+      CLOUDPODS_PASSWORD: ${{ secrets.CLOUDPODS_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # --------------------------------------------------------
+      # 步骤 1：确保 runner 上有依赖（幂等）
+      # --------------------------------------------------------
+      - name: Ensure Python deps
+        run: |
+          python3 -c "import paramiko, requests" 2>/dev/null || \
+            python3 -m pip install --user paramiko requests 2>&1 | tail -3
+
+      # --------------------------------------------------------
+      # 步骤 2：执行 functional 全量测试
+      # --------------------------------------------------------
+      - name: Run functional tests
+        id: run
+        run: |
+          set -o pipefail
+          EXTRA_ARGS=""
+          if [ -n "${{ inputs.suite }}" ]; then
+            EXTRA_ARGS="--suite ${{ inputs.suite }}"
+          fi
+          if [ "${{ inputs.no_cleanup }}" == "true" ]; then
+            EXTRA_ARGS="$EXTRA_ARGS --no-cleanup"
+          fi
+          # shellcheck disable=SC2086
+          python3 .github/scripts/cli.py run-functional $EXTRA_ARGS 2>&1 | tee run_functional.log
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+        env:
+          CLOUDPODS_KEYSTONE_URL: ${{ secrets.CLOUDPODS_KEYSTONE_URL }}
+          CLOUDPODS_USER: ${{ secrets.CLOUDPODS_USER }}
+          CLOUDPODS_PASSWORD: ${{ secrets.CLOUDPODS_PASSWORD }}
+
+      # --------------------------------------------------------
+      # 步骤 3：上传报告为 artifact
+      # --------------------------------------------------------
+      - name: Upload functional report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: functional-report-${{ github.run_id }}
+          path: |
+            reports/functional/**
+            run_functional.log
+          if-no-files-found: warn
