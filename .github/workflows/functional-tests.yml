@@ -93,7 +93,36 @@ jobs:
           CLOUDPODS_PASSWORD: ${{ secrets.CLOUDPODS_PASSWORD }}
 
       # --------------------------------------------------------
-      # 步骤 3：上传报告为 artifact
+      # 步骤 3：在 GitHub Actions 页面直接展示测试报告（Job Summary）
+      #   - $GITHUB_STEP_SUMMARY 中的 Markdown 会在 run 页面直接渲染，
+      #     无需下载 artifact 即可查看汇总表格和详细结果。
+      # --------------------------------------------------------
+      - name: Publish test report as Job Summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          # 找到最新一份报告（reports/functional/YYYY-MM-DD/report.md）
+          REPORT_MD=$(ls -1t reports/functional/*/report.md 2>/dev/null | head -1 || true)
+          if [ -z "$REPORT_MD" ]; then
+            echo "No report.md found, skip Job Summary" >> "$GITHUB_STEP_SUMMARY"
+            echo "## ⚠️ Functional 测试报告未生成" >> "$GITHUB_STEP_SUMMARY"
+            echo "（没有生成 report.md，请查看上方日志定位原因）" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          {
+            echo "## 📊 Functional 测试报告"
+            echo ""
+            echo "<details><summary>点击查看详细结果</summary>"
+            echo ""
+            cat "$REPORT_MD"
+            echo ""
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "Job Summary 已发布：$REPORT_MD"
+
+      # --------------------------------------------------------
+      # 步骤 4：上传报告为 artifact（完整 HTML 版本可下载）
       # --------------------------------------------------------
       - name: Upload functional report
         if: always()
