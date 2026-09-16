@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Functional test: acl - setfacl --backup/--restore standard usage
+# Functional test: acl - getfacl backup / setfacl --restore standard usage
 # Beakerlib-based test with lifecycle management
 # Shared suite setup/cleanup via ../lib.sh (install once, uninstall once)
 
@@ -22,8 +22,9 @@ rlJournalStart
     rlRun "setfacl -m u:root:rwx,g:root:r-x testfile" 0 "set access ACL on file"
     rlRun "setfacl -m d:u:root:rwx,d:g:root:r-x testdir" 0 "set default ACL on directory"
 
-    # --backup writes a machine-readable backup to a file
-    rlRun "setfacl --backup=acl.backup testfile" 0 "setfacl --backup file ACL"
+    # getfacl output is the machine-readable backup format used by
+    # setfacl --restore (setfacl itself has no --backup option)
+    rlRun "getfacl testfile > acl.backup" 0 "getfacl backup file ACL"
     rlRun "test -f acl.backup" 0 "backup file created"
     rlRun "grep -q '^# file:' acl.backup" 0 "backup file contains file header"
 
@@ -40,7 +41,7 @@ rlJournalStart
     rlRun "grep -q 'default:group:root:r-x' out_default.txt" 0 "default group entry present"
 
     # Restoring a directory backup also restores its default entries
-    rlRun "setfacl --backup=dir.backup testdir" 0 "setfacl --backup dir ACL"
+    rlRun "getfacl testdir > dir.backup" 0 "getfacl backup dir ACL"
     rlRun "setfacl -k testdir" 0 "clear default ACL entries before restore"
     rlRun "setfacl --restore=dir.backup" 0 "setfacl --restore dir ACL"
     output=$(getfacl testdir 2>&1)
