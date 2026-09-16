@@ -46,7 +46,7 @@ rlJournalStart
 
     output=$(getfacl testfile 2>&1)
 
-    rlAssertGrep "user::rw-" "$output" "confirm chacl set user ACL"
+    rlRun "echo \"\$output\" | grep -q 'user::rw-'" 0 "confirm chacl set user ACL"
 
 
 
@@ -54,15 +54,15 @@ rlJournalStart
 
     output=$(getfacl testdir 2>&1)
 
-    rlAssertGrep "default:user::rwx" "$output" "confirm chacl -d set default ACL"
+    rlRun "echo \"\$output\" | grep -q 'default:user::rwx'" 0 "confirm chacl -d set default ACL"
 
 
 
-    rlRun "chacl -R u::rw-,g::r--,o::r-- testdir" 0 "use chacl recursiveset ACL"
+    rlRun "chacl -R u::rw-,g::r--,o::r--,m::r-- testdir" 0 "use chacl recursiveset ACL"
 
     output=$(getfacl testdir/file1 2>&1)
 
-    rlAssertGrep "user::rw-" "$output" "confirm chacl -R recursivesetsuccess"
+    rlRun "echo \"\$output\" | grep -q 'user::rw-'" 0 "confirm chacl -R recursivesetsuccess"
 
 
 
@@ -70,7 +70,7 @@ rlJournalStart
 
     output=$(getfacl testdir 2>&1)
 
-    rlAssertGrep "default:user::rwx" "$output" "confirm chacl -b simultaneouslyset access+default"
+    rlRun "echo \"\$output\" | grep -q 'default:user::rwx'" 0 "confirm chacl -b simultaneouslyset access+default"
 
     rlPhaseEnd
 

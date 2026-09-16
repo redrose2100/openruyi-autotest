@@ -38,7 +38,7 @@ rlJournalStart
 
     rlRun "getfacl testfile" 0 "verify ACL set"
 
-    rlAssertGrep "user:root:rwx" "$(getfacl testfile 2>&1)" "confirm user:root:rwx alreadyset"
+    rlRun "getfacl testfile | grep -q 'user:root:rwx'" 0 "confirm user:root:rwx alreadyset"
 
 
 
@@ -46,7 +46,7 @@ rlJournalStart
 
     rlRun "getfacl testfile" 0 "verify ACL set"
 
-    rlAssertGrep "group:root:r-x" "$(getfacl testfile 2>&1)" "confirm group:root:r-x alreadyset"
+    rlRun "getfacl testfile | grep -q 'group:root:r-x'" 0 "confirm group:root:r-x alreadyset"
 
 
 
@@ -54,7 +54,7 @@ rlJournalStart
 
     rlRun "getfacl testfile" 0 "verify ACL set"
 
-    rlAssertGrep "other::r--" "$(getfacl testfile 2>&1)" "confirm other::r-- alreadyset"
+    rlRun "getfacl testfile | grep -q 'other::r--'" 0 "confirm other::r-- alreadyset"
 
 
 
@@ -62,7 +62,7 @@ rlJournalStart
 
     rlRun "getfacl testfile" 0 "verify mask set"
 
-    rlAssertGrep "mask::rwx" "$(getfacl testfile 2>&1)" "confirm mask::rwx alreadyset"
+    rlRun "getfacl testfile | grep -q 'mask::rwx'" 0 "confirm mask::rwx alreadyset"
 
 
 

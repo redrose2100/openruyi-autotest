@@ -42,7 +42,7 @@ rlJournalStart
 
     output=$(getfacl testfile 2>&1)
 
-    rlAssertNotGrep "user:root:" "$output" "confirmuser root entriesalreadydelete"
+    rlRun "! echo \"\$output\" | grep -q 'user:root:'" 0 "confirmuser root entriesalreadydelete"
 
 
 
@@ -50,7 +50,7 @@ rlJournalStart
 
     output=$(getfacl testfile 2>&1)
 
-    rlAssertNotGrep "group:root:" "$output" "confirmgroup root entriesalreadydelete"
+    rlRun "! echo \"\$output\" | grep -q 'group:root:'" 0 "confirmgroup root entriesalreadydelete"
 
 
 
@@ -58,7 +58,7 @@ rlJournalStart
 
     output=$(getfacl testfile 2>&1)
 
-    rlAssertNotGrep "user:root:" "$output" "confirm -b postno ACL"
+    rlRun "! echo \"\$output\" | grep -q 'user:root:'" 0 "confirm -b postno ACL"
 
 
 
@@ -66,7 +66,7 @@ rlJournalStart
 
     output=$(getfacl testdir 2>&1)
 
-    rlAssertNotGrep "default:" "$output" "confirm -k postno default ACL"
+    rlRun "! echo \"\$output\" | grep -q 'default:'" 0 "confirm -k postno default ACL"
 
 
 
@@ -78,7 +78,7 @@ rlJournalStart
 
     output=$(getfacl testfile 2>&1)
 
-    rlAssertNotGrep "user:root:" "$output" "confirmfromfiledeletesuccess"
+    rlRun "! echo \"\$output\" | grep -q 'user:root:'" 0 "confirmfromfiledeletesuccess"
 
     rlPhaseEnd
 

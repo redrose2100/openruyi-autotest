@@ -38,7 +38,7 @@ rlJournalStart
 
     output=$(getfacl testfile 2>&1)
 
-    rlAssertGrep "user:root:rwx" "$output" "confirm -L symbollinksetsuccess"
+    rlRun "echo \"\$output\" | grep -q 'user:root:rwx'" 0 "confirm -L symbollinksetsuccess"
 
 
 

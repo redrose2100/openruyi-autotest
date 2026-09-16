@@ -40,9 +40,9 @@ rlJournalStart
 
     output2=$(getfacl testdir/subdir1/file2 2>&1)
 
-    rlAssertGrep "user:root:rw-" "$output1" "verify file1 recursiveset ACL"
+    rlRun "echo \"\$output1\" | grep -q 'user:root:rw-'" 0 "verify file1 recursiveset ACL"
 
-    rlAssertGrep "user:root:rw-" "$output2" "verify subdir1/file2 recursiveset ACL"
+    rlRun "echo \"\$output2\" | grep -q 'user:root:rw-'" 0 "verify subdir1/file2 recursiveset ACL"
 
 
 
@@ -52,9 +52,9 @@ rlJournalStart
 
     output2=$(getfacl testdir/subdir1/file2 2>&1)
 
-    rlAssertNotGrep "user:root:" "$output1" "confirm file1 recursivedeletesuccess"
+    rlRun "! echo \"\$output1\" | grep -q 'user:root:'" 0 "confirm file1 recursivedeletesuccess"
 
-    rlAssertNotGrep "user:root:" "$output2" "confirm subdir1/file2 recursivedeletesuccess"
+    rlRun "! echo \"\$output2\" | grep -q 'user:root:'" 0 "confirm subdir1/file2 recursivedeletesuccess"
 
     rlPhaseEnd
 

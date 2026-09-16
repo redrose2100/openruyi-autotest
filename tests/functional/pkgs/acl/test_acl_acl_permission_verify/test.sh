@@ -36,13 +36,13 @@ rlJournalStart
 
     output=$(getfacl testfile 2>&1)
 
-    rlAssertGrep "user::rwx" "$output" "confirm user::rwx alreadyset"
+    rlRun "echo \"\$output\" | grep -q 'user::rwx'" 0 "confirm user::rwx alreadyset"
 
-    rlAssertGrep "user:root:rwx" "$output" "confirm user:root:rwx alreadyset"
+    rlRun "echo \"\$output\" | grep -q 'user:root:rwx'" 0 "confirm user:root:rwx alreadyset"
 
-    rlAssertGrep "group::r-x" "$output" "confirm group::r-x alreadyset"
+    rlRun "echo \"\$output\" | grep -q 'group::r-x'" 0 "confirm group::r-x alreadyset"
 
-    rlAssertGrep "mask::rwx" "$output" "confirm mask::rwx alreadyset"
+    rlRun "echo \"\$output\" | grep -q 'mask::rwx'" 0 "confirm mask::rwx alreadyset"
 
 
 
@@ -50,9 +50,9 @@ rlJournalStart
 
     output=$(getfacl testfile 2>&1)
 
-    rlAssertGrep "mask::r--" "$output" "confirm mask::r-- alreadyset"
+    rlRun "echo \"\$output\" | grep -q 'mask::r--'" 0 "confirm mask::r-- alreadyset"
 
-    rlAssertGrep "user:root:rwx" "$output" "confirm user:root permission mask "
+    rlRun "echo \"\$output\" | grep -q 'user:root:rwx'" 0 "confirm user:root permission mask "
 
     rlPhaseEnd
 

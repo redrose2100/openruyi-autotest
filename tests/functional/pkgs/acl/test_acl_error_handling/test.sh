@@ -44,7 +44,7 @@ rlJournalStart
 
 
 
-    rlRun "su -c'setfacl -m u:root:rwx /root/test' openruyi 2>&1" 1-255 "testpermissionnoerror"
+    rlRun "sudo -n -u openruyi setfacl -m u:root:rwx /root/test 2>&1" 1-255 "testpermissionnoerror"
 
     rlPhaseEnd
 

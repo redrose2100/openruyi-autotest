@@ -18,13 +18,13 @@ rlJournalStart
     rlPhaseStartTest "ACL inheritance test"
     rlRun "touch testdir/newfile" 0 "Create new file in test directory"
     output=$(getfacl testdir/newfile 2>&1)
-    rlAssertGrep "user:root:rwx" "$output" "New file inherits user default ACL"
-    rlAssertGrep "group:root:r-x" "$output" "New file inherits group default ACL"
+    rlRun "echo \"\$output\" | grep -q 'user:root:rwx'" 0 "New file inherits user default ACL"
+    rlRun "echo \"\$output\" | grep -q 'group:root:r-x'" 0 "New file inherits group default ACL"
 
     rlRun "mkdir testdir/newsubdir" 0 "Create subdirectory in test directory"
     output=$(getfacl testdir/newsubdir 2>&1)
-    rlAssertGrep "default:user:root:rwx" "$output" "Subdirectory inherits default user ACL"
-    rlAssertGrep "default:group:root:r-x" "$output" "Subdirectory inherits default group ACL"
+    rlRun "echo \"\$output\" | grep -q 'default:user:root:rwx'" 0 "Subdirectory inherits default user ACL"
+    rlRun "echo \"\$output\" | grep -q 'default:group:root:r-x'" 0 "Subdirectory inherits default group ACL"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"
