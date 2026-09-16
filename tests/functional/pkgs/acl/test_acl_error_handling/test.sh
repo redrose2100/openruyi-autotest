@@ -44,7 +44,19 @@ rlJournalStart
 
 
 
+    # Verify that a non-root user cannot set an ACL on a file under /root.
+    # Run as root: drop privileges to openruyi first; otherwise run directly.
+    # The command MUST fail (1-255); if it succeeds, the system's permission
+    # check is broken and this test should FAIL to expose it.
+    if [ "$(id -u)" = "0" ]; then
+
     rlRun "sudo -n -u openruyi setfacl -m u:root:rwx /root/test 2>&1" 1-255 "testpermissionnoerror"
+
+    else
+
+    rlRun "setfacl -m u:root:rwx /root/test 2>&1" 1-255 "testpermissionnoerror"
+
+    fi
 
     rlPhaseEnd
 
