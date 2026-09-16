@@ -109,9 +109,7 @@ See [User Guide](docs/user_guide.md) -- covers complete steps from cloning the r
 
 ## 3. Development Guide
 
-See [Development Guide](docs/development-guide.md) — covers how to add new test cases, directory conventions, BeakerLib lifecycle, FMF metadata specifications, and naming conventions.
-
-See [CI Guide](docs/ci_guide.md) — covers CI/CD workflows, checkpoints, pool architecture, and test execution pipeline with Mermaid flowcharts.
+See [Development Guide](docs/development-guide.md) -- covers how to add new test cases, directory conventions, BeakerLib lifecycle, FMF metadata specifications, and naming conventions.
 
 ---
 
