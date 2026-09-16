@@ -1,0 +1,48 @@
+# ============================================================
+# CI 预置池定时补齐
+#
+# 每 30 分钟自动检查双池状态，补齐缺失的 VM。
+# 同时支持手动触发（workflow_dispatch）。
+#
+# Runner: self-hosted (10.20.238.253, openruyi-github-runner)
+# ============================================================
+name: CI Pool Provision
+
+on:
+  schedule:
+    # 每 30 分钟运行一次
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pool-provision:
+    runs-on: [self-hosted, Linux, X64, openEuler]
+    timeout-minutes: 120
+    env:
+      CLOUDPODS_KEYSTONE_URL: ${{ secrets.CLOUDPODS_KEYSTONE_URL }}
+      CLOUDPODS_USER: ${{ secrets.CLOUDPODS_USER }}
+      CLOUDPODS_PASSWORD: ${{ secrets.CLOUDPODS_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure paramiko on runner
+        run: |
+          python3 -c "import paramiko" 2>/dev/null || \
+            python3 -m pip install --user paramiko 2>&1 | tail -3
+
+      - name: Pool provision (idempotent)
+        run: |
+          set -o pipefail
+          python3 .github/scripts/cli.py pool-provision \
+            --output pool_info.json 2>&1 | tee pool_provision.log
+          echo "--- pool_info.json ---"
+          cat pool_info.json
+
+      - name: Pool status
+        run: |
+          python3 .github/scripts/cli.py pool-status

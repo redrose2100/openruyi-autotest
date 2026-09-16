@@ -1,0 +1,390 @@
+# -*- coding: utf-8 -*-
+"""持久化 CI 预置环境池（双池架构）。
+
+池 A: 1 QEMU/VM, 最多 20 台（默认单服务器场景）
+池 B: 2 QEMU/VM, 最多 5 台, SKU c16m16（双服务器场景）
+
+生命周期：
+  - 持久化：跨 CI run 保留，provision 是幂等的
+  - 任务到来 → 根据 server 数判定池 → 先查后建 → 用完 release（不删除）
+  - 故障自愈：probe 失败 → 删除重建
+  - 镜像变化（riscv64 URL hash 变化）→ 全池重建
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import logging
+import re
+import threading
+import time
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+from core.cloudpods import CloudPodsClient, decrypt_password
+from core.config import get_env
+
+logger = logging.getLogger("ci_cli.pool")
+
+# ── 池 A 配置 ──
+POOL_A_PREFIX = "openruyi-ci-pool-1q"
+POOL_A_MAX = 20
+POOL_A_SKU = "ecs.g1.c8m8"
+POOL_A_QEMU_NUM = 1
+
+# ── 池 B 配置 ──
+POOL_B_PREFIX = "openruyi-ci-pool-2q"
+POOL_B_MAX = 5
+POOL_B_SKU = "ecs.g1.c16m16"
+POOL_B_QEMU_NUM = 2
+
+# ── 凭据 ──
+def _get_credentials() -> Dict[str, str]:
+    keystone_url = get_env("CLOUDPODS_KEYSTONE_URL")
+    username = get_env("CLOUDPODS_USER")
+    password = get_env("CLOUDPODS_PASSWORD")
+    if keystone_url and username and password:
+        return {"keystone_url": keystone_url, "username": username, "password": password}
+    try:
+        from cloudpods import create_server as cs
+        return {
+            "keystone_url": getattr(cs.Env, "cloudpods_keystone_url", ""),
+            "username": getattr(cs.Env, "cloudpods_user", ""),
+            "password": getattr(cs.Env, "cloudpods_password", ""),
+        }
+    except Exception:
+        return {"keystone_url": "", "username": "", "password": ""}
+
+
+# ── 镜像版本 ──
+def _get_image_url() -> str:
+    """从 create_server.Env 读取 riscv64 镜像 URL。"""
+    try:
+        from cloudpods import create_server as cs
+        return getattr(cs.Env, "riscv_image_url", "")
+    except Exception:
+        return ""
+
+
+def _compute_image_hash(image_url: str, work_dir: str = "/tmp") -> str:
+    """下载镜像并计算 sha256（持久化镜像版本标识）。"""
+    import os
+    import tempfile
+    import subprocess
+    if not image_url:
+        return ""
+    cache_file = os.path.join(work_dir, ".ci_pool_image.sha256")
+    # 如果缓存文件存在且不超过 24h，直接读取
+    if os.path.exists(cache_file):
+        mtime = os.path.getmtime(cache_file)
+        if time.time() - mtime < 86400:
+            with open(cache_file, "r") as f:
+                return f.read().strip()
+    # 下载 + 计算
+    logger.info("[pool] computing image hash for %s ...", image_url)
+    fd, tmp = tempfile.mkstemp(suffix=".qcow2.xz")
+    os.close(fd)
+    try:
+        subprocess.run(
+            ["wget", "-q", "-O", tmp, image_url],
+            timeout=3600, check=True, capture_output=True,
+        )
+        sha = hashlib.sha256()
+        with open(tmp, "rb") as f:
+            while True:
+                chunk = f.read(8 * 1024 * 1024)
+                if not chunk:
+                    break
+                sha.update(chunk)
+        h = sha.hexdigest()
+        with open(cache_file, "w") as f:
+            f.write(h)
+        logger.info("[pool] image hash: %s", h[:16])
+        return h
+    finally:
+        try:
+            os.remove(tmp)
+        except OSError:
+            pass
+
+
+# ── 池条目 ──
+POOL_META_FILE = "/tmp/.ci_pool_meta.json"
+_pool_lock = threading.Lock()
+
+
+def _pool_meta_path() -> str:
+    return POOL_META_FILE
+
+
+def _load_meta() -> Dict[str, Any]:
+    try:
+        with open(_pool_meta_path(), "r") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def _save_meta(meta: Dict[str, Any]) -> None:
+    with open(_pool_meta_path(), "w") as f:
+        json.dump(meta, f, indent=2)
+
+
+# ── CloudPods 客户端（懒加载） ──
+_cp_cache: Optional[CloudPodsClient] = None
+
+
+def _get_cp() -> Optional[CloudPodsClient]:
+    global _cp_cache
+    if _cp_cache is not None:
+        return _cp_cache
+    creds = _get_credentials()
+    if not creds["keystone_url"] or not creds["username"] or not creds["password"]:
+        logger.error("[pool] missing CloudPods credentials")
+        return None
+    pw = creds["password"]
+    try:
+        dpw = decrypt_password(pw)
+        if dpw:
+            pw = dpw
+    except Exception:
+        pass
+    _cp_cache = CloudPodsClient(
+        keystone_url=creds["keystone_url"],
+        username=creds["username"],
+        password=pw,
+    )
+    return _cp_cache
+
+
+# ── SSH 探测 ──
+def _ssh_probe(host: str, ports: List[int], user: str = "openruyi",
+               password: str = "openruyi", timeout: int = 30) -> bool:
+    """探测 QEMU SSH 是否可用。所有 port 都可达才算健康。"""
+    try:
+        from core.ssh import SSHClient
+        for port in ports:
+            ssh = SSHClient(host, port, user, password, connect_timeout=timeout)
+            ssh.close()
+        return True
+    except Exception:
+        return False
+
+
+# ── 创建一套环境 ──
+def _create_env(qemu_num: int, sku: str, pool_prefix: str) -> Optional[Dict]:
+    """创建一套环境：1 host + qemu_num 个 QEMU VM。返回 env dict 或 None。"""
+    from commands.launch_qemu_env import launch_env
+    from cloudpods import create_server as cs
+
+    # 保存原始 prefix 并临时覆盖
+    orig_prefix = cs.Env.server_name_prefix
+    cs.Env.server_name_prefix = pool_prefix
+
+    spec = {
+        "cloudpods_server_num": 1,
+        "riscv_qemu_num": qemu_num,
+        "riscv_qemu_cpu": 4 if qemu_num == 1 else 8,
+        "riscv_qemu_memory": 4 if qemu_num == 1 else 8,
+        "riscv_qemu_net_num": 1,
+        "riscv_qemu_disks": "[]",
+        "server_sku": sku,
+    }
+    try:
+        vm_info = launch_env(spec, logger=logger, iscas_disable=True)
+        if not vm_info or not vm_info.get("ok"):
+            return None
+        hosts = vm_info.get("hosts", [])
+        if not hosts:
+            return None
+        h = hosts[0]
+        return {
+            "server_id": h.get("server_id", ""),
+            "name": h.get("host_ip", ""),
+            "host_ip": h.get("host_ip", ""),
+            "qemu_ports": h.get("qemu_ports", []),
+            "ssh_user": h.get("ssh_user", "openruyi"),
+            "ssh_password": h.get("ssh_password", "openruyi"),
+            "host_ssh_user": h.get("host_ssh_user", "root"),
+            "host_ssh_password": h.get("host_ssh_password", ""),
+        }
+    finally:
+        cs.Env.server_name_prefix = orig_prefix
+
+
+def _delete_env(server_id: str) -> bool:
+    cp = _get_cp()
+    if cp is None or not server_id:
+        return False
+    try:
+        ok = cp.delete_server(server_id)
+        if ok:
+            cp.wait_for_server_is_deleted(server_id, timeout=600)
+        return ok
+    except Exception:
+        return False
+
+
+# ── 池扫描 ──
+def _list_servers(prefix: str) -> List[Dict]:
+    cp = _get_cp()
+    if cp is None:
+        return []
+    return cp.list_servers(name_prefix=prefix)
+
+
+def _get_server_ip(server_id: str) -> str:
+    cp = _get_cp()
+    if cp is None:
+        return ""
+    detail = cp.get_server_detail(server_id)
+    if not detail:
+        return ""
+    server = detail.get("server", {})
+    nics = server.get("nics", [])
+    for nic in nics:
+        ip = nic.get("ip_addr")
+        if ip:
+            return ip
+    for ip in server.get("ips", []):
+        if ip:
+            return ip
+    return ""
+
+
+# ── 池定义 ──
+class CIPool:
+    """CI 持久化预置池（单池）。"""
+
+    def __init__(self, prefix: str, max_count: int, qemu_num: int, sku: str):
+        self.prefix = prefix
+        self.max_count = max_count
+        self.qemu_num = qemu_num
+        self.sku = sku
+        self._acquired: Set[str] = set()
+        self._lock = threading.Lock()
+
+    # ── 查询 ──
+    def list_all(self) -> List[Dict]:
+        return _list_servers(self.prefix)
+
+    def count(self) -> int:
+        return len(self.list_all())
+
+    # ── 申请 ──
+    def acquire(self, timeout: int = 600) -> Optional[Dict]:
+        """从池中申请一套可用环境。无可用则尝试创建。排队等待直到超时。"""
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            env = self._find_and_acquire()
+            if env:
+                return env
+            # 没有可用 → 创建
+            if self.count() < self.max_count:
+                created = _create_env(self.qemu_num, self.sku, self.prefix)
+                if created:
+                    sid = created["server_id"]
+                    with self._lock:
+                        self._acquired.add(sid)
+                    logger.info("[pool:%s] created & acquired %s", self.prefix, sid[:12])
+                    return created
+                logger.warning("[pool:%s] create failed", self.prefix)
+            logger.info("[pool:%s] pool full (%d/%d), waiting ...",
+                        self.prefix, self.count(), self.max_count)
+            time.sleep(15)
+        logger.error("[pool:%s] acquire timeout after %ds", self.prefix, timeout)
+        return None
+
+    def _find_and_acquire(self) -> Optional[Dict]:
+        servers = self.list_all()
+        qemu_ports = [12055 + i for i in range(self.qemu_num)]
+        for s in servers:
+            sid = s.get("id", "")
+            if not sid or s.get("status", "") not in ("running", "ready"):
+                continue
+            with self._lock:
+                if sid in self._acquired:
+                    continue
+            host_ip = _get_server_ip(sid)
+            if not host_ip:
+                continue
+            if _ssh_probe(host_ip, qemu_ports):
+                with self._lock:
+                    if sid in self._acquired:
+                        continue
+                    self._acquired.add(sid)
+                logger.info("[pool:%s] acquired %s (%s)", self.prefix, s.get("name", ""), host_ip)
+                return {
+                    "server_id": sid,
+                    "name": s.get("name", ""),
+                    "host_ip": host_ip,
+                    "qemu_ports": qemu_ports,
+                    "ssh_user": "openruyi",
+                    "ssh_password": "openruyi",
+                    "host_ssh_user": "root",
+                    "host_ssh_password": "ISRCpassword@123",
+                }
+            else:
+                # probe 失败 → 删除重建
+                logger.warning("[pool:%s] %s probe failed, deleting", self.prefix, sid[:12])
+                _delete_env(sid)
+        return None
+
+    # ── 释放 ──
+    def release(self, server_id: str) -> None:
+        with self._lock:
+            self._acquired.discard(server_id)
+        logger.info("[pool:%s] released %s", self.prefix, server_id[:12])
+
+    # ── 镜像版本检测 ──
+    def image_version(self, work_dir: str = "/tmp") -> str:
+        return _compute_image_hash(_get_image_url(), work_dir)
+
+    # ── 清理 ──
+    def delete_all(self) -> int:
+        servers = self.list_all()
+        deleted = 0
+        for s in servers:
+            sid = s.get("id", "")
+            if sid and _delete_env(sid):
+                deleted += 1
+        with self._lock:
+            self._acquired.clear()
+        logger.info("[pool:%s] deleted %d servers", self.prefix, deleted)
+        return deleted
+
+    # ── 健康检测 ──
+    def probe_all(self) -> List[Dict]:
+        """扫描所有池内 server 的健康状态。"""
+        result = []
+        servers = self.list_all()
+        qemu_ports = [12055 + i for i in range(self.qemu_num)]
+        for s in servers:
+            sid = s.get("id", "")
+            name = s.get("name", "")
+            host_ip = _get_server_ip(sid)
+            healthy = _ssh_probe(host_ip, qemu_ports) if host_ip else False
+            result.append({
+                "server_id": sid, "name": name, "host_ip": host_ip,
+                "status": s.get("status", ""), "healthy": healthy,
+                "qemu_ports": qemu_ports,
+            })
+        return result
+
+
+# ── 双池管理 ──
+def _build_pools() -> Dict[str, CIPool]:
+    return {
+        "1q": CIPool(POOL_A_PREFIX, POOL_A_MAX, POOL_A_QEMU_NUM, POOL_A_SKU),
+        "2q": CIPool(POOL_B_PREFIX, POOL_B_MAX, POOL_B_QEMU_NUM, POOL_B_SKU),
+    }
+
+
+def get_pool(qemu_num: int) -> Optional[CIPool]:
+    """根据需要的 QEMU 数量返回对应的池。1→池A, 2→池B。"""
+    pools = _build_pools()
+    if qemu_num == 1:
+        return pools["1q"]
+    if qemu_num == 2:
+        return pools["2q"]
+    return None
