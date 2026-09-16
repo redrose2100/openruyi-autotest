@@ -111,6 +111,8 @@ openruyi-autotest/
 
 参见 [开发指南](docs/development-guide_zh.md) — 涵盖如何添加新测试用例、目录约定、BeakerLib 生命周期、FMF 元数据规范以及命名规范。
 
+参见 [CI 指南](docs/ci_guide_zh.md) — 涵盖 CI/CD 工作流、检查点、预置池架构及测试执行流水线，包含 Mermaid 流程图。
+
 ---
 
 ## 四、openruyi-autotest 测试报告模版
