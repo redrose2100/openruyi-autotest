@@ -84,14 +84,14 @@ class BaseCommand:
         """.github 目录。"""
         return SCRIPTS_DIR.parent
 
-    def log_info(self, msg: str) -> None:
-        logger.info(msg)
+    def log_info(self, msg: str, *args: object) -> None:
+        logger.info(msg, *args)
 
-    def log_warn(self, msg: str) -> None:
-        logger.warning(msg)
+    def log_warn(self, msg: str, *args: object) -> None:
+        logger.warning(msg, *args)
 
-    def log_error(self, msg: str) -> None:
-        logger.error(msg)
+    def log_error(self, msg: str, *args: object) -> None:
+        logger.error(msg, *args)
 
     def log_debug(self, msg: str) -> None:
         logger.debug(msg)
