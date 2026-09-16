@@ -54,6 +54,23 @@ rlJournalStart
 
     rlRun "echo \"\$output\" | grep -q 'user:root:rwx'" 0 "confirm user:root permission mask "
 
+    # Effective permission check: with mask=r--, the named user root entry
+    # is truncated to r--. getfacl -e prints the effective permissions.
+    rlRun "getfacl -e testfile > out_effective.txt 2>&1" 0 "getfacl -e shows effective permissions"
+
+    rlRun "grep -q 'user:root:rwx.*#effective:r--' out_effective.txt" 0 "mask r-- truncates user:root to effective r--"
+
+    rlRun "grep -q 'group::r-x.*#effective:r--' out_effective.txt" 0 "mask r-- truncates group to effective r--"
+
+
+
+    # After raising the mask back to rwx, the effective permissions are restored
+    rlRun "setfacl -m m::rwx testfile" 0 "raise mask back to rwx"
+
+    rlRun "getfacl -e testfile > out_effective2.txt 2>&1" 0 "getfacl -e after mask raise"
+
+    rlRun "grep -q 'user:root:rwx.*#effective:rwx' out_effective2.txt" 0 "mask rwx restores effective rwx for user:root"
+
     rlPhaseEnd
 
 

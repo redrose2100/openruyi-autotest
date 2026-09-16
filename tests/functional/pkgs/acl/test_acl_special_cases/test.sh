@@ -58,9 +58,15 @@ rlJournalStart
 
 
 
-    rlRun "setfacl --test -m u:root:rwx testfile" 0 "use --test modenoactual"
+    # --test is a dry run: it must NOT modify the file.
+    # Capture the ACL state first, then verify it is unchanged.
+    rlRun "getfacl testfile > before_test.txt 2>&1" 0 "capture ACL before --test dry run"
 
-    rlRun "getfacl testfile" 0 "verify --test modenot ACL"
+    rlRun "setfacl --test -m u:root:rwx,g:root:--- testfile" 0 "use --test modenoactual"
+
+    rlRun "getfacl testfile > after_test.txt 2>&1" 0 "capture ACL after --test dry run"
+
+    rlRun "diff -u before_test.txt after_test.txt" 0 "verify --test dry run does not modify ACL"
 
     rlPhaseEnd
 
