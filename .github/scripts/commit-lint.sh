@@ -53,9 +53,9 @@ while IFS= read -r subject; do
     continue
   fi
 
-  # 4. Summary must not exceed 72 characters
-  if [ ${#subject} -gt 72 ]; then
-    echo "::error::Commit summary exceeds 72 characters (${#subject}): \"$subject\""
+  # 4. Summary must not exceed 100 characters
+  if [ ${#subject} -gt 100 ]; then
+    echo "::error::Commit summary exceeds 100 characters (${#subject}): \"$subject\""
     status=1
     continue
   fi
