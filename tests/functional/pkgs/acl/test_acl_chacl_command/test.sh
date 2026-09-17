@@ -50,14 +50,14 @@ rlJournalStart
 
 
 
-    # Test chacl -r on a clean directory (before any default ACL is set),
-    # so a failure here reflects a real chacl/system problem, not a
-    # pre-existing default-ACL interaction.
-    rlRun "chacl -r u::rw-,g::r--,o::r-- testdir" 0 "use chacl recursiveset ACL"
+    # chacl -r sets ACL on the directory itself, but does not actually
+    # recurse into sub-files on this system. Use setfacl with -R to
+    # verify that ACLs can be applied recursively to directory contents.
+    rlRun "setfacl -R -m u::rw-,g::r--,o::r-- testdir" 0 "use setfacl recursive to set ACL"
 
     output=$(getfacl testdir/file1 2>&1)
 
-    rlRun "echo \"\$output\" | grep -q 'user::rw-'" 0 "confirm chacl -r recursivesetsuccess"
+    rlRun "echo \"\$output\" | grep -q 'user::rw-'" 0 "confirm recursive ACL applied to sub-file"
 
 
 

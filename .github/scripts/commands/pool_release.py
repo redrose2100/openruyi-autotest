@@ -54,8 +54,5 @@ class PoolReleaseCommand(BaseCommand):
             return 1
 
         result = pool.release(server_id)
-        if result:
-            self.log_info("Released & recreated %s", result["server_id"][:12])
-        else:
-            self.log_warn("VM deleted but rebuild failed for %s", server_id[:12])
+        self.log_info("Released %s back to pool (VM kept for reuse)", server_id[:12])
         return 0

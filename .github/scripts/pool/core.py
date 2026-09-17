@@ -350,30 +350,18 @@ class CIPool:
 
     # ── 释放 ──
     def release(self, server_id: str) -> Optional[Dict]:
-        """释放并重建：删除 CloudPods VM，立即重建一台新 VM 放回池中。
+        """释放环境回池：仅从已申请集合中移除，不删除 VM。
+
+        VM 保留在 CloudPods 中供下次 acquire 复用；_find_and_acquire()
+        中有 SSH probe 健康检查，不健康的 VM 会在 scan 时被自动删除重建。
 
         Returns:
-            新创建的 env dict，失败返回 None。
+            原 server_id（始终返回非 None 表示释放成功）。
         """
         with self._lock:
             self._acquired.discard(server_id)
-        logger.info("[pool:%s] released %s", self.prefix, server_id[:12])
-
-        # 删除旧 VM
-        logger.info("[pool:%s] deleting old VM %s ...", self.prefix, server_id[:12])
-        deleted = _delete_env(server_id)
-        if not deleted:
-            logger.warning("[pool:%s] failed to delete %s", self.prefix, server_id[:12])
-
-        # 重建新 VM（不加入 _acquired，作为空闲 VM 放回池中）
-        logger.info("[pool:%s] recreating fresh VM ...", self.prefix)
-        new_env = _create_env(self.qemu_num, self.sku, self.prefix)
-        if new_env:
-            logger.info("[pool:%s] recreated %s", self.prefix, new_env["server_id"][:12])
-        else:
-            logger.error("[pool:%s] failed to recreate VM!", self.prefix)
-
-        return new_env
+        logger.info("[pool:%s] released %s (VM kept, will be reused)", self.prefix, server_id[:12])
+        return {"server_id": server_id}
 
     # ── 镜像版本检测 ──
     def image_version(self, work_dir: str = "/tmp") -> str:
