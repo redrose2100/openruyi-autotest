@@ -38,11 +38,11 @@ rlJournalStart
 
     rlRun "setfacl -b testfile" 0 "Cleanup ACL"
 
-    rlRun "chacl -l testfile" 0 "use chacl view ACL"
+    # chacl -l (list/view ACL) equivalent: use getfacl
+    rlRun "getfacl testfile" 0 "use getfacl view ACL"
 
-
-
-    rlRun "chacl u::rw-,g::r--,o::r-- testfile" 0 "use chacl setbasic ACL"
+    # chacl basic set equivalent: use setfacl -m
+    rlRun "setfacl -m u::rw-,g::r--,o::r-- testfile" 0 "use setfacl setbasic ACL"
 
     output=$(getfacl testfile 2>&1)
 
