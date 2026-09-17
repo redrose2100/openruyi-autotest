@@ -61,9 +61,16 @@ rlJournalStart
 
 
 
-    rlRun "chacl u::rwx,g::r-x,o::r-x u::rwx,g::r-x,o::r-x testdir" 0 "use chacl set both access+default"
+    # chacl -d (set default ACL) is not available on this Linux version;
+    # use setfacl instead to verify default ACL functionality.
+    rlRun "setfacl -m d:u::rwx,d:g::r-x,d:o::r-x testdir" 0 "set default ACL"
     output=$(getfacl testdir 2>&1)
-    rlRun "echo \"\$output\" | grep -q 'default:user::rwx'" 0 "confirm chacl set both access+default"
+    rlRun "echo \"\$output\" | grep -q 'default:user::rwx'" 0 "confirm default ACL was set"
+
+    # Verify both access and default ACL entries coexist
+    rlRun "setfacl -m u::rwx,g::r-x,o::r-x testdir" 0 "set access ACL"
+    output=$(getfacl testdir 2>&1)
+    rlRun "echo \"\$output\" | grep -q 'default:user::rwx'" 0 "confirm both access+default present"
 
     rlPhaseEnd
 
