@@ -164,10 +164,15 @@ def _ssh_probe(host: str, ports: List[int], user: str = "openruyi",
     try:
         from core.ssh import SSHClient
         for port in ports:
+            logger.info("[debug] SSH probe: host=%s port=%s user=%s password=%s",
+                        host, port, user, password)
             ssh = SSHClient(host, port, user, password, connect_timeout=timeout)
             ssh.close()
+        logger.info("[debug] SSH probe SUCCESS: host=%s ports=%s", host, ports)
         return True
-    except Exception:
+    except Exception as exc:
+        logger.warning("[debug] SSH probe FAILED: host=%s ports=%s user=%s error=%s",
+                       host, ports, user, exc)
         return False
 
 
@@ -239,9 +244,12 @@ def _get_server_ip(server_id: str) -> str:
         return ""
     detail = cp.get_server_detail(server_id)
     if not detail:
+        logger.warning("[debug] get_server_detail(%s) returned None/empty", server_id[:12])
         return ""
     server = detail.get("server", {})
     nics = server.get("nics", [])
+    logger.info("[debug] server %s: nics=%s, ips=%s",
+                server_id[:12], nics, server.get("ips", []))
     for nic in nics:
         ip = nic.get("ip_addr")
         if ip:
@@ -249,6 +257,7 @@ def _get_server_ip(server_id: str) -> str:
     for ip in server.get("ips", []):
         if ip:
             return ip
+    logger.warning("[debug] server %s: no IP found in nics or ips", server_id[:12])
     return ""
 
 
@@ -298,15 +307,24 @@ class CIPool:
     def _find_and_acquire(self) -> Optional[Dict]:
         servers = self.list_all()
         qemu_ports = [12055 + i for i in range(self.qemu_num)]
+        logger.info("[debug] pool:%s scanning %d server(s), qemu_ports=%s",
+                    self.prefix, len(servers), qemu_ports)
         for s in servers:
             sid = s.get("id", "")
-            if not sid or s.get("status", "") not in ("running", "ready"):
+            sname = s.get("name", "")
+            sstatus = s.get("status", "")
+            logger.info("[debug] pool:%s check server id=%s name=%s status=%s",
+                        self.prefix, sid[:12] if sid else "N/A", sname, sstatus)
+            if not sid or sstatus not in ("running", "ready"):
+                logger.info("[debug] pool:%s skip %s (bad status: %s)", self.prefix, sid[:12] if sid else "N/A", sstatus)
                 continue
             with self._lock:
                 if sid in self._acquired:
+                    logger.info("[debug] pool:%s skip %s (already acquired)", self.prefix, sid[:12])
                     continue
             host_ip = _get_server_ip(sid)
             if not host_ip:
+                logger.info("[debug] pool:%s skip %s (no host_ip)", self.prefix, sid[:12])
                 continue
             if _ssh_probe(host_ip, qemu_ports):
                 with self._lock:
