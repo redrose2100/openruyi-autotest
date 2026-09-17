@@ -35,15 +35,16 @@ rlJournalStart
     rlRun "echo \"\$output\" | grep -q 'user:root:rwx'" 0 "restore re-adds user:root:rwx"
     rlRun "echo \"\$output\" | grep -q 'group:root:r-x'" 0 "restore re-adds group:root:r-x"
 
-    # getfacl -d shows ONLY the default ACL entries
-    rlRun "getfacl -d testdir > out_default.txt 2>&1" 0 "getfacl -d shows default ACL"
+    # getfacl shows default entries with 'default:' prefix; filter instead of -d flag
+    rlRun "getfacl testdir 2>&1 | grep 'default:' > out_default.txt" 0 "get default ACL entries"
     rlRun "grep -q 'default:user:root:rwx' out_default.txt" 0 "default user entry present"
     rlRun "grep -q 'default:group:root:r-x' out_default.txt" 0 "default group entry present"
 
     # Restoring a directory backup also restores its default entries
     rlRun "getfacl testdir > dir.backup" 0 "getfacl backup dir ACL"
     rlRun "setfacl -k testdir" 0 "clear default ACL entries before restore"
-    rlRun "setfacl --restore=dir.backup" 0 "setfacl --restore dir ACL"
+    # setfacl --restore reads '# file:' line from backup to locate the path
+    rlRun "cd $TmpDir && setfacl --restore=dir.backup" 0 "setfacl --restore dir ACL"
     output=$(getfacl testdir 2>&1)
     rlRun "echo \"\$output\" | grep -q 'default:user:root:rwx'" 0 "dir restore re-adds default user entry"
     rlRun "echo \"\$output\" | grep -q 'default:group:root:r-x'" 0 "dir restore re-adds default group entry"

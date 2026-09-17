@@ -61,19 +61,9 @@ rlJournalStart
 
 
 
-    rlRun "chacl -d u::rwx,g::r-x,o::r-x testdir" 0 "use chacl set default ACL"
-
+    rlRun "chacl u::rwx,g::r-x,o::r-x u::rwx,g::r-x,o::r-x testdir" 0 "use chacl set both access+default"
     output=$(getfacl testdir 2>&1)
-
-    rlRun "echo \"\$output\" | grep -q 'default:user::rwx'" 0 "confirm chacl -d set default ACL"
-
-
-
-    rlRun "chacl -b u::rwx,g::r-x,o::r-x u::rwx,g::r-x,o::r-x testdir" 0 "use chacl -b simultaneouslyset"
-
-    output=$(getfacl testdir 2>&1)
-
-    rlRun "echo \"\$output\" | grep -q 'default:user::rwx'" 0 "confirm chacl -b simultaneouslyset access+default"
+    rlRun "echo \"\$output\" | grep -q 'default:user::rwx'" 0 "confirm chacl set both access+default"
 
     rlPhaseEnd
 
