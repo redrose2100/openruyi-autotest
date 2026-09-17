@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""pool-release 命令：释放池环境（不删除 VM，归还池中）。"""
+"""pool-release 命令：释放池环境（删除 CloudPods VM 并重建，确保无残留）。"""
 from __future__ import annotations
 
 import json
@@ -12,10 +12,10 @@ logger = logging.getLogger("ci_cli.commands.pool_release")
 
 
 class PoolReleaseCommand(BaseCommand):
-    """释放从池中申请的环境（不删除 VM）"""
+    """释放池环境：删除 CloudPods VM 并重建一台新 VM 放回池中"""
 
     name = "pool-release"
-    description = "释放 CI 预置池中已申请的环境（不删除 VM，归还池）"
+    description = "释放 CI 预置池环境（删旧建新，确保 CloudPods 无残留）"
 
     def setup_parser(self, parser):
         parser.add_argument("--server-id", default="",
@@ -53,6 +53,9 @@ class PoolReleaseCommand(BaseCommand):
             self.log_error("Unknown pool for qemu_num=%d", qemu_num)
             return 1
 
-        pool.release(server_id)
-        self.log_info("Released %s from pool (%d QEMU)", server_id[:12], qemu_num)
+        result = pool.release(server_id)
+        if result:
+            self.log_info("Released & recreated %s", result["server_id"][:12])
+        else:
+            self.log_warn("VM deleted but rebuild failed for %s", server_id[:12])
         return 0

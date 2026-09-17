@@ -6,7 +6,7 @@
 
 生命周期：
   - 持久化：跨 CI run 保留，provision 是幂等的
-  - 任务到来 → 根据 server 数判定池 → 先查后建 → 用完 release（不删除）
+  - 任务到来 → 根据 server 数判定池 → 先查后建 → 用完 release（删除旧 VM + 重建新 VM 放回池）
   - 故障自愈：probe 失败 → 删除重建
   - 镜像变化（riscv64 URL hash 变化）→ 全池重建
 """
@@ -331,10 +331,31 @@ class CIPool:
         return None
 
     # ── 释放 ──
-    def release(self, server_id: str) -> None:
+    def release(self, server_id: str) -> Optional[Dict]:
+        """释放并重建：删除 CloudPods VM，立即重建一台新 VM 放回池中。
+
+        Returns:
+            新创建的 env dict，失败返回 None。
+        """
         with self._lock:
             self._acquired.discard(server_id)
         logger.info("[pool:%s] released %s", self.prefix, server_id[:12])
+
+        # 删除旧 VM
+        logger.info("[pool:%s] deleting old VM %s ...", self.prefix, server_id[:12])
+        deleted = _delete_env(server_id)
+        if not deleted:
+            logger.warning("[pool:%s] failed to delete %s", self.prefix, server_id[:12])
+
+        # 重建新 VM（不加入 _acquired，作为空闲 VM 放回池中）
+        logger.info("[pool:%s] recreating fresh VM ...", self.prefix)
+        new_env = _create_env(self.qemu_num, self.sku, self.prefix)
+        if new_env:
+            logger.info("[pool:%s] recreated %s", self.prefix, new_env["server_id"][:12])
+        else:
+            logger.error("[pool:%s] failed to recreate VM!", self.prefix)
+
+        return new_env
 
     # ── 镜像版本检测 ──
     def image_version(self, work_dir: str = "/tmp") -> str:
