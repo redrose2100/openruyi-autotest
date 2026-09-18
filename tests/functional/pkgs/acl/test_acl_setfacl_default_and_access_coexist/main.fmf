@@ -1,0 +1,11 @@
+summary: Functional test - acl - setfacl - default and access ACL coexist on directory
+test: ./test.sh
+tag:
+ - functional
+ - acl
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/acl/test_acl_setfacl_default_and_access_coexist
+require:
+ - acl
+ - beakerlib

@@ -1,0 +1,11 @@
+summary: Functional test - acl - setfacl - reject invalid ACL type tag
+test: ./test.sh
+tag:
+ - functional
+ - acl
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/acl/test_acl_setfacl_invalid_acl_type
+require:
+ - acl
+ - beakerlib

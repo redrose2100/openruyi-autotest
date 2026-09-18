@@ -1,0 +1,11 @@
+summary: Functional test - acl - default ACL - new file inherits named entries
+test: ./test.sh
+tag:
+ - functional
+ - acl
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/acl/test_acl_default_file_inherits_named_entries
+require:
+ - acl
+ - beakerlib

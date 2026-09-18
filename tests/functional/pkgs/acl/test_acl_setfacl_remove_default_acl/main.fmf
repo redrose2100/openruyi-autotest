@@ -1,0 +1,11 @@
+summary: Functional test - acl - setfacl -k remove default ACL from directory
+test: ./test.sh
+tag:
+ - functional
+ - acl
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/acl/test_acl_setfacl_remove_default_acl
+require:
+ - acl
+ - beakerlib

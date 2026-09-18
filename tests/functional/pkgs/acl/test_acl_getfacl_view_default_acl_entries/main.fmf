@@ -1,0 +1,11 @@
+summary: Functional test - acl - getfacl - view default ACL entries on directory
+test: ./test.sh
+tag:
+ - functional
+ - acl
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/acl/test_acl_getfacl_view_default_acl_entries
+require:
+ - acl
+ - beakerlib

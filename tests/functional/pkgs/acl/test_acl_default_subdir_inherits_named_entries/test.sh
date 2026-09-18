@@ -1,0 +1,28 @@
+#!/bin/bash
+# Functional test: acl - default ACL - subdirectory inherits named default entries
+. /usr/share/beakerlib/beakerlib.sh || exit 1
+
+rlJournalStart
+    rlPhaseStartSetup "Environment setup"
+        TmpDir=$(mktemp -d)
+        rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+        rlRun "mkdir testdir" 0 "Create test directory"
+    rlPhaseEnd
+
+    rlPhaseStartTest "子目录继承命名 default ACL 条目"
+        rlRun "setfacl -m d:u:root:rwx,d:u:daemon:r-x,d:g:root:r-x,d:g:wheel:r-- testdir" 0 "set named entries"
+        rlRun "mkdir testdir/newsubdir" 0 "create subdirectory"
+        output=$(getfacl testdir/newsubdir 2>&1)
+        rlRun "echo \"\$output\" | grep -q 'default:user:daemon:r-x'" 0 "subdir inherits default user"
+        rlRun "echo \"\$output\" | grep -q 'default:group:wheel:r--'" 0 "subdir inherits default group" 
+    rlPhaseEnd
+
+    rlPhaseStartCleanup "Clean up test environment"
+        rlRun "cd /" 0 "Leave test directory"
+        if [ -n "$TmpDir" ] && [ -d "$TmpDir" ]; then
+            rlRun "rm -rf $TmpDir" 0 "Clean up temporary test directory"
+        fi
+    rlPhaseEnd
+
+    rlJournalPrintText
+rlJournalEnd

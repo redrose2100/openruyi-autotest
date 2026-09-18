@@ -1,0 +1,11 @@
+summary: Functional test - acl - setfacl --test dry run does not modify ACL
+test: ./test.sh
+tag:
+ - functional
+ - acl
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/acl/test_acl_setfacl_test_dry_run
+require:
+ - acl
+ - beakerlib

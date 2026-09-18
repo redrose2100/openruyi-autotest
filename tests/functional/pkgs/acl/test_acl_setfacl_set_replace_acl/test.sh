@@ -1,0 +1,26 @@
+#!/bin/bash
+# Functional test: acl - setfacl --set replace entire ACL
+. /usr/share/beakerlib/beakerlib.sh || exit 1
+
+rlJournalStart
+    rlPhaseStartSetup "Environment setup"
+        TmpDir=$(mktemp -d)
+        rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+        rlRun "touch testfile" 0 "Create test file"
+    rlPhaseEnd
+
+    rlPhaseStartTest "使用 --set 替换整个 ACL"
+        rlRun "setfacl --set u::rw-,u:root:rwx,g::r--,o::r--,m::rwx testfile" 0 "setfacl --set"
+        rlRun "getfacl testfile > out.txt 2>&1" 0 "verify"
+        rlAssertGrep "user:root:rwx" out.txt
+    rlPhaseEnd
+
+    rlPhaseStartCleanup "Clean up test environment"
+        rlRun "cd /" 0 "Leave test directory"
+        if [ -n "$TmpDir" ] && [ -d "$TmpDir" ]; then
+            rlRun "rm -rf $TmpDir" 0 "Clean up temporary test directory"
+        fi
+    rlPhaseEnd
+
+    rlJournalPrintText
+rlJournalEnd
