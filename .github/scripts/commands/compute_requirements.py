@@ -102,6 +102,36 @@ def parse_fmf_value(raw: str) -> str:
     return raw
 
 
+def parse_server_require(test_dir: Path) -> int:
+    """就近原则解析 server: 字段（测试目录 -> 逐层上溯 -> 默认 1）。
+
+    从 test_dir 自身开始向上查找 main.fmf 中的 server: 字段，
+    以最先找到的为准；都找不到则返回默认值 1。
+    """
+    cur = test_dir
+    while True:
+        fmf = cur / "main.fmf"
+        if fmf.exists():
+            try:
+                content = fmf.read_text(encoding="utf-8", errors="replace")
+                for line in content.splitlines():
+                    m = re.match(r"^\s*server\s*:\s*(.+)$", line)
+                    if m:
+                        val = parse_fmf_value(m.group(1))
+                        try:
+                            n = int(val)
+                            if n in (1, 2):
+                                return n
+                        except ValueError:
+                            pass
+            except Exception:
+                pass
+        if cur.name == "tests" or cur.parent == cur:
+            break
+        cur = cur.parent
+    return 1  # 默认
+
+
 def parse_hardware_require(fmf_files: List[Path]) -> Dict[str, str]:
     """沿继承链（子 -> 父）解析 extra-hardware-require 各字段，合并返回。"""
     hw: Dict[str, str] = {}
@@ -235,14 +265,30 @@ def compute_spec(changed_files: List[str], repo_root: Path) -> Tuple[List[str], 
     suite_paths = sorted(set(suite_paths))
     if not test_paths and not suite_paths:
         return [], [], {**DEFAULT_SPEC, "packages": [], "reason": "no test dirs found",
-                        "test_paths": [], "suite_paths": []}
+                        "test_paths": [], "suite_paths": [], "server_count": 1}
+
+    # ---- 计算 server_count（就近原则，取全体最大值） ----
+    server_count = 1
+    for rel in changed_files:
+        rel = rel.strip()
+        if not rel:
+            continue
+        path = tests_root / rel if not rel.startswith("tests/") else repo_root / rel
+        if not path.exists():
+            continue
+        test_dir = path if path.is_dir() else path.parent
+        sc = parse_server_require(test_dir)
+        if sc > server_count:
+            server_count = sc
+    if server_count > 1:
+        logger.info("Detected server_count=%d from fmf server: fields", server_count)
 
     # ---- 计算资源规格 ----
     cpu = DEFAULT_SPEC["riscv_qemu_cpu"]
     memory = DEFAULT_SPEC["riscv_qemu_memory"]
     net = DEFAULT_SPEC["riscv_qemu_net_num"]
     disk = 0
-    qemu_num = DEFAULT_SPEC["riscv_qemu_num"]
+    qemu_num = server_count  # 池化模型：server_count 即 QEMU 数量
 
     # 从 FMF 继承链中取最大需求
     for fmf in all_fmf_files:
@@ -284,6 +330,7 @@ def compute_spec(changed_files: List[str], repo_root: Path) -> Tuple[List[str], 
         "riscv_qemu_net_num": net,
         "riscv_qemu_disks": json.dumps(disk_sizes),
         "server_sku": sku,
+        "server_count": server_count,
         "packages": sorted(all_pkgs),
         "reason": "; ".join(reason_parts),
     }

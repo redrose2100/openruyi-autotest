@@ -219,14 +219,18 @@ class CloudPodsClient:
     def list_servers(self, name_prefix: str = "", limit: int = 0) -> List[Dict]:
         """按名称前缀列出 CloudPods 服务器（精简字段）。
 
+        CloudPods API 的 name 参数为精确匹配，而服务器名称格式为
+        ``{prefix}-{uuid_suffix}``（generate_name 机制），因此不在 API
+        层传 name 参数，获取全部 server 后在客户端按前缀过滤。
+
         返回 list，每项含 id / name / status / ips 等关键字段；
         查询失败返回空列表。
         """
         params: Dict = {"scope": "system", "details": "false"}
-        if name_prefix:
-            params["name"] = name_prefix
         if limit:
             params["limit"] = limit
+        # 不传 name 参数：CloudPods API name 是精确匹配，而服务器命名格式为
+        # openruyi-ci-pool-1q-xxxxxxxx，前缀匹配不到。改为客户端过滤。
         rs = self._request("GET", "/servers", params=params)
         if rs is None or rs.status_code != 200:
             logger.error("List servers failed: status=%s",
@@ -236,9 +240,12 @@ class CloudPodsClient:
         servers = data.get("servers", [])
         result: List[Dict] = []
         for s in servers:
+            name = s.get("name", "")
+            if name_prefix and not name.startswith(name_prefix):
+                continue
             result.append({
                 "id": s.get("id", ""),
-                "name": s.get("name", ""),
+                "name": name,
                 "status": s.get("status", ""),
                 "ips": s.get("ips", []),
             })

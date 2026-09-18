@@ -44,7 +44,31 @@ rlJournalStart
 
 
 
-    rlRun "su -c'setfacl -m u:root:rwx /root/test' openruyi 2>&1" 1-255 "testpermissionnoerror"
+    # Nonexistent user / group must be rejected with an error.
+    rlRun "setfacl -m u:no_such_user:rwx testfile" 1-255 "testnoexist user setfacl error"
+
+    rlRun "setfacl -m g:no_such_group:rwx testfile" 1-255 "testnoexist group setfacl error"
+
+
+
+    # Invalid permission string must be rejected.
+    rlRun "setfacl -m u:root:zz testfile" 1-255 "testinvalid permission setfacl error"
+
+
+
+    # Verify that a non-root user cannot set an ACL on a file under /root.
+    # Run as root: drop privileges to openruyi first; otherwise run directly.
+    # The command MUST fail (1-255); if it succeeds, the system's permission
+    # check is broken and this test should FAIL to expose it.
+    if [ "$(id -u)" = "0" ]; then
+
+    rlRun "sudo -n -u openruyi setfacl -m u:root:rwx /root/test 2>&1" 1-255 "testpermissionnoerror"
+
+    else
+
+    rlRun "setfacl -m u:root:rwx /root/test 2>&1" 1-255 "testpermissionnoerror"
+
+    fi
 
     rlPhaseEnd
 

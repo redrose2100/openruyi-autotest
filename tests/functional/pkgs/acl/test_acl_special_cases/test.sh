@@ -34,17 +34,17 @@ rlJournalStart
 
     rlPhaseStartTest "special scenarios"
 
-    rlRun "setfacl -m u:root:rwx,u:openruyi:r-x,g:root:r--,g:openruyi:rw- testfile" 0 "setmultiuserandgroup ACL"
+    rlRun "setfacl -m u:root:rwx,u:daemon:r-x,g:root:r--,g:wheel:rw- testfile" 0 "setmultiuserandgroup ACL"
 
     output=$(getfacl testfile 2>&1)
 
-    rlAssertGrep "user:root:rwx" "$output" "confirm user:root:rwx alreadyset"
+    rlRun "echo \"\$output\" | grep -q 'user:root:rwx'" 0 "confirm user:root:rwx alreadyset"
 
-    rlAssertGrep "user:openruyi:r-x" "$output" "confirm user:openruyi:r-x alreadyset"
+    rlRun "echo \"\$output\" | grep -q 'user:daemon:r-x'" 0 "confirm user:daemon:r-x alreadyset"
 
-    rlAssertGrep "group:root:r--" "$output" "confirm group:root:r-- alreadyset"
+    rlRun "echo \"\$output\" | grep -q 'group:root:r--'" 0 "confirm group:root:r-- alreadyset"
 
-    rlAssertGrep "group:openruyi:rw-" "$output" "confirm group:openruyi:rw- alreadyset"
+    rlRun "echo \"\$output\" | grep -q 'group:wheel:rw-'" 0 "confirm group:wheel:rw- alreadyset"
 
 
 
@@ -54,13 +54,19 @@ rlJournalStart
 
     rlRun "setfacl -b testfile" 0 " ACL"
 
-    rlRun "setfacl --restore acl_backup.txt 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "retry ACL"
+    rlRun "setfacl --restore acl_backup.txt" 0 "retry ACL"
 
 
 
-    rlRun "setfacl --test -m u:root:rwx testfile" 0 "use --test modenoactual"
+    # --test is a dry run: it must NOT modify the file.
+    # Capture the ACL state first, then verify it is unchanged.
+    rlRun "getfacl testfile > before_test.txt 2>&1" 0 "capture ACL before --test dry run"
 
-    rlRun "getfacl testfile" 0 "verify --test modenot ACL"
+    rlRun "setfacl --test -m u:root:rwx,g:root:--- testfile" 0 "use --test modenoactual"
+
+    rlRun "getfacl testfile > after_test.txt 2>&1" 0 "capture ACL after --test dry run"
+
+    rlRun "diff -u before_test.txt after_test.txt" 0 "verify --test dry run does not modify ACL"
 
     rlPhaseEnd
 

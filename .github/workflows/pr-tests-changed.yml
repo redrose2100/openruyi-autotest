@@ -8,11 +8,10 @@
 # 流程：
 #   1. 检查 PR 中 tests/ 下改动的文件
 #   2. 根据改动脚本涉及的测试元数据计算 VM 规格
-#      （QEMU 数量、CPU、内存、网卡、磁盘）
-#   3. 在 CloudPods 云平台创建 KVM 虚拟机，并在其中启动
-#      openRuyi RISC-V QEMU 虚拟机（复用 create_server.py 逻辑）
+#      （QEMU 数量、CPU、内存、网卡、磁盘、server_count）
+#   3. 从持久化 CI 预置池中申请环境（池A=1q×20 / 池B=2q×5）
 #   4. 在 QEMU 中模拟手工测试方式执行被修改的脚本
-#   5. 清理云平台虚拟机（无论成败）
+#   5. 释放环境回池（不删除 VM，标记为空闲供复用）
 #
 # 注意：不发布 PR 评论。fork 仓库提交的 PR 中 GITHUB_TOKEN 为只读，
 #   且自定义 secrets 不传递给 fork PR，调用评论 API 会 403 失败。
@@ -99,16 +98,17 @@ jobs:
           cat vm_requirements.json
 
       # --------------------------------------------------------
-      # 步骤 3：创建 CloudPods 虚拟机 + 启动 QEMU
+      # 步骤 3：从 CI 预置池中申请环境
       # --------------------------------------------------------
-      - name: Launch CloudPods hosts and QEMU VMs
-        id: launch
+      - name: Acquire environment from CI pool
+        id: pool-acquire
         if: steps.changed.outputs.changed == 'true'
         run: |
           set -o pipefail
-          python3 .github/scripts/cli.py launch-qemu-env \
+          python3 .github/scripts/cli.py pool-acquire \
             --requirements vm_requirements.json \
-            --output vm_info.json 2>&1 | tee launch.log
+            --timeout 600 \
+            --output vm_info.json 2>&1 | tee pool_acquire.log
           echo "vm_info:"
           cat vm_info.json
         env:
@@ -133,15 +133,15 @@ jobs:
           cat test_results.json || true
 
       # --------------------------------------------------------
-      # 步骤 5：清理云平台虚拟机（总是执行）
+      # 步骤 5：释放环境回池（不删除 VM，总是执行）
       # --------------------------------------------------------
-      - name: Cleanup CloudPods resources
+      - name: Release environment back to pool
         if: always()
         run: |
           if [ -f vm_info.json ]; then
-            python3 .github/scripts/cli.py cleanup-cloudpods --vm-info vm_info.json || true
+            python3 .github/scripts/cli.py pool-release --pool-info vm_info.json || true
           else
-            echo "No vm_info.json, skip cleanup"
+            echo "No vm_info.json, skip release"
           fi
         env:
           CLOUDPODS_KEYSTONE_URL: ${{ secrets.CLOUDPODS_KEYSTONE_URL }}

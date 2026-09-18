@@ -38,7 +38,7 @@ rlJournalStart
 
     rlRun "getfacl testdir" 0 "verify default ACL set"
 
-    rlAssertGrep "default:user:root:rwx" "$(getfacl testdir 2>&1)" "confirm default:user:root:rwx alreadyset"
+    rlRun "getfacl testdir | grep -q 'default:user:root:rwx'" 0 "confirm default:user:root:rwx alreadyset"
 
 
 
@@ -64,7 +64,7 @@ rlJournalStart
 
     rlRun "getfacl testfile" 0 "verify ACL replace"
 
-    rlAssertGrep "user:root:rwx" "$(getfacl testfile 2>&1)" "confirm --set alreadyreplace ACL"
+    rlRun "getfacl testfile | grep -q 'user:root:rwx'" 0 "confirm --set alreadyreplace ACL"
 
 
 
