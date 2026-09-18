@@ -36,17 +36,16 @@ def generate_package_md(pkg_name, testsuites):
     lines = [f"# {pkg_name} 功能测试覆盖详情", ""]
     total_suites = len(testsuites)
     total_points = sum(len(s['points']) for s in testsuites)
-    lines.append(f"共 **{total_suites}** 个测试套，**{total_points}** 个测试点")
+    lines.append(f"共 **{total_suites}** 个测试用例，**{total_points}** 个测试点")
     lines.append("")
-    lines.append("| Test Suite | Test Case | Test Point |")
-    lines.append("|------------|-----------|------------|")
+    lines.append("| 软件包 | 测试用例 | 测试点 |")
+    lines.append("|--------|----------|--------|")
     for suite in testsuites:
         suite_name = suite['suite']
         points = suite['points']
-        case_count = len(points)
         for i, point in enumerate(points):
             if i == 0:
-                lines.append(f"| {suite_name} | {case_count} cases | {point} |")
+                lines.append(f"| {pkg_name} | {suite_name} | {point} |")
             else:
                 lines.append(f"| | | {point} |")
     return '\n'.join(lines) + '\n'

@@ -1,10 +1,10 @@
 # gzip 功能测试覆盖详情
 
-共 **2** 个测试套，**29** 个测试点
+共 **2** 个测试用例，**29** 个测试点
 
-| Test Suite | Test Case | Test Point |
-|------------|-----------|------------|
-| test_gzip_version_help | 28 cases | gzip 版本信息 |
+| 软件包 | 测试用例 | 测试点 |
+|--------|----------|--------|
+| gzip | test_gzip_version_help | gzip 版本信息 |
 | | | gzip 帮助信息 |
 | | | gunzip 版本信息 |
 | | | gunzip 帮助信息 |
@@ -32,4 +32,4 @@
 | | | zfgrep 帮助信息 |
 | | | uncompress 版本信息 |
 | | | uncompress 帮助信息 |
-| test_gzip_error_handling | 1 cases | gzip: 无效选项 |
+| gzip | test_gzip_error_handling | gzip: 无效选项 |

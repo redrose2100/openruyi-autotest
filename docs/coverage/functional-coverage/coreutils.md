@@ -1,10 +1,10 @@
 # coreutils 功能测试覆盖详情
 
-共 **24** 个测试套，**234** 个测试点
+共 **24** 个测试用例，**234** 个测试点
 
-| Test Suite | Test Case | Test Point |
-|------------|-----------|------------|
-| test_coreutils_file_creation_and_listing_echo_cat_ls_dir_vdir | 15 cases | echo create file |
+| 软件包 | 测试用例 | 测试点 |
+|--------|----------|--------|
+| coreutils | test_coreutils_file_creation_and_listing_echo_cat_ls_dir_vdir | echo create file |
 | | | echo append |
 | | | echo -n suppress newline |
 | | | echo -n: verify no trailing newline |
@@ -19,7 +19,7 @@
 | | | ls -1 single column |
 | | | dir list directory |
 | | | vdir long format list |
-| test_coreutils_copy_move_remove_cp_mv_rm_rmdir | 18 cases | cp copy file |
+| coreutils | test_coreutils_copy_move_remove_cp_mv_rm_rmdir | cp copy file |
 | | | cp: verify copy exists |
 | | | cp: files identical |
 | | | cp -r recursive copy |
@@ -37,14 +37,14 @@
 | | | Create empty directory |
 | | | rmdir remove empty directory |
 | | | rmdir: directory removed |
-| test_coreutils_directory_file_creation_temp_files_mkdir_touch_mktemp | 7 cases | mkdir -p nested directories |
+| coreutils | test_coreutils_directory_file_creation_temp_files_mkdir_touch_mktemp | mkdir -p nested directories |
 | | | mkdir -p: verify nested dir |
 | | | mkdir -m set mode |
 | | | touch create file |
 | | | touch: file exists |
 | | | touch -t set timestamp |
 | | | touch -a access time only |
-| test_coreutils_links_and_path_resolution_ln_link_unlink_readlink_realpath | 15 cases | Create link source |
+| coreutils | test_coreutils_links_and_path_resolution_ln_link_unlink_readlink_realpath | Create link source |
 | | | ln create hard link |
 | | | ln: hard link same inode |
 | | | ln -s symbolic link |
@@ -59,7 +59,7 @@
 | | | readlink: correct target |
 | | | readlink -f canonicalize |
 | | | realpath canonical path |
-| test_coreutils_file_viewing_head_tail_tac_nl | 10 cases | head -n 5: first 5 lines |
+| coreutils | test_coreutils_file_viewing_head_tail_tac_nl | head -n 5: first 5 lines |
 | | | head -n 3: verify count |
 | | | head -c 10: first 10 bytes |
 | | | tail -n 5: last 5 lines |
@@ -69,7 +69,7 @@
 | | | tac reverse lines |
 | | | tac: first becomes last |
 | | | nl number lines |
-| test_coreutils_counting_and_statistics_wc_du_df_stat | 12 cases | wc -l line count |
+| coreutils | test_coreutils_counting_and_statistics_wc_du_df_stat | wc -l line count |
 | | | wc -l: 20 lines |
 | | | wc -c byte count |
 | | | wc -w word count |
@@ -81,7 +81,7 @@
 | | | stat file status |
 | | | stat -c format output |
 | | | stat -f filesystem status |
-| test_coreutils_text_processing_i_sort_uniq_cut_tr | 17 cases | sort alphabetically |
+| coreutils | test_coreutils_text_processing_i_sort_uniq_cut_tr | sort alphabetically |
 | | | sort: first is apple |
 | | | sort -r reverse |
 | | | sort -u unique |
@@ -98,7 +98,7 @@
 | | | tr translate uppercase to lowercase |
 | | | tr -d delete characters |
 | | | tr -s squeeze repeats |
-| test_coreutils_text_processing_ii_paste_comm_join_fmt_fold_pr_expand_unexpand | 12 cases | paste merge files side by side |
+| coreutils | test_coreutils_text_processing_ii_paste_comm_join_fmt_fold_pr_expand_unexpand | paste merge files side by side |
 | | | paste -d: custom delimiter |
 | | | paste -s serial |
 | | | comm compare sorted files |
@@ -110,16 +110,16 @@
 | | | pr -n number lines |
 | | | expand tabs to spaces |
 | | | unexpand -a spaces to tabs |
-| test_coreutils_octal_dump_od | 4 cases | od octal dump |
+| coreutils | test_coreutils_octal_dump_od | od octal dump |
 | | | od -c character dump |
 | | | od -x hex dump |
 | | | od -A x hex address |
-| test_coreutils_path_operations_basename_dirname_pwd | 5 cases | basename extract filename |
+| coreutils | test_coreutils_path_operations_basename_dirname_pwd | basename extract filename |
 | | | basename strip suffix |
 | | | dirname extract directory |
 | | | dirname path extraction |
 | | | pwd print working directory |
-| test_coreutils_permissions_and_ownership_chmod_chown_chgrp | 10 cases | Create permission test file |
+| coreutils | test_coreutils_permissions_and_ownership_chmod_chown_chgrp | Create permission test file |
 | | | chmod u+x add exec |
 | | | chmod: verify exec set |
 | | | chmod 644 numeric |
@@ -129,10 +129,10 @@
 | | | chown version check |
 | | | chown to self |
 | | | chgrp version check |
-| test_coreutils_redirection_tee | 3 cases | tee write to file |
+| coreutils | test_coreutils_redirection_tee | tee write to file |
 | | | tee: verify output |
 | | | tee -a append mode |
-| test_coreutils_checksums_cksum_md5sum_sha1sum_sha224sum_sha384sum_sha512sum_sha256sum_b2sum_sum | 15 cases | cksum CRC checksum |
+| coreutils | test_coreutils_checksums_cksum_md5sum_sha1sum_sha224sum_sha384sum_sha512sum_sha256sum_b2sum_sum | cksum CRC checksum |
 | | | md5sum compute |
 | | | md5sum save |
 | | | md5sum -c verify |
@@ -147,12 +147,12 @@
 | | | sha512sum compute |
 | | | b2sum BLAKE2 checksum |
 | | | sum BSD checksum |
-| test_coreutils_encoding_base32_base64_basenc | 5 cases | base32 encode |
+| coreutils | test_coreutils_encoding_base32_base64_basenc | base32 encode |
 | | | base32 -d decode |
 | | | base64 encode |
 | | | base64 -d decode |
 | | | basenc --base64 encode |
-| test_coreutils_system_information_uname_who_whoami_id_groups_users_hostid_nproc_tty_logname_pinky | 18 cases | uname system name |
+| coreutils | test_coreutils_system_information_uname_who_whoami_id_groups_users_hostid_nproc_tty_logname_pinky | uname system name |
 | | | uname -a all info |
 | | | uname -r kernel release |
 | | | uname -m machine hardware |
@@ -170,7 +170,7 @@
 | | | tty terminal name |
 | | | logname login name |
 | | | pinky user info |
-| test_coreutils_boolean_and_condition_true_false_test | 8 cases | true returns success |
+| coreutils | test_coreutils_boolean_and_condition_true_false_test | true returns success |
 | | | false returns failure |
 | | | test -f: file exists |
 | | | test -d: directory exists |
@@ -178,7 +178,7 @@
 | | | test numeric comparison |
 | | | [ -f: file exists |
 | | | [ string equality |
-| test_coreutils_environment_and_time_env_printenv_date_printf | 8 cases | env show environment |
+| coreutils | test_coreutils_environment_and_time_env_printenv_date_printf | env show environment |
 | | | env set variable for command |
 | | | printenv show PATH |
 | | | date current date/time |
@@ -186,16 +186,16 @@
 | | | date -u UTC time |
 | | | printf formatted output |
 | | | printf string output |
-| test_coreutils_flow_control_sleep_timeout_yes | 6 cases | sleep delay |
+| coreutils | test_coreutils_flow_control_sleep_timeout_yes | sleep delay |
 | | | timeout: command finishes in time |
 | | | timeout: successful completion |
 | | | timeout: kills slow command |
 | | | yes repeated output |
 | | | yes custom string |
-| test_coreutils_process_control_nice_nohup_stdbuf | 3 cases | nice adjust priority |
+| coreutils | test_coreutils_process_control_nice_nohup_stdbuf | nice adjust priority |
 | | | nohup run command |
 | | | stdbuf line buffered output |
-| test_coreutils_file_operations_dd_truncate_shred_sync_install_chroot | 15 cases | dd copy file |
+| coreutils | test_coreutils_file_operations_dd_truncate_shred_sync_install_chroot | dd copy file |
 | | | truncate set size |
 | | | truncate: verify size |
 | | | Create file to shred |
@@ -210,7 +210,7 @@
 | | | mkfifo create named pipe |
 | | | mkfifo: verify pipe created |
 | | | mknod version check |
-| test_coreutils_numbers_and_expressions_seq_factor_shuf_numfmt_expr | 13 cases | seq generate sequence |
+| coreutils | test_coreutils_numbers_and_expressions_seq_factor_shuf_numfmt_expr | seq generate sequence |
 | | | seq: 5 numbers |
 | | | seq -s custom separator |
 | | | factor prime factorization |
@@ -223,17 +223,17 @@
 | | | expr basic arithmetic |
 | | | expr multiplication |
 | | | expr string length |
-| test_coreutils_split_files_split_csplit | 3 cases | split by lines |
+| coreutils | test_coreutils_split_files_split_csplit | split by lines |
 | | | split: multiple output files |
 | | | csplit split by pattern |
-| test_coreutils_special_utilities_stty_pathchk_tsort_ptx_dircolors | 7 cases | stty -a show all terminal settings |
+| coreutils | test_coreutils_special_utilities_stty_pathchk_tsort_ptx_dircolors | stty -a show all terminal settings |
 | | | pathchk validate path |
 | | | pathchk -p POSIX check |
 | | | tsort topological sort |
 | | | ptx permuted index |
 | | | dircolors -p print database |
 | | | dircolors output LS_COLORS |
-| test_coreutils_error_handling | 5 cases | cp: error on nonexistent source |
+| coreutils | test_coreutils_error_handling | cp: error on nonexistent source |
 | | | ls: error on nonexistent file |
 | | | mkdir: error on existing dir |
 | | | rm: error on dir without -r |

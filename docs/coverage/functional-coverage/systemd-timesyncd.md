@@ -1,19 +1,19 @@
 # systemd-timesyncd 功能测试覆盖详情
 
-共 **5** 个测试套，**13** 个测试点
+共 **5** 个测试用例，**13** 个测试点
 
-| Test Suite | Test Case | Test Point |
-|------------|-----------|------------|
-| test_systemd_timesyncd_service_status | 4 cases | Service status |
+| 软件包 | 测试用例 | 测试点 |
+|--------|----------|--------|
+| systemd-timesyncd | test_systemd_timesyncd_service_status | Service status |
 | | | Time sync status |
 | | | Timesync detail |
 | | | Is enabled |
-| test_systemd_timesyncd_ntp_management | 4 cases | Fallback NTP servers |
+| systemd-timesyncd | test_systemd_timesyncd_ntp_management | Fallback NTP servers |
 | | | Current NTP server |
 | | | Server address |
 | | | NTP servers list |
-| test_systemd_timesyncd_service_control | 2 cases | Restart service |
+| systemd-timesyncd | test_systemd_timesyncd_service_control | Restart service |
 | | | Is active |
-| test_systemd_timesyncd_configuration | 2 cases | Config file |
+| systemd-timesyncd | test_systemd_timesyncd_configuration | Config file |
 | | | Cat config |
-| test_systemd_timesyncd_systemdtimewaitsync | 1 cases | Wait sync service |
+| systemd-timesyncd | test_systemd_timesyncd_systemdtimewaitsync | Wait sync service |

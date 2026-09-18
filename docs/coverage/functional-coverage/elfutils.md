@@ -1,10 +1,10 @@
 # elfutils 功能测试覆盖详情
 
-共 **2** 个测试套，**31** 个测试点
+共 **2** 个测试用例，**31** 个测试点
 
-| Test Suite | Test Case | Test Point |
-|------------|-----------|------------|
-| test_elfutils_version_help | 30 cases | eu-addr2line 版本信息 |
+| 软件包 | 测试用例 | 测试点 |
+|--------|----------|--------|
+| elfutils | test_elfutils_version_help | eu-addr2line 版本信息 |
 | | | eu-addr2line 帮助信息 |
 | | | eu-ar 版本信息 |
 | | | eu-ar 帮助信息 |
@@ -34,4 +34,4 @@
 | | | eu-srcfiles 帮助信息 |
 | | | eu-stack 版本信息 |
 | | | eu-stack 帮助信息 |
-| test_elfutils_error_handling | 1 cases | eu-addr2line: 无效选项 |
+| elfutils | test_elfutils_error_handling | eu-addr2line: 无效选项 |

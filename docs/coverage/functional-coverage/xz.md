@@ -1,10 +1,10 @@
 # xz 功能测试覆盖详情
 
-共 **2** 个测试套，**31** 个测试点
+共 **2** 个测试用例，**31** 个测试点
 
-| Test Suite | Test Case | Test Point |
-|------------|-----------|------------|
-| test_xz_version_help | 30 cases | xz 版本信息 |
+| 软件包 | 测试用例 | 测试点 |
+|--------|----------|--------|
+| xz | test_xz_version_help | xz 版本信息 |
 | | | xz 帮助信息 |
 | | | unxz 版本信息 |
 | | | unxz 帮助信息 |
@@ -34,4 +34,4 @@
 | | | lzegrep 帮助信息 |
 | | | lzfgrep 版本信息 |
 | | | lzfgrep 帮助信息 |
-| test_xz_error_handling | 1 cases | xz: 无效选项 |
+| xz | test_xz_error_handling | xz: 无效选项 |

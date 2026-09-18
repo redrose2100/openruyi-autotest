@@ -1,16 +1,16 @@
 # labwc 功能测试覆盖详情
 
-共 **9** 个测试套，**10** 个测试点
+共 **9** 个测试用例，**10** 个测试点
 
-| Test Suite | Test Case | Test Point |
-|------------|-----------|------------|
-| test_labwc_help | 1 cases | labwc help |
-| test_labwc_configuration | 1 cases | labwc: config options |
-| test_labwc_debug_mode | 1 cases | labwc: debug option |
-| test_labwc_check_for_display_no_display | 1 cases | labwc: startup/session options |
-| test_labwc_library_check | 1 cases | labwc: linked libraries |
-| test_labwc_labnag | 1 cases | labnag help |
-| test_labwc_labsensibleterminal | 1 cases | lab-sensible-terminal help |
-| test_labwc_config_dirs | 2 cases | System config dir |
+| 软件包 | 测试用例 | 测试点 |
+|--------|----------|--------|
+| labwc | test_labwc_help | labwc help |
+| labwc | test_labwc_configuration | labwc: config options |
+| labwc | test_labwc_debug_mode | labwc: debug option |
+| labwc | test_labwc_check_for_display_no_display | labwc: startup/session options |
+| labwc | test_labwc_library_check | labwc: linked libraries |
+| labwc | test_labwc_labnag | labnag help |
+| labwc | test_labwc_labsensibleterminal | lab-sensible-terminal help |
+| labwc | test_labwc_config_dirs | System config dir |
 | | | Data dir |
-| test_labwc_error_handling | 1 cases | labwc: invalid option |
+| labwc | test_labwc_error_handling | labwc: invalid option |

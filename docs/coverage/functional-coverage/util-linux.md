@@ -1,10 +1,10 @@
 # util-linux 功能测试覆盖详情
 
-共 **2** 个测试套，**31** 个测试点
+共 **2** 个测试用例，**31** 个测试点
 
-| Test Suite | Test Case | Test Point |
-|------------|-----------|------------|
-| test_util_linux_version_help | 30 cases | addpart 版本信息 |
+| 软件包 | 测试用例 | 测试点 |
+|--------|----------|--------|
+| util-linux | test_util_linux_version_help | addpart 版本信息 |
 | | | addpart 帮助信息 |
 | | | agetty 版本信息 |
 | | | agetty 帮助信息 |
@@ -34,4 +34,4 @@
 | | | blkpr 帮助信息 |
 | | | blkzone 版本信息 |
 | | | blkzone 帮助信息 |
-| test_util_linux_error_handling | 1 cases | addpart: 无效选项 |
+| util-linux | test_util_linux_error_handling | addpart: 无效选项 |

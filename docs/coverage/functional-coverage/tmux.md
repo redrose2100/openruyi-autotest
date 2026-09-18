@@ -1,10 +1,10 @@
 # tmux 功能测试覆盖详情
 
-共 **22** 个测试套，**179** 个测试点
+共 **22** 个测试用例，**179** 个测试点
 
-| Test Suite | Test Case | Test Point |
-|------------|-----------|------------|
-| test_tmux_server_management | 8 cases | start-server: start tmux server |
+| 软件包 | 测试用例 | 测试点 |
+|--------|----------|--------|
+| tmux | test_tmux_server_management | start-server: start tmux server |
 | | | list-sessions: initial state |
 | | | has-session: check nonexistent |
 | | | list-clients: list connected clients |
@@ -12,7 +12,7 @@
 | | | list-commands: filter specific command |
 | | | list-commands: format output |
 | | | server-access -l: list access |
-| test_tmux_session_creation_and_management | 21 cases | new-session -d: create detached session |
+| tmux | test_tmux_session_creation_and_management | new-session -d: create detached session |
 | | | has-session: verify session exists |
 | | | new-session -d: with start directory |
 | | | has-session: verify sess2 exists |
@@ -33,7 +33,7 @@
 | | | lock-client: lock client |
 | | | refresh-client -S: status line only |
 | | | refresh-client -L: lease |
-| test_tmux_window_management | 29 cases | new-window: create window |
+| tmux | test_tmux_window_management | new-window: create window |
 | | | new-window -d: detached |
 | | | new-window -c: with directory |
 | | | new-window -e: with env |
@@ -62,7 +62,7 @@
 | | | resize-window: set size |
 | | | resize-window -U: up |
 | | | resize-window -D: down |
-| test_tmux_pane_management | 38 cases | split-window: horizontal split |
+| tmux | test_tmux_pane_management | split-window: horizontal split |
 | | | split-window -h: vertical split |
 | | | split-window -v: vertical explicit |
 | | | split-window -l: with size |
@@ -100,14 +100,14 @@
 | | | capture-pane -J: join lines |
 | | | pipe-pane -o: pipe output |
 | | | respawn-pane -k: respawn |
-| test_tmux_layout_management | 7 cases | select-layout: even-horizontal |
+| tmux | test_tmux_layout_management | select-layout: even-horizontal |
 | | | select-layout: even-vertical |
 | | | select-layout: main-horizontal |
 | | | select-layout: main-vertical |
 | | | select-layout: tiled |
 | | | next-layout: cycle layouts |
 | | | previous-layout: prev layout |
-| test_tmux_buffer_management | 13 cases | set-buffer -b: named buffer |
+| tmux | test_tmux_buffer_management | set-buffer -b: named buffer |
 | | | set-buffer: direct data |
 | | | set-buffer -a: append |
 | | | list-buffers: list all buffers |
@@ -120,7 +120,7 @@
 | | | save-buffer: create buffer |
 | | | save-buffer: save to file |
 | | | load-buffer: load from file |
-| test_tmux_key_bindings_and_input | 13 cases | list-keys: list all keys |
+| tmux | test_tmux_key_bindings_and_input | list-keys: list all keys |
 | | | list-keys -T: prefix table |
 | | | list-keys -T: root table |
 | | | list-keys -a: all keys |
@@ -133,7 +133,7 @@
 | | | send-keys -l: literal |
 | | | send-keys -H: hex |
 | | | send-prefix: send prefix key |
-| test_tmux_options_and_settings | 10 cases | set-option -g: global |
+| tmux | test_tmux_options_and_settings | set-option -g: global |
 | | | set-option -a: append |
 | | | set-option: mouse on |
 | | | set-option -s: server option |
@@ -143,43 +143,43 @@
 | | | show-options -s: server options |
 | | | show-window-options: window options |
 | | | show-window-options -g: global window options |
-| test_tmux_environment_variables | 5 cases | set-environment -g: global env |
+| tmux | test_tmux_environment_variables | set-environment -g: global env |
 | | | set-environment: session env |
 | | | set-environment -gur: update then remove |
 | | | show-environment -g: global env |
 | | | show-environment: session env |
-| test_tmux_hooks | 5 cases | set-hook: session-created |
+| tmux | test_tmux_hooks | set-hook: session-created |
 | | | set-hook: client-attached |
 | | | show-hooks -g: global hooks |
 | | | set-hook -gu: remove global hook |
 | | | set-hook -gu: remove hook |
-| test_tmux_messages_and_display | 5 cases | display-message: show message |
+| tmux | test_tmux_messages_and_display | display-message: show message |
 | | | display-message -p: print format |
 | | | show-messages: message log |
 | | | display-popup -C: close popup |
 | | | clear-history: clear pane history |
-| test_tmux_conditional_and_shell_execution | 5 cases | if-shell: true condition |
+| tmux | test_tmux_conditional_and_shell_execution | if-shell: true condition |
 | | | run-shell: run shell command |
 | | | run-shell -b: background |
 | | | command-prompt: open prompt |
 | | | confirm-before: confirm dialog |
-| test_tmux_source_and_configuration | 1 cases | source-file: source config |
-| test_tmux_copy_mode | 1 cases | copy-mode: enter copy mode |
-| test_tmux_find_window | 1 cases | find-window: search windows |
-| test_tmux_choose_commands_interactive | 2 cases | choose-tree -G: tree display |
+| tmux | test_tmux_source_and_configuration | source-file: source config |
+| tmux | test_tmux_copy_mode | copy-mode: enter copy mode |
+| tmux | test_tmux_find_window | find-window: search windows |
+| tmux | test_tmux_choose_commands_interactive | choose-tree -G: tree display |
 | | | choose-client: client selection |
-| test_tmux_clock_mode | 1 cases | clock-mode: show clock |
-| test_tmux_lock_management | 2 cases | lock-server: lock server |
+| tmux | test_tmux_clock_mode | clock-mode: show clock |
+| tmux | test_tmux_lock_management | lock-server: lock server |
 | | | lock-session: lock session |
-| test_tmux_show_prompt_history | 2 cases | show-prompt-history: prompt history |
+| tmux | test_tmux_show_prompt_history | show-prompt-history: prompt history |
 | | | clear-prompt-history: clear prompt history |
-| test_tmux_waitfor_event_channels | 1 cases | wait-for -L: lock channel |
-| test_tmux_cleanup_kill_sessions | 7 cases | kill-session: kill renamed_sess |
+| tmux | test_tmux_waitfor_event_channels | wait-for -L: lock channel |
+| tmux | test_tmux_cleanup_kill_sessions | kill-session: kill renamed_sess |
 | | | kill-session: kill sess_fmt |
 | | | kill-session: kill sess_sz |
 | | | kill-session: kill sess_flags |
 | | | kill-session: kill sess_env |
 | | | kill-session: kill main test session |
 | | | kill-server: terminate server |
-| test_tmux_error_handling | 2 cases | Error: nonexistent session |
+| tmux | test_tmux_error_handling | Error: nonexistent session |
 | | | Error: invalid option |

@@ -1,27 +1,27 @@
 # make 功能测试覆盖详情
 
-共 **9** 个测试套，**21** 个测试点
+共 **9** 个测试用例，**21** 个测试点
 
-| Test Suite | Test Case | Test Point |
-|------------|-----------|------------|
-| test_make_basic_makefile_execution | 4 cases | Run default target |
+| 软件包 | 测试用例 | 测试点 |
+|--------|----------|--------|
+| make | test_make_basic_makefile_execution | Run default target |
 | | | Run specific target |
 | | | Run clean target |
 | | | make -s: silent mode |
-| test_make_variables | 2 cases | Variable expansion |
+| make | test_make_variables | Variable expansion |
 | | | Override variable |
-| test_make_options | 7 cases | make -n: dry run |
+| make | test_make_options | make -n: dry run |
 | | | make -B: always make |
 | | | make --just-print |
 | | | make -d: debug output |
 | | | make --debug=b: basic debug |
 | | | make -q: question mode |
 | | | make -s: silent |
-| test_make_parallel_execution | 1 cases | make -j2: parallel 2 jobs |
-| test_make_environment | 2 cases | make -e: environment overrides |
+| make | test_make_parallel_execution | make -j2: parallel 2 jobs |
+| make | test_make_environment | make -e: environment overrides |
 | | | Environment variable in make |
-| test_make_directory_change | 1 cases | make -C: change directory |
-| test_make_include | 1 cases | Include file |
-| test_make_gmake_alias | 1 cases | gmake is GNU Make |
-| test_make_error_handling | 2 cases | make -k: continue on error |
+| make | test_make_directory_change | make -C: change directory |
+| make | test_make_include | Include file |
+| make | test_make_gmake_alias | gmake is GNU Make |
+| make | test_make_error_handling | make -k: continue on error |
 | | | make -i: ignore errors |

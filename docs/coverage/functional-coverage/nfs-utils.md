@@ -1,10 +1,10 @@
 # nfs-utils 功能测试覆盖详情
 
-共 **1** 个测试套，**5** 个测试点
+共 **1** 个测试用例，**5** 个测试点
 
-| Test Suite | Test Case | Test Point |
-|------------|-----------|------------|
-| test_nfs_utils_main | 5 cases | 获取 nfs-utils 版本信息 |
+| 软件包 | 测试用例 | 测试点 |
+|--------|----------|--------|
+| nfs-utils | test_nfs_utils_main | 获取 nfs-utils 版本信息 |
 | | | 列出包内二进制文件 |
 | | | 检查 systemd 服务文件 |
 | | | 检查配置文件 |

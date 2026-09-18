@@ -1,9 +1,9 @@
 # cryptsetup 功能测试覆盖详情
 
-共 **2** 个测试套，**3** 个测试点
+共 **2** 个测试用例，**3** 个测试点
 
-| Test Suite | Test Case | Test Point |
-|------------|-----------|------------|
-| test_cryptsetup_version_help | 2 cases | cryptsetup 版本信息 |
+| 软件包 | 测试用例 | 测试点 |
+|--------|----------|--------|
+| cryptsetup | test_cryptsetup_version_help | cryptsetup 版本信息 |
 | | | cryptsetup 帮助信息 |
-| test_cryptsetup_error_handling | 1 cases | cryptsetup: 无效选项 |
+| cryptsetup | test_cryptsetup_error_handling | cryptsetup: 无效选项 |
