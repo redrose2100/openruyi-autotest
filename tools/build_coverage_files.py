@@ -81,14 +81,14 @@ def update_readme_table(readme_path):
     new_lines = []
     for line in old_table.strip('\n').split('\n'):
         line = line.rstrip()
-        if not line.startswith('| '):
+        if not line.startswith('|'):
             continue
         if line.startswith('| Category') or line.startswith('| 分类'):
             hdr = "| Category | Representative Packages |" if is_en else "| 分类 | 代表性软件包 |"
             new_lines.append(hdr)
+            new_lines.append("|----------|------------------------|")
             continue
         if line.startswith('|---') or line.startswith('|--'):
-            new_lines.append("|----------|------------------------|")
             continue
 
         parts = [p.strip() for p in line.split('|')]
