@@ -7,7 +7,7 @@ Each new test file:
 - No dependency on lib.sh (package managed by tmt require in main.fmf)
 """
 
-import os, shutil, textwrap, inspect
+import os, shutil, textwrap, inspect, stat, subprocess
 
 BASE = r"e:\code\openruyi-autotest"
 ACL = os.path.join(BASE, "tests", "functional", "pkgs", "acl")
@@ -673,8 +673,21 @@ def generate():
             setup_extra=setup_indented,
             test_body=test_indented,
         )
-        with open(os.path.join(dir_path, "test.sh"), "w", encoding="utf-8", newline="\n") as f:
+        test_sh = os.path.join(dir_path, "test.sh")
+        with open(test_sh, "w", encoding="utf-8", newline="\n") as f:
             f.write(content)
+        # Mark executable on Linux filesystem and in git index
+        try:
+            os.chmod(test_sh, os.stat(test_sh).st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
+        except OSError:
+            pass  # Windows ignores exec bits
+        try:
+            subprocess.run(
+                ["git", "update-index", "--chmod=+x", test_sh],
+                cwd=BASE, capture_output=True, check=False,
+            )
+        except Exception:
+            pass
 
         # Generate main.fmf
         fmf_content = FMF.format(desc_en=desc_en, dirname=dirname)
