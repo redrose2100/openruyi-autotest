@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "删除所有扩展 ACL"
+    rlPhaseStartTest "remove all extended ACL entries"
         rlRun "setfacl -m u:root:rwx,g:root:r-x testfile" 0 "pre-set ACL"
         rlRun "setfacl -b testfile" 0 "remove all ACL"
         output=$(getfacl testfile 2>&1)

@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "mkdir testdir" 0 "Create test directory"
     rlPhaseEnd
 
-    rlPhaseStartTest "为目录设置 default other"
+    rlPhaseStartTest "set default other on directory"
         rlRun "setfacl -m d:o::r-- testdir" 0 "set default other"
         rlRun "getfacl testdir > out.txt 2>&1" 0 "verify" 
     rlPhaseEnd

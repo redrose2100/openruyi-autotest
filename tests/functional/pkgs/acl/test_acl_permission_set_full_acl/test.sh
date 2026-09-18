@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "设置并验证完整 ACL 权限"
+    rlPhaseStartTest "set and verify full ACL entries"
         rlRun "setfacl --set u::rwx,u:root:rwx,g::r-x,o::r--,m::rwx testfile" 0 "set full ACL"
         output=$(getfacl testfile 2>&1)
         rlRun "echo \"\$output\" | grep -q 'user::rwx'" 0 "user::rwx"

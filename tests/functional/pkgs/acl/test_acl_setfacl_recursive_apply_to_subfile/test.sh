@@ -10,7 +10,7 @@ rlJournalStart
         rlRun "touch testdir/file1" 0 "create sub-file" 
     rlPhaseEnd
 
-    rlPhaseStartTest "递归应用 ACL 到子文件"
+    rlPhaseStartTest "recursively apply ACL to sub-files"
         rlRun "setfacl -R -m u:root:rwx,g::r--,o::r-- testdir" 0 "recursive setfacl"
         output=$(getfacl testdir/file1 2>&1)
         rlRun "echo \"\$output\" | grep -q 'user:root:rwx'" 0 "sub-file has ACL" 

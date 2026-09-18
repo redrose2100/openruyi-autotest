@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "mkdir testdir" 0 "Create test directory"
     rlPhaseEnd
 
-    rlPhaseStartTest "目录上 default ACL 与 access ACL 共存"
+    rlPhaseStartTest "default and access ACL coexist on directory"
         rlRun "setfacl -m d:u:root:rwx,d:g::r-x,d:o::r-x testdir" 0 "set default ACL"
         rlRun "setfacl -m u:root:rwx,g::r-x,o::r-x testdir" 0 "set access ACL"
         output=$(getfacl testdir 2>&1)

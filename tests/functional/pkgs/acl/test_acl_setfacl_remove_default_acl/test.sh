@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "mkdir testdir" 0 "Create test directory"
     rlPhaseEnd
 
-    rlPhaseStartTest "删除目录的 default ACL"
+    rlPhaseStartTest "remove default ACL from directory"
         rlRun "setfacl -m d:u:root:rwx testdir" 0 "pre-set default ACL"
         rlRun "setfacl -k testdir" 0 "remove default ACL"
         output=$(getfacl testdir 2>&1)

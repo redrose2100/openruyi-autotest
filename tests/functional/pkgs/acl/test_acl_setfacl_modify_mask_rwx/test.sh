@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "设置 mask 为 rwx"
+    rlPhaseStartTest "set mask to rwx"
         rlRun "setfacl -m m::rwx testfile" 0 "set mask rwx"
         rlRun "getfacl testfile > out.txt 2>&1" 0 "verify mask"
         rlAssertGrep "mask::rwx" out.txt

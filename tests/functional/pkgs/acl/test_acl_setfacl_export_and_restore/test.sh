@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "mkdir testdir" 0 "Create test directory"
     rlPhaseEnd
 
-    rlPhaseStartTest "导出并恢复 ACL"
+    rlPhaseStartTest "export and restore ACL"
         rlRun "touch testfile" 0 "Create test file"
         rlRun "setfacl -m u:root:rwx,g:root:rwx testfile" 0 "set ACL"
         rlRun "getfacl -R testdir > acl_backup.txt" 0 "export ACL"

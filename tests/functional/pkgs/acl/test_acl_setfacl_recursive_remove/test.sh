@@ -11,7 +11,7 @@ rlJournalStart
         rlRun "setfacl -R -m u:root:rw- testdir" 0 "pre-set ACL" 
     rlPhaseEnd
 
-    rlPhaseStartTest "递归删除所有子目录文件 ACL"
+    rlPhaseStartTest "recursively remove ACL from all files"
         rlRun "setfacl -R -b testdir" 0 "recursive remove ACL"
         output1=$(getfacl testdir/file1 2>&1)
         output2=$(getfacl testdir/subdir1/file2 2>&1)

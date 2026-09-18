@@ -10,7 +10,7 @@ rlJournalStart
         rlRun "ln -s testfile symlink" 0 "create symlink" 
     rlPhaseEnd
 
-    rlPhaseStartTest "使用 -P 参数不跟随符号链接"
+    rlPhaseStartTest "use -P to not follow symlink"
         rlRun "setfacl -P -m u:root:r-- symlink" 0 "setfacl -P on symlink" 
     rlPhaseEnd
 

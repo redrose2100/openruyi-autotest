@@ -61,7 +61,7 @@ CHECKPOINTS = [
     (
         "test_acl_getfacl_view_file_default_acl",
         "getfacl - view file default ACL",
-        "查看文件默认 ACL",
+        "view file default ACL",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "getfacl testfile > out.txt 2>&1" 0 "getfacl testfile"
         rlAssertGrep "user::" out.txt
@@ -71,7 +71,7 @@ CHECKPOINTS = [
     (
         "test_acl_getfacl_view_dir_default_acl",
         "getfacl - view directory default ACL",
-        "查看目录默认 ACL",
+        "view directory default ACL",
         """rlRun "mkdir testdir" 0 "Create test directory" """,
         """rlRun "getfacl testdir > out.txt 2>&1" 0 "getfacl testdir"
         rlAssertGrep "user::" out.txt
@@ -80,7 +80,7 @@ CHECKPOINTS = [
     (
         "test_acl_getfacl_param_a_access_acl",
         "getfacl -a show access ACL only",
-        "使用 -a 参数查看 access ACL",
+        "use -a to show access ACL only",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "getfacl -a testfile > out.txt 2>&1" 0 "getfacl -a"
         rlAssertGrep "user::" out.txt
@@ -93,7 +93,7 @@ CHECKPOINTS = [
     (
         "test_acl_getfacl_view_default_acl_entries",
         "getfacl - view default ACL entries on directory",
-        "查看目录默认 ACL 条目",
+        "view default ACL entries on directory",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:u::rwx,d:g::r-x,d:o::--- testdir" 0 "set default ACL"
         rlRun "getfacl testdir > out.txt 2>&1" 0 "getfacl testdir"
@@ -104,7 +104,7 @@ CHECKPOINTS = [
     (
         "test_acl_getfacl_param_c_no_header",
         "getfacl -c suppress header comment",
-        "使用 -c 参数不显示注释头",
+        "use -c to suppress header comment",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "getfacl -c testfile > out.txt 2>&1" 0 "getfacl -c"
         rlAssertNotGrep "^# file:" out.txt""",
@@ -112,7 +112,7 @@ CHECKPOINTS = [
     (
         "test_acl_getfacl_param_n_numeric",
         "getfacl -n display numeric UID/GID",
-        "使用 -n 参数显示数字 ID",
+        "use -n to display numeric IDs",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "getfacl -n testfile > out.txt 2>&1" 0 "getfacl -n"
         rlAssertGrep "[0-9]" out.txt""",
@@ -120,7 +120,7 @@ CHECKPOINTS = [
     (
         "test_acl_getfacl_param_t_tabular",
         "getfacl -t tabular output format",
-        "使用 -t 参数表格输出",
+        "use -t for tabular output",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "getfacl -t testfile > out.txt 2>&1" 0 "getfacl -t"
         rlAssertGrep "[r-][w-][x-]" out.txt""",
@@ -130,7 +130,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_modify_user_rwx",
         "setfacl -m set user rwx permission",
-        "设置用户 root 的 rwx 权限",
+        "set user root rwx permission",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl -m u:root:rwx testfile" 0 "set user root rwx"
         rlRun "getfacl testfile > out.txt 2>&1" 0 "verify ACL"
@@ -139,7 +139,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_modify_group_rx",
         "setfacl -m set group r-x permission",
-        "设置组 root 的 r-x 权限",
+        "set group root r-x permission",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl -m g:root:r-x testfile" 0 "set group root r-x"
         rlRun "getfacl testfile > out.txt 2>&1" 0 "verify ACL"
@@ -148,7 +148,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_modify_other_readonly",
         "setfacl -m set other readonly",
-        "设置 other 的只读权限",
+        "set other readonly permission",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl -m o::r-- testfile" 0 "set other readonly"
         rlRun "getfacl testfile > out.txt 2>&1" 0 "verify ACL"
@@ -157,7 +157,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_modify_mask_rwx",
         "setfacl -m set mask to rwx",
-        "设置 mask 为 rwx",
+        "set mask to rwx",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl -m m::rwx testfile" 0 "set mask rwx"
         rlRun "getfacl testfile > out.txt 2>&1" 0 "verify mask"
@@ -166,7 +166,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_param_n_no_recalc_mask",
         "setfacl -n do not recalculate mask",
-        "使用 -n 参数不重新计算 mask",
+        "use -n to not recalculate mask",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl -n -m u:root:r-- testfile" 0 "setfacl -n"
         rlRun "getfacl testfile > out.txt 2>&1" 0 "verify ACL" """,
@@ -176,7 +176,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_default_user_acl",
         "setfacl - set default user ACL on directory",
-        "为目录设置 default user ACL",
+        "set default user ACL on directory",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:u:root:rwx testdir" 0 "set default user ACL"
         rlRun "getfacl testdir > out.txt 2>&1" 0 "verify"
@@ -185,7 +185,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_default_group_acl",
         "setfacl - set default group ACL on directory",
-        "为目录设置 default group ACL",
+        "set default group ACL on directory",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:g:root:r-x testdir" 0 "set default group ACL"
         rlRun "getfacl testdir > out.txt 2>&1" 0 "verify" """,
@@ -193,7 +193,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_default_mask",
         "setfacl - set default mask on directory",
-        "为目录设置 default mask",
+        "set default mask on directory",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:m::rwx testdir" 0 "set default mask"
         rlRun "getfacl testdir > out.txt 2>&1" 0 "verify" """,
@@ -201,7 +201,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_default_other",
         "setfacl - set default other on directory",
-        "为目录设置 default other",
+        "set default other on directory",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:o::r-- testdir" 0 "set default other"
         rlRun "getfacl testdir > out.txt 2>&1" 0 "verify" """,
@@ -209,7 +209,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_set_replace_acl",
         "setfacl --set replace entire ACL",
-        "使用 --set 替换整个 ACL",
+        "use --set to replace entire ACL",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl --set u::rw-,u:root:rwx,g::r--,o::r--,m::rwx testfile" 0 "setfacl --set"
         rlRun "getfacl testfile > out.txt 2>&1" 0 "verify"
@@ -218,7 +218,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_restore_from_rules_file",
         "setfacl -M apply ACL from file",
-        "从文件读取并应用 ACL",
+        "apply ACL from rules file",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "echo 'u:root:rw-' > acl_rules.txt" 0 "create rules file"
         rlRun "setfacl -M acl_rules.txt testfile" 0 "apply from file"
@@ -229,7 +229,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_remove_user_entry",
         "setfacl -x remove user ACL entry",
-        "删除用户 root 的 ACL 条目",
+        "remove user root ACL entry",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl -m u:root:rwx testfile" 0 "pre-set user ACL"
         rlRun "setfacl -x u:root testfile" 0 "remove user entry"
@@ -239,7 +239,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_remove_group_entry",
         "setfacl -x remove group ACL entry",
-        "删除组 root 的 ACL 条目",
+        "remove group root ACL entry",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl -m g:root:r-x testfile" 0 "pre-set group ACL"
         rlRun "setfacl -x g:root testfile" 0 "remove group entry"
@@ -249,7 +249,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_remove_all_acl",
         "setfacl -b remove all extended ACL",
-        "删除所有扩展 ACL",
+        "remove all extended ACL entries",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl -m u:root:rwx,g:root:r-x testfile" 0 "pre-set ACL"
         rlRun "setfacl -b testfile" 0 "remove all ACL"
@@ -259,7 +259,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_remove_default_acl",
         "setfacl -k remove default ACL from directory",
-        "删除目录的 default ACL",
+        "remove default ACL from directory",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:u:root:rwx testdir" 0 "pre-set default ACL"
         rlRun "setfacl -k testdir" 0 "remove default ACL"
@@ -269,7 +269,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_remove_from_rules_file",
         "setfacl -X remove ACL by rule file",
-        "通过规则文件删除 ACL",
+        "remove ACL by rule file",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "echo 'u:root' > remove_rules.txt" 0 "create remove rules"
         rlRun "setfacl -m u:root:rwx testfile" 0 "pre-set ACL"
@@ -282,7 +282,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_recursive_set",
         "setfacl -R recursively set ACL",
-        "递归设置子目录文件 ACL",
+        "recursively set ACL on sub-files",
         """rlRun "mkdir -p testdir/subdir1/subdir2" 0 "create nested dirs"
         rlRun "touch testdir/file1 testdir/subdir1/file2" 0 "create test files" """,
         """rlRun "setfacl -R -m u:root:rw- testdir" 0 "recursive set ACL"
@@ -294,7 +294,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_recursive_remove",
         "setfacl -R -b recursively remove ACL",
-        "递归删除所有子目录文件 ACL",
+        "recursively remove ACL from all files",
         """rlRun "mkdir -p testdir/subdir1" 0 "create nested dirs"
         rlRun "touch testdir/file1 testdir/subdir1/file2" 0 "create test files"
         rlRun "setfacl -R -m u:root:rw- testdir" 0 "pre-set ACL" """,
@@ -309,7 +309,7 @@ CHECKPOINTS = [
     (
         "test_acl_getfacl_backup_file_acl",
         "getfacl backup - save file ACL to backup",
-        "备份文件 ACL",
+        "back up file ACL",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl -m u:root:rwx,g:root:r-x testfile" 0 "set ACL"
         rlRun "getfacl testfile > acl.backup" 0 "getfacl backup"
@@ -319,7 +319,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_restore_file_acl",
         "setfacl --restore file ACL from backup",
-        "从备份恢复文件 ACL",
+        "restore file ACL from backup",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl -m u:root:rwx,g:root:r-x testfile" 0 "set ACL"
         rlRun "getfacl testfile > acl.backup" 0 "create backup"
@@ -332,7 +332,7 @@ CHECKPOINTS = [
     (
         "test_acl_getfacl_backup_dir_default_acl",
         "getfacl backup - save directory default ACL",
-        "备份目录 default ACL 条目",
+        "back up directory default ACL entries",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:u:root:rwx,d:g:root:r-x testdir" 0 "set default ACL"
         rlRun "getfacl testdir 2>&1 | grep 'default:' > out.txt" 0 "get default entries"
@@ -342,7 +342,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_restore_dir_acl",
         "setfacl --restore directory ACL from backup",
-        "从备份恢复目录 ACL",
+        "restore directory ACL from backup",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:u:root:rwx,d:g:root:r-x testdir" 0 "set default ACL"
         rlRun "getfacl testdir > dir.backup" 0 "create dir backup"
@@ -357,7 +357,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_symlink_follow",
         "setfacl -L follow symlink to set ACL",
-        "使用 -L 参数跟随符号链接设置 ACL",
+        "use -L to follow symlink",
         """rlRun "touch testfile" 0 "Create test file"
         rlRun "ln -s testfile symlink" 0 "create symlink" """,
         """rlRun "setfacl -L -m u:root:rwx symlink" 0 "setfacl -L"
@@ -367,7 +367,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_symlink_nofollow",
         "setfacl -P do not follow symlink",
-        "使用 -P 参数不跟随符号链接",
+        "use -P to not follow symlink",
         """rlRun "touch testfile" 0 "Create test file"
         rlRun "ln -s testfile symlink" 0 "create symlink" """,
         """rlRun "setfacl -P -m u:root:r-- symlink" 0 "setfacl -P on symlink" """,
@@ -377,7 +377,7 @@ CHECKPOINTS = [
     (
         "test_acl_inheritance_file_inherits_default",
         "ACL inheritance - new file inherits default ACL",
-        "新文件继承 default ACL",
+        "new file inherits default ACL",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:u:root:rwx,d:g:root:r-x,d:o::r-- testdir" 0 "set default ACL"
         rlRun "touch testdir/newfile" 0 "create new file"
@@ -388,7 +388,7 @@ CHECKPOINTS = [
     (
         "test_acl_inheritance_subdir_inherits_default",
         "ACL inheritance - subdirectory inherits default ACL",
-        "子目录继承 default ACL",
+        "subdirectory inherits default ACL",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:u:root:rwx,d:g:root:r-x,d:o::r-- testdir" 0 "set default ACL"
         rlRun "mkdir testdir/newsubdir" 0 "create subdirectory"
@@ -401,7 +401,7 @@ CHECKPOINTS = [
     (
         "test_acl_permission_set_full_acl",
         "ACL permission - set and verify full ACL entries",
-        "设置并验证完整 ACL 权限",
+        "set and verify full ACL entries",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl --set u::rwx,u:root:rwx,g::r-x,o::r--,m::rwx testfile" 0 "set full ACL"
         output=$(getfacl testfile 2>&1)
@@ -413,7 +413,7 @@ CHECKPOINTS = [
     (
         "test_acl_permission_mask_truncates",
         "ACL permission - mask truncates effective permissions",
-        "mask 限制有效权限",
+        "mask truncates effective permissions",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl -m u:root:rwx,m::r-- testfile" 0 "set mask limited"
         output=$(getfacl testfile 2>&1)
@@ -426,7 +426,7 @@ CHECKPOINTS = [
     (
         "test_acl_permission_mask_restore",
         "ACL permission - raise mask restores effective permissions",
-        "提升 mask 恢复有效权限",
+        "raise mask to restore effective permissions",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl -m u:root:rwx testfile" 0 "set user ACL"
         rlRun "setfacl -m m::rwx testfile" 0 "raise mask to rwx"
@@ -438,7 +438,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_set_named_user_acl",
         "setfacl - set named user ACL entry",
-        "设置命名用户 ACL",
+        "set named user ACL entry",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl -m u:root:rwx,g::r--,o::r-- testfile" 0 "set ACL"
         output=$(getfacl testfile 2>&1)
@@ -447,7 +447,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_recursive_apply_to_subfile",
         "setfacl -R apply ACL recursively to sub-files",
-        "递归应用 ACL 到子文件",
+        "recursively apply ACL to sub-files",
         """rlRun "mkdir -p testdir" 0 "Create test directory"
         rlRun "touch testdir/file1" 0 "create sub-file" """,
         """rlRun "setfacl -R -m u:root:rwx,g::r--,o::r-- testdir" 0 "recursive setfacl"
@@ -457,7 +457,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_default_and_access_coexist",
         "setfacl - default and access ACL coexist on directory",
-        "目录上 default ACL 与 access ACL 共存",
+        "default and access ACL coexist on directory",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:u:root:rwx,d:g::r-x,d:o::r-x testdir" 0 "set default ACL"
         rlRun "setfacl -m u:root:rwx,g::r-x,o::r-x testdir" 0 "set access ACL"
@@ -470,7 +470,7 @@ CHECKPOINTS = [
     (
         "test_acl_default_named_user_and_group",
         "default ACL - set named user and group entries",
-        "设置 default ACL 命名用户和组条目",
+        "set named user and group default ACL entries",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:u:root:rwx,d:u:daemon:r-x,d:g:root:r-x,d:g:wheel:r-- testdir" 0 "set named entries"
         output=$(getfacl testdir 2>&1)
@@ -482,7 +482,7 @@ CHECKPOINTS = [
     (
         "test_acl_default_file_inherits_named_entries",
         "default ACL - new file inherits named entries",
-        "新文件继承命名 default ACL 条目",
+        "new file inherits named default ACL entries",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:u:root:rwx,d:u:daemon:r-x,d:g:root:r-x,d:g:wheel:r-- testdir" 0 "set named entries"
         rlRun "touch testdir/newfile" 0 "create new file"
@@ -495,7 +495,7 @@ CHECKPOINTS = [
     (
         "test_acl_default_subdir_inherits_named_entries",
         "default ACL - subdirectory inherits named default entries",
-        "子目录继承命名 default ACL 条目",
+        "subdirectory inherits named default ACL entries",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:u:root:rwx,d:u:daemon:r-x,d:g:root:r-x,d:g:wheel:r-- testdir" 0 "set named entries"
         rlRun "mkdir testdir/newsubdir" 0 "create subdirectory"
@@ -506,7 +506,7 @@ CHECKPOINTS = [
     (
         "test_acl_default_remove_named_user",
         "default ACL - remove named user from default ACL",
-        "从 default ACL 中删除命名用户",
+        "remove named user from default ACL",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:u:root:rwx,d:u:daemon:r-x testdir" 0 "set named user entries"
         rlRun "setfacl -x d:u:daemon testdir" 0 "remove daemon user"
@@ -517,7 +517,7 @@ CHECKPOINTS = [
     (
         "test_acl_default_remove_named_group",
         "default ACL - remove named group from default ACL",
-        "从 default ACL 中删除命名组",
+        "remove named group from default ACL",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "setfacl -m d:g:root:r-x,d:g:wheel:r-- testdir" 0 "set named group entries"
         rlRun "setfacl -x d:g:wheel testdir" 0 "remove wheel group"
@@ -529,56 +529,56 @@ CHECKPOINTS = [
     (
         "test_acl_getfacl_nonexistent_file",
         "getfacl - error on nonexistent file",
-        "对不存在的文件执行 getfacl 报错",
+        "getfacl on nonexistent file fails",
         "",
         'rlRun "getfacl nonexistent_file" 1-255 "getfacl on nonexistent file fails"',
     ),
     (
         "test_acl_setfacl_nonexistent_file",
         "setfacl - error on nonexistent file",
-        "对不存在的文件执行 setfacl 报错",
+        "setfacl on nonexistent file fails",
         "",
         'rlRun "setfacl -m u:root:rwx nonexistent_file" 1-255 "setfacl on nonexistent file fails"',
     ),
     (
         "test_acl_setfacl_invalid_permission",
         "setfacl - reject invalid permission string",
-        "无效权限字符串被拒绝",
+        "invalid permission string rejected",
         'rlRun "touch testfile" 0 "Create test file"',
         'rlRun "setfacl -m u:root:xyz testfile" 1-255 "invalid permission rejected"',
     ),
     (
         "test_acl_setfacl_invalid_acl_type",
         "setfacl - reject invalid ACL type tag",
-        "无效 ACL 类型标记被拒绝",
+        "invalid ACL type tag rejected",
         'rlRun "touch testfile" 0 "Create test file"',
         'rlRun "setfacl -m x:root:rw testfile" 1-255 "invalid ACL type rejected"',
     ),
     (
         "test_acl_setfacl_nonexistent_user",
         "setfacl - reject nonexistent user",
-        "不存在用户被拒绝",
+        "nonexistent user rejected",
         'rlRun "touch testfile" 0 "Create test file"',
         'rlRun "setfacl -m u:no_such_user:rwx testfile" 1-255 "nonexistent user rejected"',
     ),
     (
         "test_acl_setfacl_nonexistent_group",
         "setfacl - reject nonexistent group",
-        "不存在组被拒绝",
+        "nonexistent group rejected",
         'rlRun "touch testfile" 0 "Create test file"',
         'rlRun "setfacl -m g:no_such_group:rwx testfile" 1-255 "nonexistent group rejected"',
     ),
     (
         "test_acl_setfacl_invalid_perm_string",
         "setfacl - reject invalid permission format",
-        "无效权限格式被拒绝",
+        "invalid permission format rejected",
         'rlRun "touch testfile" 0 "Create test file"',
         'rlRun "setfacl -m u:root:zz testfile" 1-255 "invalid perm format rejected"',
     ),
     (
         "test_acl_setfacl_permission_denied",
         "setfacl - permission denied on protected file",
-        "无权限设置受保护文件 ACL",
+        "permission denied on protected file",
         'rlRun "touch testfile" 0 "Create test file"',
         """        if [ "$(id -u)" = "0" ]; then
             rlRun "sudo -n -u openruyi setfacl -m u:root:rwx /root/test 2>&1" 1-255 "non-root cannot set ACL"
@@ -593,7 +593,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_multi_user_and_group",
         "setfacl - set multiple user and group ACL entries",
-        "设置多用户和多组 ACL",
+        "set multiple user and group ACL entries",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "setfacl -m u:root:rwx,u:daemon:r-x,g:root:r--,g:wheel:rw- testfile" 0 "set multi ACL"
         output=$(getfacl testfile 2>&1)
@@ -605,7 +605,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_export_and_restore",
         "setfacl - export ACL and restore",
-        "导出并恢复 ACL",
+        "export and restore ACL",
         'rlRun "mkdir testdir" 0 "Create test directory"',
         """rlRun "touch testfile" 0 "Create test file"
         rlRun "setfacl -m u:root:rwx,g:root:rwx testfile" 0 "set ACL"
@@ -616,7 +616,7 @@ CHECKPOINTS = [
     (
         "test_acl_setfacl_test_dry_run",
         "setfacl --test dry run does not modify ACL",
-        "--test 模拟运行不修改 ACL",
+        "--test dry run does not modify ACL",
         'rlRun "touch testfile" 0 "Create test file"',
         """rlRun "getfacl testfile > before.txt 2>&1" 0 "capture before"
         rlRun "setfacl --test -m u:root:rwx,g:root:--- testfile" 0 "setfacl --test"

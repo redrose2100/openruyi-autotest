@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "无效权限格式被拒绝"
+    rlPhaseStartTest "invalid permission format rejected"
         rlRun "setfacl -m u:root:zz testfile" 1-255 "invalid perm format rejected"
     rlPhaseEnd
 

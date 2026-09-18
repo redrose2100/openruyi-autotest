@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "设置组 root 的 r-x 权限"
+    rlPhaseStartTest "set group root r-x permission"
         rlRun "setfacl -m g:root:r-x testfile" 0 "set group root r-x"
         rlRun "getfacl testfile > out.txt 2>&1" 0 "verify ACL"
         rlAssertGrep "group:root:r-x" out.txt

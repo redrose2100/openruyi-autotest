@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "设置命名用户 ACL"
+    rlPhaseStartTest "set named user ACL entry"
         rlRun "setfacl -m u:root:rwx,g::r--,o::r-- testfile" 0 "set ACL"
         output=$(getfacl testfile 2>&1)
         rlRun "echo \"\$output\" | grep -q 'user:root:rwx'" 0 "named user ACL set" 

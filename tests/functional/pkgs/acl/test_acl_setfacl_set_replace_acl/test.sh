@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "使用 --set 替换整个 ACL"
+    rlPhaseStartTest "use --set to replace entire ACL"
         rlRun "setfacl --set u::rw-,u:root:rwx,g::r--,o::r--,m::rwx testfile" 0 "setfacl --set"
         rlRun "getfacl testfile > out.txt 2>&1" 0 "verify"
         rlAssertGrep "user:root:rwx" out.txt

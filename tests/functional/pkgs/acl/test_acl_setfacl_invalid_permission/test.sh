@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "无效权限字符串被拒绝"
+    rlPhaseStartTest "invalid permission string rejected"
         rlRun "setfacl -m u:root:xyz testfile" 1-255 "invalid permission rejected"
     rlPhaseEnd
 

@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "设置用户 root 的 rwx 权限"
+    rlPhaseStartTest "set user root rwx permission"
         rlRun "setfacl -m u:root:rwx testfile" 0 "set user root rwx"
         rlRun "getfacl testfile > out.txt 2>&1" 0 "verify ACL"
         rlAssertGrep "user:root:rwx" out.txt

@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "mkdir testdir" 0 "Create test directory"
     rlPhaseEnd
 
-    rlPhaseStartTest "从 default ACL 中删除命名组"
+    rlPhaseStartTest "remove named group from default ACL"
         rlRun "setfacl -m d:g:root:r-x,d:g:wheel:r-- testdir" 0 "set named group entries"
         rlRun "setfacl -x d:g:wheel testdir" 0 "remove wheel group"
         output=$(getfacl testdir 2>&1)

@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "mkdir testdir" 0 "Create test directory"
     rlPhaseEnd
 
-    rlPhaseStartTest "新文件继承命名 default ACL 条目"
+    rlPhaseStartTest "new file inherits named default ACL entries"
         rlRun "setfacl -m d:u:root:rwx,d:u:daemon:r-x,d:g:root:r-x,d:g:wheel:r-- testdir" 0 "set named entries"
         rlRun "touch testdir/newfile" 0 "create new file"
         output=$(getfacl testdir/newfile 2>&1)

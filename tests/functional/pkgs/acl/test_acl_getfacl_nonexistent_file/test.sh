@@ -9,7 +9,7 @@ rlJournalStart
 
     rlPhaseEnd
 
-    rlPhaseStartTest "对不存在的文件执行 getfacl 报错"
+    rlPhaseStartTest "getfacl on nonexistent file fails"
         rlRun "getfacl nonexistent_file" 1-255 "getfacl on nonexistent file fails"
     rlPhaseEnd
 

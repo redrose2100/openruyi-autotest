@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "mkdir testdir" 0 "Create test directory"
     rlPhaseEnd
 
-    rlPhaseStartTest "从备份恢复目录 ACL"
+    rlPhaseStartTest "restore directory ACL from backup"
         rlRun "setfacl -m d:u:root:rwx,d:g:root:r-x testdir" 0 "set default ACL"
         rlRun "getfacl testdir > dir.backup" 0 "create dir backup"
         rlRun "setfacl -k testdir" 0 "clear default ACL"

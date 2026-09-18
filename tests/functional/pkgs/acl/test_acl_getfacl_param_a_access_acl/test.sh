@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "使用 -a 参数查看 access ACL"
+    rlPhaseStartTest "use -a to show access ACL only"
         rlRun "getfacl -a testfile > out.txt 2>&1" 0 "getfacl -a"
         rlAssertGrep "user::" out.txt
         if getfacl -a testfile 2>&1 | grep -q "default:"; then

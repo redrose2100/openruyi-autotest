@@ -9,7 +9,7 @@ rlJournalStart
 
     rlPhaseEnd
 
-    rlPhaseStartTest "对不存在的文件执行 setfacl 报错"
+    rlPhaseStartTest "setfacl on nonexistent file fails"
         rlRun "setfacl -m u:root:rwx nonexistent_file" 1-255 "setfacl on nonexistent file fails"
     rlPhaseEnd
 

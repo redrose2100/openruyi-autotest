@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "mask 限制有效权限"
+    rlPhaseStartTest "mask truncates effective permissions"
         rlRun "setfacl -m u:root:rwx,m::r-- testfile" 0 "set mask limited"
         output=$(getfacl testfile 2>&1)
         rlRun "echo \"\$output\" | grep -q 'mask::r--'" 0 "mask::r--"

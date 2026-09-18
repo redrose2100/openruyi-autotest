@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "mkdir testdir" 0 "Create test directory"
     rlPhaseEnd
 
-    rlPhaseStartTest "子目录继承命名 default ACL 条目"
+    rlPhaseStartTest "subdirectory inherits named default ACL entries"
         rlRun "setfacl -m d:u:root:rwx,d:u:daemon:r-x,d:g:root:r-x,d:g:wheel:r-- testdir" 0 "set named entries"
         rlRun "mkdir testdir/newsubdir" 0 "create subdirectory"
         output=$(getfacl testdir/newsubdir 2>&1)

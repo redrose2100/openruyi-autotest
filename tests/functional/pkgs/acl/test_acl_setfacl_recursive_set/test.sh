@@ -10,7 +10,7 @@ rlJournalStart
         rlRun "touch testdir/file1 testdir/subdir1/file2" 0 "create test files" 
     rlPhaseEnd
 
-    rlPhaseStartTest "递归设置子目录文件 ACL"
+    rlPhaseStartTest "recursively set ACL on sub-files"
         rlRun "setfacl -R -m u:root:rw- testdir" 0 "recursive set ACL"
         output1=$(getfacl testdir/file1 2>&1)
         output2=$(getfacl testdir/subdir1/file2 2>&1)

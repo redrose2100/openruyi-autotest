@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "--test 模拟运行不修改 ACL"
+    rlPhaseStartTest "--test dry run does not modify ACL"
         rlRun "getfacl testfile > before.txt 2>&1" 0 "capture before"
         rlRun "setfacl --test -m u:root:rwx,g:root:--- testfile" 0 "setfacl --test"
         rlRun "getfacl testfile > after.txt 2>&1" 0 "capture after"

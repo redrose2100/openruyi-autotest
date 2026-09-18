@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "使用 -t 参数表格输出"
+    rlPhaseStartTest "use -t for tabular output"
         rlRun "getfacl -t testfile > out.txt 2>&1" 0 "getfacl -t"
         rlAssertGrep "[r-][w-][x-]" out.txt
     rlPhaseEnd

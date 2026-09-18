@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "查看文件默认 ACL"
+    rlPhaseStartTest "view file default ACL"
         rlRun "getfacl testfile > out.txt 2>&1" 0 "getfacl testfile"
         rlAssertGrep "user::" out.txt
         rlAssertGrep "group::" out.txt

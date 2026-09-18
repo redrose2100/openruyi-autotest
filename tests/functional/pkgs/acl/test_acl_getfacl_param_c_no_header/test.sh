@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "使用 -c 参数不显示注释头"
+    rlPhaseStartTest "use -c to suppress header comment"
         rlRun "getfacl -c testfile > out.txt 2>&1" 0 "getfacl -c"
         rlAssertNotGrep "^# file:" out.txt
     rlPhaseEnd

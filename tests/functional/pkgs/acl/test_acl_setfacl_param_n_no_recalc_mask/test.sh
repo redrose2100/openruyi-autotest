@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "使用 -n 参数不重新计算 mask"
+    rlPhaseStartTest "use -n to not recalculate mask"
         rlRun "setfacl -n -m u:root:r-- testfile" 0 "setfacl -n"
         rlRun "getfacl testfile > out.txt 2>&1" 0 "verify ACL" 
     rlPhaseEnd

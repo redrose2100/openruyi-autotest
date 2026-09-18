@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "mkdir testdir" 0 "Create test directory"
     rlPhaseEnd
 
-    rlPhaseStartTest "从 default ACL 中删除命名用户"
+    rlPhaseStartTest "remove named user from default ACL"
         rlRun "setfacl -m d:u:root:rwx,d:u:daemon:r-x testdir" 0 "set named user entries"
         rlRun "setfacl -x d:u:daemon testdir" 0 "remove daemon user"
         output=$(getfacl testdir 2>&1)

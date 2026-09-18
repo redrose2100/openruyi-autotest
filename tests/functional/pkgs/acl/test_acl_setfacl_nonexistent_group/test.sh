@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "不存在组被拒绝"
+    rlPhaseStartTest "nonexistent group rejected"
         rlRun "setfacl -m g:no_such_group:rwx testfile" 1-255 "nonexistent group rejected"
     rlPhaseEnd
 

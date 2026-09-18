@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "mkdir testdir" 0 "Create test directory"
     rlPhaseEnd
 
-    rlPhaseStartTest "为目录设置 default group ACL"
+    rlPhaseStartTest "set default group ACL on directory"
         rlRun "setfacl -m d:g:root:r-x testdir" 0 "set default group ACL"
         rlRun "getfacl testdir > out.txt 2>&1" 0 "verify" 
     rlPhaseEnd

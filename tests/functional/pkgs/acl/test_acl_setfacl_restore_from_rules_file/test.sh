@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "从文件读取并应用 ACL"
+    rlPhaseStartTest "apply ACL from rules file"
         rlRun "echo 'u:root:rw-' > acl_rules.txt" 0 "create rules file"
         rlRun "setfacl -M acl_rules.txt testfile" 0 "apply from file"
         rlRun "getfacl testfile > out.txt 2>&1" 0 "verify" 

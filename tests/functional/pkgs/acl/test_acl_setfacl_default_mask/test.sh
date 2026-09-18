@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "mkdir testdir" 0 "Create test directory"
     rlPhaseEnd
 
-    rlPhaseStartTest "为目录设置 default mask"
+    rlPhaseStartTest "set default mask on directory"
         rlRun "setfacl -m d:m::rwx testdir" 0 "set default mask"
         rlRun "getfacl testdir > out.txt 2>&1" 0 "verify" 
     rlPhaseEnd

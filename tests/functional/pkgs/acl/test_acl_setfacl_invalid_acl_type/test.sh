@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "无效 ACL 类型标记被拒绝"
+    rlPhaseStartTest "invalid ACL type tag rejected"
         rlRun "setfacl -m x:root:rw testfile" 1-255 "invalid ACL type rejected"
     rlPhaseEnd
 

@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "设置多用户和多组 ACL"
+    rlPhaseStartTest "set multiple user and group ACL entries"
         rlRun "setfacl -m u:root:rwx,u:daemon:r-x,g:root:r--,g:wheel:rw- testfile" 0 "set multi ACL"
         output=$(getfacl testfile 2>&1)
         rlRun "echo \"\$output\" | grep -q 'user:root:rwx'" 0 "user root"

@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "mkdir testdir" 0 "Create test directory"
     rlPhaseEnd
 
-    rlPhaseStartTest "设置 default ACL 命名用户和组条目"
+    rlPhaseStartTest "set named user and group default ACL entries"
         rlRun "setfacl -m d:u:root:rwx,d:u:daemon:r-x,d:g:root:r-x,d:g:wheel:r-- testdir" 0 "set named entries"
         output=$(getfacl testdir 2>&1)
         rlRun "echo \"\$output\" | grep -q 'default:user:root:rwx'" 0 "default user root"

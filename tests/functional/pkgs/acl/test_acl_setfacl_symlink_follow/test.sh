@@ -10,7 +10,7 @@ rlJournalStart
         rlRun "ln -s testfile symlink" 0 "create symlink" 
     rlPhaseEnd
 
-    rlPhaseStartTest "使用 -L 参数跟随符号链接设置 ACL"
+    rlPhaseStartTest "use -L to follow symlink"
         rlRun "setfacl -L -m u:root:rwx symlink" 0 "setfacl -L"
         output=$(getfacl testfile 2>&1)
         rlRun "echo \"\$output\" | grep -q 'user:root:rwx'" 0 "symlink target has ACL" 

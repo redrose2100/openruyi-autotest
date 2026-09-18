@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "设置 other 的只读权限"
+    rlPhaseStartTest "set other readonly permission"
         rlRun "setfacl -m o::r-- testfile" 0 "set other readonly"
         rlRun "getfacl testfile > out.txt 2>&1" 0 "verify ACL"
         rlAssertGrep "other::r--" out.txt

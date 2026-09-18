@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "提升 mask 恢复有效权限"
+    rlPhaseStartTest "raise mask to restore effective permissions"
         rlRun "setfacl -m u:root:rwx testfile" 0 "set user ACL"
         rlRun "setfacl -m m::rwx testfile" 0 "raise mask to rwx"
         rlRun "getfacl -e testfile > out.txt 2>&1" 0 "show effective permissions"

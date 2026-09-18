@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "通过规则文件删除 ACL"
+    rlPhaseStartTest "remove ACL by rule file"
         rlRun "echo 'u:root' > remove_rules.txt" 0 "create remove rules"
         rlRun "setfacl -m u:root:rwx testfile" 0 "pre-set ACL"
         rlRun "setfacl -X remove_rules.txt testfile" 0 "remove by file"

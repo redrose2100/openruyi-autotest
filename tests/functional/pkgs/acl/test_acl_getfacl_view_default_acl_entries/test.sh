@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "mkdir testdir" 0 "Create test directory"
     rlPhaseEnd
 
-    rlPhaseStartTest "查看目录默认 ACL 条目"
+    rlPhaseStartTest "view default ACL entries on directory"
         rlRun "setfacl -m d:u::rwx,d:g::r-x,d:o::--- testdir" 0 "set default ACL"
         rlRun "getfacl testdir > out.txt 2>&1" 0 "getfacl testdir"
         rlAssertGrep "default:user::rwx" out.txt

@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "使用 -n 参数显示数字 ID"
+    rlPhaseStartTest "use -n to display numeric IDs"
         rlRun "getfacl -n testfile > out.txt 2>&1" 0 "getfacl -n"
         rlAssertGrep "[0-9]" out.txt
     rlPhaseEnd

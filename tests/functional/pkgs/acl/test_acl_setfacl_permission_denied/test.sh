@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "无权限设置受保护文件 ACL"
+    rlPhaseStartTest "permission denied on protected file"
         if [ "$(id -u)" = "0" ]; then
             rlRun "sudo -n -u openruyi setfacl -m u:root:rwx /root/test 2>&1" 1-255 "non-root cannot set ACL"
         else

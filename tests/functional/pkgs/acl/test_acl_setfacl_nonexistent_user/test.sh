@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "不存在用户被拒绝"
+    rlPhaseStartTest "nonexistent user rejected"
         rlRun "setfacl -m u:no_such_user:rwx testfile" 1-255 "nonexistent user rejected"
     rlPhaseEnd
 

@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "删除组 root 的 ACL 条目"
+    rlPhaseStartTest "remove group root ACL entry"
         rlRun "setfacl -m g:root:r-x testfile" 0 "pre-set group ACL"
         rlRun "setfacl -x g:root testfile" 0 "remove group entry"
         output=$(getfacl testfile 2>&1)

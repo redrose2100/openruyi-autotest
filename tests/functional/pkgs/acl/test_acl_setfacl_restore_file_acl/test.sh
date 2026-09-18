@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "从备份恢复文件 ACL"
+    rlPhaseStartTest "restore file ACL from backup"
         rlRun "setfacl -m u:root:rwx,g:root:r-x testfile" 0 "set ACL"
         rlRun "getfacl testfile > acl.backup" 0 "create backup"
         rlRun "setfacl -b testfile" 0 "clear ACL"

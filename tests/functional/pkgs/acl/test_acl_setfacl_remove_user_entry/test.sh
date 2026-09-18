@@ -9,7 +9,7 @@ rlJournalStart
         rlRun "touch testfile" 0 "Create test file"
     rlPhaseEnd
 
-    rlPhaseStartTest "删除用户 root 的 ACL 条目"
+    rlPhaseStartTest "remove user root ACL entry"
         rlRun "setfacl -m u:root:rwx testfile" 0 "pre-set user ACL"
         rlRun "setfacl -x u:root testfile" 0 "remove user entry"
         output=$(getfacl testfile 2>&1)
