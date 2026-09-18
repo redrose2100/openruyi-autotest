@@ -327,6 +327,13 @@ def run_tests_direct(ssh: SSHClient, sudo_pw: str, repo_dir: str,
         })
         logger.info("[QEMU] direct result for %s: %s (final=%s pass=%s fail=%s exit=%s)",
                     target, status, final, pass_n, fail_n, code)
+        if status == "fail":
+            fail_lines = [l for l in output.splitlines() if ":: [   FAIL   ] ::" in l or ":: [  FAIL  ] ::" in l]
+            if fail_lines:
+                logger.info("[QEMU] FAIL details for %s:\n%s", target, "\n".join(fail_lines[-20:]))
+            # Also log the last 100 lines of output for FAIL cases
+            tail_lines = output.splitlines()[-100:]
+            logger.info("[QEMU] output tail for %s:\n%s", target, "\n".join(tail_lines))
     return results
 
 
