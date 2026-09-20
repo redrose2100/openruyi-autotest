@@ -421,7 +421,7 @@ CHECKPOINTS = [
         rlRun "echo \\"\\$output\\" | grep -q 'user:root:rwx'" 0 "entry preserved"
         rlRun "getfacl -e testfile > out.txt 2>&1" 0 "show effective permissions"
         rlAssertGrep "user:root:rwx.*#effective:r--" out.txt
-        rlAssertGrep "group::r-x.*#effective:r--" out.txt""",
+        rlAssertGrep "group::r--.*#effective:r--" out.txt""",
     ),
     (
         "test_acl_permission_mask_restore",
