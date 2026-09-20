@@ -1,0 +1,11 @@
+summary: Functional test - ed - inverse global command v/pattern/
+test: ./test.sh
+tag:
+ - functional
+ - ed
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/ed/test_ed_global_inverse
+require:
+ - ed
+ - beakerlib

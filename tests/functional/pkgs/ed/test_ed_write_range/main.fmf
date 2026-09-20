@@ -1,0 +1,11 @@
+summary: Functional test - ed - write range of lines to file
+test: ./test.sh
+tag:
+ - functional
+ - ed
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/ed/test_ed_write_range
+require:
+ - ed
+ - beakerlib

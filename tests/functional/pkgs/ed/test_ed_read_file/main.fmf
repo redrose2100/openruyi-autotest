@@ -1,0 +1,11 @@
+summary: Functional test - ed - read external file with r command
+test: ./test.sh
+tag:
+ - functional
+ - ed
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/ed/test_ed_read_file
+require:
+ - ed
+ - beakerlib

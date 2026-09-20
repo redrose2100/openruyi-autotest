@@ -1,0 +1,11 @@
+summary: Functional test - ed - open file and quit without saving
+test: ./test.sh
+tag:
+ - functional
+ - ed
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/ed/test_ed_basic_open_quit
+require:
+ - ed
+ - beakerlib

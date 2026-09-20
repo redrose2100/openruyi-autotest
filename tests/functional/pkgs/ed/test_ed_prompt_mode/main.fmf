@@ -1,0 +1,11 @@
+summary: Functional test - ed - custom prompt with -p flag
+test: ./test.sh
+tag:
+ - functional
+ - ed
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/ed/test_ed_prompt_mode
+require:
+ - ed
+ - beakerlib
