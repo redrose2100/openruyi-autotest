@@ -1,0 +1,12 @@
+summary: Functional test - gdb - Check main tool executability
+test: ./test.sh
+tag:
+ - functional
+ - gdb
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/gdb/test_gdb_gdb_basic
+
+require:
+ - beakerlib
+ - gdb

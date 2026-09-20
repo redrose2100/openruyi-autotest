@@ -1,0 +1,12 @@
+summary: Functional test - nss_wrapper - Get nss_wrapper version info
+test: ./test.sh
+tag:
+ - functional
+ - nss_wrapper
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/nss_wrapper/test_nss_wrapper_main
+
+require:
+ - beakerlib
+ - nss_wrapper

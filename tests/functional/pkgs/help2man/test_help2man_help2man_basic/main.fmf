@@ -1,0 +1,12 @@
+summary: Functional test - help2man - Check main tool executability
+test: ./test.sh
+tag:
+ - functional
+ - help2man
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/help2man/test_help2man_help2man_basic
+
+require:
+ - beakerlib
+ - help2man

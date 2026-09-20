@@ -1,0 +1,12 @@
+summary: Functional test - gpm - Get gpm version info
+test: ./test.sh
+tag:
+ - functional
+ - gpm
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/gpm/test_gpm_main
+
+require:
+ - beakerlib
+ - gpm

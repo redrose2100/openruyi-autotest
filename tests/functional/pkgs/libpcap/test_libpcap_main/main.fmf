@@ -1,0 +1,12 @@
+summary: Functional test - libpcap - Get libpcap version info
+test: ./test.sh
+tag:
+ - functional
+ - libpcap
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/libpcap/test_libpcap_main
+
+require:
+ - beakerlib
+ - libpcap

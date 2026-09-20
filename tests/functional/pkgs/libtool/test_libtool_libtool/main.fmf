@@ -1,0 +1,12 @@
+summary: Functional test - libtool - Get libtool help info
+test: ./test.sh
+tag:
+ - functional
+ - libtool
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/libtool/test_libtool_libtool
+
+require:
+ - beakerlib
+ - libtool

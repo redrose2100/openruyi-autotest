@@ -1,0 +1,7 @@
+# python-lxml Functional Test Coverage Details
+
+**1** test cases in total, **1** test points
+
+| Package | Test Case | Test Point |
+|---------|-----------|------------|
+| python-lxml | test_python-lxml_files | Python lxml file verification |

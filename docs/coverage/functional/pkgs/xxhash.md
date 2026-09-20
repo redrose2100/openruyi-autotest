@@ -1,0 +1,8 @@
+# xxhash Functional Test Coverage Details
+
+**2** test cases in total, **2** test points
+
+| Package | Test Case | Test Point |
+|---------|-----------|------------|
+| xxhash | test_xxhash_xxhash_basic | Check main tool executability |
+| xxhash | test_xxhash_xxhash_version | Get xxhash help info |

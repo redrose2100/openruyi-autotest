@@ -1,0 +1,12 @@
+summary: Functional test - pyproject-rpm-macros - Check package installed
+test: ./test.sh
+tag:
+ - functional
+ - pyproject-rpm-macros
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/pyproject-rpm-macros/test_pyproject_rpm_macros_main
+
+require:
+ - beakerlib
+ - pyproject-rpm-macros

@@ -1,0 +1,12 @@
+summary: Functional test - uid_wrapper - Get uid_wrapper version info
+test: ./test.sh
+tag:
+ - functional
+ - uid_wrapper
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/uid_wrapper/test_uid_wrapper_main
+
+require:
+ - beakerlib
+ - uid_wrapper

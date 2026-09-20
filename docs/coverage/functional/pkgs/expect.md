@@ -1,0 +1,8 @@
+# expect Functional Test Coverage Details
+
+**2** test cases in total, **2** test points
+
+| Package | Test Case | Test Point |
+|---------|-----------|------------|
+| expect | test_expect_expect_basic | Check main tool executability |
+| expect | test_expect_expect_version | Get expect help info |

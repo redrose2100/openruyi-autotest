@@ -1,0 +1,12 @@
+summary: Functional test - cmocka - Get cmocka version info
+test: ./test.sh
+tag:
+ - functional
+ - cmocka
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/cmocka/test_cmocka_main
+
+require:
+ - beakerlib
+ - cmocka

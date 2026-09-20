@@ -1,0 +1,12 @@
+summary: Functional test - boost - Get boost version info
+test: ./test.sh
+tag:
+ - functional
+ - boost
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/boost/test_boost_main
+
+require:
+ - beakerlib
+ - boost

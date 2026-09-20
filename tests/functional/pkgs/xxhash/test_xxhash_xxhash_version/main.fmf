@@ -1,0 +1,12 @@
+summary: Functional test - xxhash - Get xxhash help info
+test: ./test.sh
+tag:
+ - functional
+ - xxhash
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/xxhash/test_xxhash_xxhash_version
+
+require:
+ - beakerlib
+ - xxhash

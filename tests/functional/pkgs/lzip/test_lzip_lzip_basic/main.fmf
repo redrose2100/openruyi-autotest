@@ -1,0 +1,12 @@
+summary: Functional test - lzip - Check main tool executability
+test: ./test.sh
+tag:
+ - functional
+ - lzip
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/lzip/test_lzip_lzip_basic
+
+require:
+ - beakerlib
+ - lzip

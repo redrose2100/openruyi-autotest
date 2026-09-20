@@ -1,0 +1,12 @@
+summary: Functional test - re2c - Get re2c help info
+test: ./test.sh
+tag:
+ - functional
+ - re2c
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/re2c/test_re2c_re2c_version
+
+require:
+ - beakerlib
+ - re2c

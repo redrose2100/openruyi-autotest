@@ -1,0 +1,7 @@
+# libpcap Functional Test Coverage Details
+
+**1** test cases in total, **1** test points
+
+| Package | Test Case | Test Point |
+|---------|-----------|------------|
+| libpcap | test_libpcap_main | Get libpcap version info |

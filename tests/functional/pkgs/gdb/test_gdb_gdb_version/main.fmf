@@ -1,0 +1,12 @@
+summary: Functional test - gdb - Get gdb help info
+test: ./test.sh
+tag:
+ - functional
+ - gdb
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/gdb/test_gdb_gdb_version
+
+require:
+ - beakerlib
+ - gdb

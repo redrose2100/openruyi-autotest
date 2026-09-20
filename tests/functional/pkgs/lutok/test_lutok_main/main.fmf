@@ -1,0 +1,12 @@
+summary: Functional test - lutok - Get lutok version info
+test: ./test.sh
+tag:
+ - functional
+ - lutok
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/lutok/test_lutok_main
+
+require:
+ - beakerlib
+ - lutok

@@ -1,0 +1,12 @@
+summary: Functional test - libmicrohttpd - Get libmicrohttpd version info
+test: ./test.sh
+tag:
+ - functional
+ - libmicrohttpd
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/libmicrohttpd/test_libmicrohttpd_main
+
+require:
+ - beakerlib
+ - libmicrohttpd

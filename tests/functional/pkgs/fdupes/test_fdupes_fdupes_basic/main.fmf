@@ -1,0 +1,12 @@
+summary: Functional test - fdupes - Check main tool executability
+test: ./test.sh
+tag:
+ - functional
+ - fdupes
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/fdupes/test_fdupes_fdupes_basic
+
+require:
+ - beakerlib
+ - fdupes

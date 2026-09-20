@@ -1,0 +1,12 @@
+summary: Functional test - libssh - Get libssh version info
+test: ./test.sh
+tag:
+ - functional
+ - libssh
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/libssh/test_libssh_main
+
+require:
+ - beakerlib
+ - libssh

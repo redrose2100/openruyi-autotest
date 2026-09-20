@@ -1,0 +1,12 @@
+summary: Functional test - python-rpm-generators - Get python-rpm-generators version info
+test: ./test.sh
+tag:
+ - functional
+ - python-rpm-generators
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/python-rpm-generators/test_python_rpm_generators_main
+
+require:
+ - beakerlib
+ - python-rpm-generators

@@ -1,0 +1,12 @@
+summary: Functional test - chrpath - Get chrpath help info
+test: ./test.sh
+tag:
+ - functional
+ - chrpath
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/chrpath/test_chrpath_chrpath_version
+
+require:
+ - beakerlib
+ - chrpath

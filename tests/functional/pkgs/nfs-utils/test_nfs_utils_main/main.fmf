@@ -1,0 +1,12 @@
+summary: Functional test - nfs-utils - Get nfs-utils version info
+test: ./test.sh
+tag:
+ - functional
+ - nfs-utils
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/nfs-utils/test_nfs_utils_main
+
+require:
+ - beakerlib
+ - nfs-utils

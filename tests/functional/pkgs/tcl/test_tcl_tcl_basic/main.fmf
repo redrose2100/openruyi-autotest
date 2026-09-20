@@ -1,0 +1,12 @@
+summary: Functional test - tcl - Check main tool executability
+test: ./test.sh
+tag:
+ - functional
+ - tcl
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/tcl/test_tcl_tcl_basic
+
+require:
+ - beakerlib
+ - tcl

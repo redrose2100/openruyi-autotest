@@ -1,0 +1,12 @@
+summary: Functional test - bison - Check main tool executability
+test: ./test.sh
+tag:
+ - functional
+ - bison
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/bison/test_bison_bison_basic
+
+require:
+ - beakerlib
+ - bison

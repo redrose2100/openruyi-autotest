@@ -1,0 +1,12 @@
+summary: Functional test - python-flit-core - Get python-flit-core version info
+test: ./test.sh
+tag:
+ - functional
+ - python-flit-core
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/python-flit-core/test_python_flit_core_main
+
+require:
+ - beakerlib
+ - python-flit-core

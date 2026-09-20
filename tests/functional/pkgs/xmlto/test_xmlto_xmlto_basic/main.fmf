@@ -1,0 +1,12 @@
+summary: Functional test - xmlto - Check main tool executability
+test: ./test.sh
+tag:
+ - functional
+ - xmlto
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/xmlto/test_xmlto_xmlto_basic
+
+require:
+ - beakerlib
+ - xmlto

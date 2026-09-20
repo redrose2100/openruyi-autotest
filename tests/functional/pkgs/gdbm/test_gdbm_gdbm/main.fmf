@@ -1,0 +1,12 @@
+summary: Functional test - gdbm - Get gdbm help info
+test: ./test.sh
+tag:
+ - functional
+ - gdbm
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/gdbm/test_gdbm_gdbm
+
+require:
+ - beakerlib
+ - gdbm

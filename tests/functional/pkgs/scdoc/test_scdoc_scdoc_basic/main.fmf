@@ -1,0 +1,12 @@
+summary: Functional test - scdoc - Check main tool executability
+test: ./test.sh
+tag:
+ - functional
+ - scdoc
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/scdoc/test_scdoc_scdoc_basic
+
+require:
+ - beakerlib
+ - scdoc

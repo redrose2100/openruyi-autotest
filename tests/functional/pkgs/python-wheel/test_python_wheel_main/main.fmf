@@ -1,0 +1,12 @@
+summary: Functional test - python-wheel - Get python-wheel version info
+test: ./test.sh
+tag:
+ - functional
+ - python-wheel
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/python-wheel/test_python_wheel_main
+
+require:
+ - beakerlib
+ - python-wheel

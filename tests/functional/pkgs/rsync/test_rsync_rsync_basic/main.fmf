@@ -1,0 +1,12 @@
+summary: Functional test - rsync - Check main tool executability
+test: ./test.sh
+tag:
+ - functional
+ - rsync
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/rsync/test_rsync_rsync_basic
+
+require:
+ - beakerlib
+ - rsync

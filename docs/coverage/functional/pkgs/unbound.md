@@ -1,0 +1,7 @@
+# unbound Functional Test Coverage Details
+
+**1** test cases in total, **1** test points
+
+| Package | Test Case | Test Point |
+|---------|-----------|------------|
+| unbound | test_unbound_main | Get unbound version info |

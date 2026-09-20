@@ -1,0 +1,12 @@
+summary: Functional test - libsodium - Get libsodium version info
+test: ./test.sh
+tag:
+ - functional
+ - libsodium
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/libsodium/test_libsodium_main
+
+require:
+ - beakerlib
+ - libsodium

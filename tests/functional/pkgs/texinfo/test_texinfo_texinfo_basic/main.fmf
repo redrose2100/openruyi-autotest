@@ -1,0 +1,12 @@
+summary: Functional test - texinfo - Check main tool executability
+test: ./test.sh
+tag:
+ - functional
+ - texinfo
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/texinfo/test_texinfo_texinfo_basic
+
+require:
+ - beakerlib
+ - texinfo

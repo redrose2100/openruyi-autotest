@@ -1,0 +1,12 @@
+summary: Functional test - kyua - Get kyua help info
+test: ./test.sh
+tag:
+ - functional
+ - kyua
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/kyua/test_kyua_kyua_version
+
+require:
+ - beakerlib
+ - kyua

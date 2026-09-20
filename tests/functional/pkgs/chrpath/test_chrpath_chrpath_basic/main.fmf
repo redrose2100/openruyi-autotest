@@ -1,0 +1,12 @@
+summary: Functional test - chrpath - Check main tool executability
+test: ./test.sh
+tag:
+ - functional
+ - chrpath
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/chrpath/test_chrpath_chrpath_basic
+
+require:
+ - beakerlib
+ - chrpath

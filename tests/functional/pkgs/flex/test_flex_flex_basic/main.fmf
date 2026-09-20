@@ -1,0 +1,12 @@
+summary: Functional test - flex - Check main tool executability
+test: ./test.sh
+tag:
+ - functional
+ - flex
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/flex/test_flex_flex_basic
+
+require:
+ - beakerlib
+ - flex

@@ -1,0 +1,12 @@
+summary: Functional test - bash-completion - Check package installed
+test: ./test.sh
+tag:
+ - functional
+ - bash-completion
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/bash-completion/test_bash_completion_main
+
+require:
+ - beakerlib
+ - bash-completion

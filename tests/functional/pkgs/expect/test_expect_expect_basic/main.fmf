@@ -1,0 +1,12 @@
+summary: Functional test - expect - Check main tool executability
+test: ./test.sh
+tag:
+ - functional
+ - expect
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/expect/test_expect_expect_basic
+
+require:
+ - beakerlib
+ - expect

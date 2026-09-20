@@ -1,0 +1,12 @@
+summary: Functional test - nss - Get nss help info
+test: ./test.sh
+tag:
+ - functional
+ - nss
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/nss/test_nss_nss
+
+require:
+ - beakerlib
+ - nss

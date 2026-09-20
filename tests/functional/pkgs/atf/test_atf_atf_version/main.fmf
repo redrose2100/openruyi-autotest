@@ -1,0 +1,12 @@
+summary: Functional test - atf - Get atf help info
+test: ./test.sh
+tag:
+ - functional
+ - atf
+duration: 1m
+tier: 1
+path: /tests/functional/pkgs/atf/test_atf_atf_version
+
+require:
+ - beakerlib
+ - atf
