@@ -141,9 +141,9 @@ class TestPostPrComment(unittest.TestCase):
             ],
         }
         c = self.mod.build_comment(r)
-        self.assertIn("自动测试验证报告", c)
-        self.assertIn("✅ 全部通过", c)
-        self.assertIn("通过 `3`", c)
+        self.assertIn("Automated Test Verification Report", c)
+        self.assertIn("All Passed", c)
+        self.assertIn("Passed `3`", c)
 
     def test_build_comment_fail_has_details(self):
         r = {
@@ -156,8 +156,8 @@ class TestPostPrComment(unittest.TestCase):
             ],
         }
         c = self.mod.build_comment(r)
-        self.assertIn("❌ 存在失败", c)
-        self.assertIn("失败详情", c)
+        self.assertIn("Has Failures", c)
+        self.assertIn("Failure Details", c)
         self.assertIn("assertion boom", c)
 
 
