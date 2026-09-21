@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| fdupes | test_fdupes_fdupes_basic | Check main tool executability |
-| fdupes | test_fdupes_fdupes_version | Get fdupes help info |
+| fdupes | test_fdupes_fdupes_basic | basic |
+| fdupes | test_fdupes_fdupes_version | version |

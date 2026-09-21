@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| less | test_less_basic | basic functionality |
+| less | test_less_basic | error handling |
 | less | test_less_error | error handling |

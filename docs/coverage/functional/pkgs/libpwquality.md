@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libpwquality | test_libpwquality_basic | basic functionality |
+| libpwquality | test_libpwquality_basic | error handling |
 | libpwquality | test_libpwquality_error | error handling |

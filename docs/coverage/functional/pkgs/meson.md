@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| meson | test_meson_main | Get meson version info |
+| meson | test_meson_main | main |

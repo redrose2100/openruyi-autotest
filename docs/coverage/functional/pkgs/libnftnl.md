@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libnftnl | test_libnftnl_files | file verification |
+| libnftnl | test_libnftnl_files | ļ֤ |

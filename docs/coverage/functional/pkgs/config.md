@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| config | test_config_config | Get config help info |
+| config | test_config_config | config |

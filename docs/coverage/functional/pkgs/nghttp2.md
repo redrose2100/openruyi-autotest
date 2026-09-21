@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| nghttp2 | test_nghttp2_files | file verification |
+| nghttp2 | test_nghttp2_files | ļ֤ |

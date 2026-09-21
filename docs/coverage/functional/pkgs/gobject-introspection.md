@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| gobject-introspection | test_gobject_introspection_gobject_introspection | Get gobject-introspection help info |
+| gobject-introspection | test_gobject_introspection_gobject_introspection | gobject introspection gobject introspection |

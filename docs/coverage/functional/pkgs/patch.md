@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| patch | test_patch_basic | basic functionality |
+| patch | test_patch_basic | error handling |
 | patch | test_patch_error | error handling |

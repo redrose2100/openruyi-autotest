@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| iproute2 | test_iproute2_basic | basic functionality |
+| iproute2 | test_iproute2_basic | iproute2 error handling |

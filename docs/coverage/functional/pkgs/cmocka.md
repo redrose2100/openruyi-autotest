@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| cmocka | test_cmocka_main | Get cmocka version info |
+| cmocka | test_cmocka_main | main |

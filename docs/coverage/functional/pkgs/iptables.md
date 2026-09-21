@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| iptables | test_iptables_iptables_basic | Check main tool executability |
-| iptables | test_iptables_iptables_version | Get iptables help info |
+| iptables | test_iptables_iptables_basic | basic |
+| iptables | test_iptables_iptables_version | version |

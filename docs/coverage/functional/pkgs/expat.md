@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| expat | test_expat_basic | basic functionality |
+| expat | test_expat_basic | error handling |
 | expat | test_expat_error | error handling |

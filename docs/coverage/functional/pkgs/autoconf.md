@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| autoconf | test_autoconf_main | Get autoconf version info |
+| autoconf | test_autoconf_main | main |

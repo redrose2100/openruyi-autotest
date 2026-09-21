@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| file | test_file_basic | basic functionality |
+| file | test_file_basic | error handling |
 | file | test_file_error | error handling |

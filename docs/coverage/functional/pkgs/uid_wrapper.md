@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| uid_wrapper | test_uid_wrapper_main | Get uid_wrapper version info |
+| uid_wrapper | test_uid_wrapper_main | uid wrapper main |

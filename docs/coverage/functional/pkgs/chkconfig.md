@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| chkconfig | test_alternatives_basic | alternatives basic functionality |
-| chkconfig | test_chkconfig_basic | basic functionality |
+| chkconfig | test_alternatives_basic | error handling |
+| chkconfig | test_chkconfig_basic | error handling |

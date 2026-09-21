@@ -1,8 +1,10 @@
 # cryptsetup Functional Test Coverage Details
 
-**2** test cases in total, **2** test points
+**4** test cases in total, **4** test points
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
+| cryptsetup | test_cryptsetup_cryptsetup | cryptsetup info |
 | cryptsetup | test_cryptsetup_error_handling | error handling |
-| cryptsetup | test_cryptsetup_version_help | version and help |
+| cryptsetup | test_cryptsetup_integritysetup | integritysetup info |
+| cryptsetup | test_cryptsetup_veritysetup | veritysetup info |

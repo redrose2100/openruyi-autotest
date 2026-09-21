@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| gawk | test_gawk_basic | basic functionality |
+| gawk | test_gawk_basic | error handling |
 | gawk | test_gawk_error | error handling |

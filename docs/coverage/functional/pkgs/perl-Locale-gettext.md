@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| perl-Locale-gettext | test_perl_locale_gettext_main | Get perl-Locale-gettext version info |
+| perl-Locale-gettext | test_perl_locale_gettext_main | perl locale gettext main |

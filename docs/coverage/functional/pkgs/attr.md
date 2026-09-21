@@ -5,5 +5,5 @@
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
 | attr | test_attr_error_handling | error handling |
-| attr | test_attr_getfattr_basic | getfattr basic functionality |
-| attr | test_attr_setfattr_basic | setfattr basic functionality |
+| attr | test_attr_getfattr_basic | getfattr error handling |
+| attr | test_attr_setfattr_basic | setfattr error handling |

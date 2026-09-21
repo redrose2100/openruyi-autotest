@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| python-rpm-macros | test_python_rpm_macros_main | Check package installed |
+| python-rpm-macros | test_python_rpm_macros_main | python rpm macros main |

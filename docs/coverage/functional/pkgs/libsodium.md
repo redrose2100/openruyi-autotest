@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libsodium | test_libsodium_main | Get libsodium version info |
+| libsodium | test_libsodium_main | main |

@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| dejagnu | test_dejagnu_dejagnu_basic | Check main tool executability |
-| dejagnu | test_dejagnu_dejagnu_version | Get dejagnu help info |
+| dejagnu | test_dejagnu_error_handling | error handling |
+| dejagnu | test_dejagnu_runtest | runtest execution |

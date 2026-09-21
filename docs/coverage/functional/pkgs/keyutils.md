@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| keyutils | test_keyutils_basic | basic functionality |
+| keyutils | test_keyutils_basic | error handling |

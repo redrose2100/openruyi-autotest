@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| ca-certificates | test_ca_certificates_error_handling | error handling |
-| ca-certificates | test_ca_certificates_version_help | version and help |
+| ca-certificates | test_ca_certificates_error_handling | certificates - error handling |
+| ca-certificates | test_ca_certificates_version_help | certificates - version and help |

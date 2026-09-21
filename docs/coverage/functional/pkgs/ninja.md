@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| ninja | test_ninja_main | Get ninja version info |
+| ninja | test_ninja_main | main |

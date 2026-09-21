@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| publicsuffix-list | test_publicsuffix_list_main | Check package installed |
+| publicsuffix-list | test_publicsuffix_list_main | publicsuffix list main |

@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| gpm | test_gpm_main | Get gpm version info |
+| gpm | test_gpm_main | main |

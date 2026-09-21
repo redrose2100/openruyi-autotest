@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| brotli | test_brotli_basic | basic functionality |
-| brotli | test_brotli_error | error handling |
+| brotli | test_brotli_compress | brotli compress |
+| brotli | test_brotli_decompress | brotli decompress |

@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| iso-codes | test_iso_codes_main | Check package installed |
+| iso-codes | test_iso_codes_main | iso codes main |

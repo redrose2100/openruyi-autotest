@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| tzdata | test_tzdata_basic | basic functionality |
+| tzdata | test_tzdata_basic | error handling |
 | tzdata | test_tzdata_error | error handling |

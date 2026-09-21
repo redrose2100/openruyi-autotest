@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| python-setuptools | test_python_setuptools_main | Get python-setuptools version info |
+| python-setuptools | test_python_setuptools_main | python setuptools main |

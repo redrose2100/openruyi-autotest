@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| icu4c | test_icu4c_basic | basic functionality |
+| icu4c | test_icu4c_basic | icu4c error handling |

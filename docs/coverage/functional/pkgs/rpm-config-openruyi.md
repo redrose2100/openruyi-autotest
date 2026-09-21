@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| rpm-config-openruyi | test_rpm_config_openruyi_error_handling | error handling |
-| rpm-config-openruyi | test_rpm_config_openruyi_version_help | version and help |
+| rpm-config-openruyi | test_rpm_config_openruyi_error_handling | config-openruyi - error handling |
+| rpm-config-openruyi | test_rpm_config_openruyi_version_help | config-openruyi - version and help |

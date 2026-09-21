@@ -1,8 +1,11 @@
 # diffutils Functional Test Coverage Details
 
-**2** test cases in total, **2** test points
+**5** test cases in total, **5** test points
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| diffutils | test_diffutils_basic | basic functionality |
-| diffutils | test_diffutils_error | error handling |
+| diffutils | test_diffutils_cmp | cmp basic usage |
+| diffutils | test_diffutils_diff | diff basic usage |
+| diffutils | test_diffutils_diff3 | diff3 basic usage |
+| diffutils | test_diffutils_error_handling | error handling |
+| diffutils | test_diffutils_sdiff | sdiff basic usage |

@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| nss | test_nss_nss | Get nss help info |
+| nss | test_nss_nss | nss |

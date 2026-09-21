@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| nss_wrapper | test_nss_wrapper_main | Get nss_wrapper version info |
+| nss_wrapper | test_nss_wrapper_main | nss wrapper main |

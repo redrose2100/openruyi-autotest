@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| pyproject-rpm-macros | test_pyproject_rpm_macros_main | Check package installed |
+| pyproject-rpm-macros | test_pyproject_rpm_macros_main | pyproject rpm macros main |

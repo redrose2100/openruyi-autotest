@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| beakerlib | test_beakerlib_basic | basic functionality |
+| beakerlib | test_beakerlib_basic | beakerlib error handling |

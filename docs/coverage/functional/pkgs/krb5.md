@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| krb5 | test_krb5_basic | basic functionality |
+| krb5 | test_krb5_basic | krb5 error handling |

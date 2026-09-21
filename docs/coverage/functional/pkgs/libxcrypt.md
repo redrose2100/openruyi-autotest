@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libxcrypt | test_libxcrypt_files | file verification |
+| libxcrypt | test_libxcrypt_files | ļ֤ |

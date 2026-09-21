@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| ncurses | test_ncurses_basic | basic functionality |
+| ncurses | test_ncurses_basic | error handling |

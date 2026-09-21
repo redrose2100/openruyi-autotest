@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libeconf | test_libeconf_files | file verification |
+| libeconf | test_libeconf_files | ļ֤ |

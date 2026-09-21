@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libidn2 | test_libidn2_basic | basic functionality |
+| libidn2 | test_libidn2_basic | error handling |
 | libidn2 | test_libidn2_error | error handling |

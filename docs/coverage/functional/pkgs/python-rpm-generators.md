@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| python-rpm-generators | test_python_rpm_generators_main | Get python-rpm-generators version info |
+| python-rpm-generators | test_python_rpm_generators_main | python rpm generators main |

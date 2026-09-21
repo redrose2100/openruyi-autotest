@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libtirpc | test_libtirpc_files | file verification |
+| libtirpc | test_libtirpc_files | ļ֤ |

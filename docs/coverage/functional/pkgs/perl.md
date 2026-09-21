@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| perl | test_perl_basic | basic functionality |
+| perl | test_perl_basic | error handling |

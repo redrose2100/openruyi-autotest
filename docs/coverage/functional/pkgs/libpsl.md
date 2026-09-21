@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libpsl | test_libpsl_files | file verification |
+| libpsl | test_libpsl_files | ļ֤ |

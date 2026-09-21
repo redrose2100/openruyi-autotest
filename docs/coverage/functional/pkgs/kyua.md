@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| kyua | test_kyua_kyua_basic | Check main tool executability |
-| kyua | test_kyua_kyua_version | Get kyua help info |
+| kyua | test_kyua_kyua_basic | basic |
+| kyua | test_kyua_kyua_version | version |

@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| socket_wrapper | test_socket_wrapper_main | Get socket_wrapper version info |
+| socket_wrapper | test_socket_wrapper_main | socket wrapper main |

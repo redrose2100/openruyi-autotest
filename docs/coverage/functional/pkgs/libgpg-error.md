@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libgpg-error | test_libgpg-error_files | libgpg error handling file verification |
+| libgpg-error | test_libgpg-error_files | error -ļ֤ |

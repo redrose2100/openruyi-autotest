@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libcap-ng | test_libcap-ng_files | libcap ng file verification |
+| libcap-ng | test_libcap-ng_files | ng -ļ֤ |

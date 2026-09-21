@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| pcre2 | test_pcre2_basic | basic functionality |
+| pcre2 | test_pcre2_basic | error handling |
 | pcre2 | test_pcre2_error | error handling |

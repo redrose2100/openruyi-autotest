@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| automake | test_automake_main | Get automake version info |
+| automake | test_automake_main | main |

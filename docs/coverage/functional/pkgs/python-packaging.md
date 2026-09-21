@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| python-packaging | test_python_packaging_main | Check package installed |
+| python-packaging | test_python_packaging_main | python packaging main |

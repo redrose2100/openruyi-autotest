@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| glib | test_glib_basic | basic functionality |
+| glib | test_glib_basic | error handling |

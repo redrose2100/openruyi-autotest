@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| gcc16 | test_gcc16_basic | basic functionality |
+| gcc16 | test_gcc16_basic | gcc16 error handling |

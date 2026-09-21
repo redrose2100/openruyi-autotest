@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| nfs-utils | test_nfs_utils_main | Get nfs-utils version info |
+| nfs-utils | test_nfs_utils_main | nfs utils main |

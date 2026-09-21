@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| xxhash | test_xxhash_xxhash_basic | Check main tool executability |
-| xxhash | test_xxhash_xxhash_version | Get xxhash help info |
+| xxhash | test_xxhash_xxhash_basic | basic |
+| xxhash | test_xxhash_xxhash_version | version |

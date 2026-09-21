@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libssh | test_libssh_main | Get libssh version info |
+| libssh | test_libssh_main | main |

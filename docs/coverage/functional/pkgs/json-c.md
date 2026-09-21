@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| json-c | test_json-c_files | JSONhandle c file verification |
+| json-c | test_json-c_files | c -ļ֤ |

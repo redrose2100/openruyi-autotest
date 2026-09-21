@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| lzip | test_lzip_lzip_basic | Check main tool executability |
-| lzip | test_lzip_lzip_version | Get lzip help info |
+| lzip | test_lzip_lzip_basic | basic |
+| lzip | test_lzip_lzip_version | version |

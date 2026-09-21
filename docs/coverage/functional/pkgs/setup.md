@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| setup | test_setup_main | Check package installed |
+| setup | test_setup_main | main |

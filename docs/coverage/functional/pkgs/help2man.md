@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| help2man | test_help2man_help2man_basic | Check main tool executability |
-| help2man | test_help2man_help2man_version | Get help2man help info |
+| help2man | test_help2man_help2man_basic | basic |
+| help2man | test_help2man_help2man_version | version |

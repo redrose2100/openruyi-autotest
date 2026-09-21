@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| unbound | test_unbound_main | Get unbound version info |
+| unbound | test_unbound_main | main |

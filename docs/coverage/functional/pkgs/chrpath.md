@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| chrpath | test_chrpath_chrpath_basic | Check main tool executability |
-| chrpath | test_chrpath_chrpath_version | Get chrpath help info |
+| chrpath | test_chrpath_chrpath_basic | basic |
+| chrpath | test_chrpath_chrpath_version | version |

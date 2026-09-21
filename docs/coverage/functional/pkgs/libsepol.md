@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libsepol | test_libsepol_files | file verification |
+| libsepol | test_libsepol_files | ļ֤ |

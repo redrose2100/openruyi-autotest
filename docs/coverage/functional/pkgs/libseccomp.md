@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libseccomp | test_libseccomp_files | file verification |
+| libseccomp | test_libseccomp_files | ļ֤ |

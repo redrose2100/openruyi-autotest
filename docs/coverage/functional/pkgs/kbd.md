@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| kbd | test_kbd_basic | basic functionality |
+| kbd | test_kbd_basic | error handling |

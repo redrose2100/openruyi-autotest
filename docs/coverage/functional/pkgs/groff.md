@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| groff | test_groff_groff_basic | Check main tool executability |
-| groff | test_groff_groff_version | Get groff help info |
+| groff | test_groff_groff_basic | basic |
+| groff | test_groff_groff_version | version |

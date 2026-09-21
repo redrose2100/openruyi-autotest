@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libedit | test_libedit_files | file verification |
+| libedit | test_libedit_files | ļ֤ |

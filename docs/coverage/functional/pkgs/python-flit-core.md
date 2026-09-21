@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| python-flit-core | test_python_flit_core_main | Get python-flit-core version info |
+| python-flit-core | test_python_flit_core_main | python flit core main |

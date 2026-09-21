@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| python-pyelftools | test_python_pyelftools_main | Get python-pyelftools version info |
+| python-pyelftools | test_python_pyelftools_main | python pyelftools main |

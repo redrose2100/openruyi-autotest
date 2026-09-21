@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| scdoc | test_scdoc_scdoc_basic | Check main tool executability |
-| scdoc | test_scdoc_scdoc_version | Get scdoc help info |
+| scdoc | test_scdoc_scdoc_basic | basic |
+| scdoc | test_scdoc_scdoc_version | version |

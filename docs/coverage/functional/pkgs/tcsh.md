@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| tcsh | test_tcsh_basic | basic functionality |
+| tcsh | test_tcsh_basic | error handling |
 | tcsh | test_tcsh_error | error handling |

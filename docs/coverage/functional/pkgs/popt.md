@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| popt | test_popt_files | file verification |
+| popt | test_popt_files | ļ֤ |

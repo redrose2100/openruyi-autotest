@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| tcl | test_tcl_tcl_basic | Check main tool executability |
-| tcl | test_tcl_tcl_version | Get tcl help info |
+| tcl | test_tcl_tcl_basic | basic |
+| tcl | test_tcl_tcl_version | version |

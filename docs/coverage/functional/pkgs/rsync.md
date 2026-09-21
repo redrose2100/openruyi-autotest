@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| rsync | test_rsync_rsync_basic | Check main tool executability |
-| rsync | test_rsync_rsync_version | Get rsync help info |
+| rsync | test_rsync_rsync_basic | basic |
+| rsync | test_rsync_rsync_version | version |

@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libmicrohttpd | test_libmicrohttpd_main | Get libmicrohttpd version info |
+| libmicrohttpd | test_libmicrohttpd_main | main |

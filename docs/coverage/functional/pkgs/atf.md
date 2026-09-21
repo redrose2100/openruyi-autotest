@@ -1,8 +1,10 @@
 # atf Functional Test Coverage Details
 
-**2** test cases in total, **2** test points
+**4** test cases in total, **4** test points
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| atf | test_atf_atf_basic | Check main tool executability |
-| atf | test_atf_atf_version | Get atf help info |
+| atf | test_atf_check | atf-check test checker |
+| atf | test_atf_error_handling | error handling |
+| atf | test_atf_sh | atf-sh shell interface |
+| atf | test_atf_version | atf version |

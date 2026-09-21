@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| texinfo | test_texinfo_texinfo_basic | Check main tool executability |
-| texinfo | test_texinfo_texinfo_version | Get texinfo help info |
+| texinfo | test_texinfo_texinfo_basic | basic |
+| texinfo | test_texinfo_texinfo_version | version |

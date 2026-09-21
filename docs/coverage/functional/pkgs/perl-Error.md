@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| perl-Error | test_perl_error_main | Get perl-Error version info |
+| perl-Error | test_perl_error_main | perl error main |

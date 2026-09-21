@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| flex | test_flex_flex_basic | Check main tool executability |
-| flex | test_flex_flex_version | Get flex help info |
+| flex | test_flex_flex_basic | basic |
+| flex | test_flex_flex_version | version |

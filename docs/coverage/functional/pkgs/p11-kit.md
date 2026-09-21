@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| p11-kit | test_p11kit_basic | p11kit basic functionality |
+| p11-kit | test_p11kit_basic | kit - error handling |

@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| jitterentropy | test_jitterentropy_files | file verification |
+| jitterentropy | test_jitterentropy_files | ļ֤ |

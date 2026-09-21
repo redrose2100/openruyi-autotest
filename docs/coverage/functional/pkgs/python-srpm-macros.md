@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| python-srpm-macros | test_python_srpm_macros_main | Check package installed |
+| python-srpm-macros | test_python_srpm_macros_main | python srpm macros main |

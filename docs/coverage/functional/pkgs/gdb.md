@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| gdb | test_gdb_gdb_basic | Check main tool executability |
-| gdb | test_gdb_gdb_version | Get gdb help info |
+| gdb | test_gdb_gdb_basic | basic |
+| gdb | test_gdb_gdb_version | version |

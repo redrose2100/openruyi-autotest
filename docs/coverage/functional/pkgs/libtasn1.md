@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libtasn1 | test_libtasn1_basic | basic functionality |
+| libtasn1 | test_libtasn1_basic | error handling |
 | libtasn1 | test_libtasn1_error | error handling |

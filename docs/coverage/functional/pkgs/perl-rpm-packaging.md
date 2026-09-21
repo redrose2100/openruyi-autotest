@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| perl-rpm-packaging | test_perl_rpm_packaging_main | Get perl-rpm-packaging version info |
+| perl-rpm-packaging | test_perl_rpm_packaging_main | perl rpm packaging main |

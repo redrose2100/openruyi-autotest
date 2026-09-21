@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libtool | test_libtool_libtool | Get libtool help info |
+| libtool | test_libtool_libtool | libtool |

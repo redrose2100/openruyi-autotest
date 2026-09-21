@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| ca-certificates-mozilla | test_ca_certificates_mozilla_error_handling | Functional test - Mozilla CAcertificate - error handling |
-| ca-certificates-mozilla | test_ca_certificates_mozilla_version_help | Functional test - Mozilla CAcertificate - version and help |
+| ca-certificates-mozilla | test_ca_certificates_mozilla_error_handling | certificates-mozilla - error handling |
+| ca-certificates-mozilla | test_ca_certificates_mozilla_version_help | certificates-mozilla - version and help |

@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| re2c | test_re2c_re2c_basic | Check main tool executability |
-| re2c | test_re2c_re2c_version | Get re2c help info |
+| re2c | test_re2c_re2c_basic | basic |
+| re2c | test_re2c_re2c_version | version |

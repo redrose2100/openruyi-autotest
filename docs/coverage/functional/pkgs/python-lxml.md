@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| python-lxml | test_python-lxml_files | Python lxml file verification |
+| python-lxml | test_python-lxml_files | lxml -ļ֤ |

@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| lutok | test_lutok_main | Get lutok version info |
+| lutok | test_lutok_main | main |

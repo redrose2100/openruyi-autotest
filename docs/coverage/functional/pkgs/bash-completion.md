@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| bash-completion | test_bash_completion_main | Check package installed |
+| bash-completion | test_bash_completion_main | bash completion main |

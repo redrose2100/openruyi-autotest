@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libnetfilter_conntrack | test_libnetfilter_conntrack_files | file verification |
+| libnetfilter_conntrack | test_libnetfilter_conntrack_files | ļ֤ |

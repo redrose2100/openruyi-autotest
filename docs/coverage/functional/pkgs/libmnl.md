@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libmnl | test_libmnl_files | file verification |
+| libmnl | test_libmnl_files | ļ֤ |

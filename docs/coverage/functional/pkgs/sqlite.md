@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| sqlite | test_sqlite_basic | basic functionality |
+| sqlite | test_sqlite_basic | error handling |
 | sqlite | test_sqlite_error | error handling |

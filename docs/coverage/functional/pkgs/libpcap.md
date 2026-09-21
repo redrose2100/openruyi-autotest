@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libpcap | test_libpcap_main | Get libpcap version info |
+| libpcap | test_libpcap_main | main |

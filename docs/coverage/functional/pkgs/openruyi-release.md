@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| openruyi-release | test_openruyi_release_main | Check package installed |
+| openruyi-release | test_openruyi_release_main | openruyi release main |

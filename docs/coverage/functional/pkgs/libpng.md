@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libpng | test_libpng_basic | basic functionality |
+| libpng | test_libpng_basic | error handling |
 | libpng | test_libpng_error | error handling |

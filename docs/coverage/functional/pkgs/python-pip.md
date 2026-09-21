@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| python-pip | test_pip_basic | pip basic functionality |
+| python-pip | test_pip_basic | error handling |

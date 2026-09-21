@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| dbus | test_dbus_basic | basic functionality |
+| dbus | test_dbus_basic | error handling |

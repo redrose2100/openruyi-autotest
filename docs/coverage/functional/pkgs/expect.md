@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| expect | test_expect_expect_basic | Check main tool executability |
-| expect | test_expect_expect_version | Get expect help info |
+| expect | test_expect_expect_basic | basic |
+| expect | test_expect_expect_version | version |

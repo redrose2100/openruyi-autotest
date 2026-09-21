@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| readline | test_readline_files | file verification |
+| readline | test_readline_files | ļ֤ |

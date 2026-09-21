@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| systemtap | test_systemtap_systemtap_basic | Check main tool executability |
-| systemtap | test_systemtap_systemtap_version | Get systemtap help info |
+| systemtap | test_systemtap_systemtap_basic | basic |
+| systemtap | test_systemtap_systemtap_version | version |

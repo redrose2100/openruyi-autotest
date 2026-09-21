@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| boost | test_boost_main | Get boost version info |
+| boost | test_boost_main | main |

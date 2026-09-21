@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| unzip | test_unzip_basic | basic functionality |
+| unzip | test_unzip_basic | error handling |
 | unzip | test_unzip_error | error handling |

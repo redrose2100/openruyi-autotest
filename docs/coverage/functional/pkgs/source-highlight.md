@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| source-highlight | test_source_highlight_source_highlight_basic | Check main tool executability |
-| source-highlight | test_source_highlight_source_highlight_version | Get source-highlight help info |
+| source-highlight | test_source_highlight_source_highlight_basic | source highlight source highlight basic |
+| source-highlight | test_source_highlight_source_highlight_version | source highlight source highlight version |

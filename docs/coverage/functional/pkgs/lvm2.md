@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| lvm2 | test_lvm2_basic | basic functionality |
+| lvm2 | test_lvm2_basic | lvm2 error handling |

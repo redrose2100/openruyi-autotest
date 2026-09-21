@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| gnutls | test_certtool | gnutls - certtool |
-| gnutls | test_gnutls_basic | basic functionality |
+| gnutls | test_certtool | certtool |
+| gnutls | test_gnutls_basic | error handling |

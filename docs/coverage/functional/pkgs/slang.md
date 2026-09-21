@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| slang | test_slang_basic | basic functionality |
+| slang | test_slang_basic | error handling |
 | slang | test_slang_error | error handling |

@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libcap | test_libcap_files | file verification |
+| libcap | test_libcap_files | ļ֤ |

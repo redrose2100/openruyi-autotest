@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| linux-headers | test_linux_headers_error_handling | error handling |
-| linux-headers | test_linux_headers_version_help | version and help |
+| linux-headers | test_linux_headers_error_handling | headers - error handling |
+| linux-headers | test_linux_headers_version_help | headers - version and help |

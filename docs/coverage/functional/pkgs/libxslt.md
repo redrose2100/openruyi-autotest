@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libxslt | test_libxslt_basic | basic functionality |
+| libxslt | test_libxslt_basic | error handling |
 | libxslt | test_libxslt_error | error handling |

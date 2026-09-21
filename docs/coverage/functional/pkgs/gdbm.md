@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| gdbm | test_gdbm_gdbm | Get gdbm help info |
+| gdbm | test_gdbm_gdbm | gdbm |

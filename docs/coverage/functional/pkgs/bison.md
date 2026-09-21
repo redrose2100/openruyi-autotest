@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| bison | test_bison_bison_basic | Check main tool executability |
-| bison | test_bison_bison_version | Get bison help info |
+| bison | test_bison_bison_basic | basic |
+| bison | test_bison_bison_version | version |

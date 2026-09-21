@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| xmlto | test_xmlto_xmlto_basic | Check main tool executability |
-| xmlto | test_xmlto_xmlto_version | Get xmlto help info |
+| xmlto | test_xmlto_xmlto_basic | basic |
+| xmlto | test_xmlto_xmlto_version | version |

@@ -4,5 +4,5 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| libxml2 | test_libxml2_basic | basic functionality |
+| libxml2 | test_libxml2_basic | error handling |
 | libxml2 | test_libxml2_error | error handling |

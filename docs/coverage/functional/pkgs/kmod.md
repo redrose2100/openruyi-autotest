@@ -4,4 +4,4 @@
 
 | Package | Test Case | Test Point |
 |---------|-----------|------------|
-| kmod | test_kmod_basic | basic functionality |
+| kmod | test_kmod_basic | error handling |
