@@ -3,8 +3,6 @@
 > Test execution time: YYYY-MM-DD HH:MM
 > Test environment: openRuyi Creek, kernel xxx, riscv64
 
-> :cn: [中文版 (Chinese Version)](test_reports_zh.md)
-
 ---
 
 ## Overview

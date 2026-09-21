@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-"""资源池管理：CloudPods 环境的申请 / 校验 / 释放 / 清理。
+"""Resource pool management: CloudPods env acquire / verify / release / cleanup.
 
-需求 2.3~2.6 的实现：
-  - 2.3 执行每个测试套前，根据所需条件，从 CloudPods 资源池中查找是否存在
-        符合条件的虚拟机环境（名称前缀匹配 + SSH 可用性检查）；没有则创建一套。
-  - 2.4 池中有虚拟机但不可用（无法 SSH）时，删除后重新创建一套。
-  - 2.5 测试套执行完成后释放对该环境的控制（归还池），但不删除。
-  - 2.6 所有测试套执行完成后，统一删除资源池中所有本次使用的环境。
+Implements requirements 2.3~2.6:
+  - 2.3 Before each test suite, search CloudPods pool for a matching VM env
+        (name prefix match + SSH availability check); create one if none found.
+  - 2.4 If a pooled VM is unavailable (SSH fails), delete it and recreate.
+  - 2.5 After test suite completes, release the env back to pool (no delete).
+  - 2.6 After all test suites complete, delete all envs used in this batch.
 
-环境定义：一个 CloudPods server（KVM host）+ 其上启动的 N 个 QEMU VM。
-资源池按名称前缀区分（env_prefix），一套环境 = 一个 server。
+Env definition: a CloudPods server (KVM host) + N QEMU VMs on it.
+Pool is differentiated by name prefix (env_prefix); one env = one server.
 """
 from __future__ import annotations
 
@@ -25,9 +25,10 @@ from core.config import get_env
 
 logger = logging.getLogger("ci_cli.functional.resource_pool")
 
-# CloudPods 凭据：环境变量优先 -> 显式传入 -> create_server.Env 默认值
+# CloudPods credentials: env var priority -> explicit param -> create_server.Env defaults
+
 def _default_credentials() -> Dict[str, str]:
-    """读取 create_server.Env 的默认凭据（与 launch_env 创建时保持一致）。"""
+    """Read default credentials from create_server.Env (consistent with launch_env creation)."""
     try:
         from cloudpods import create_server as cs
         env = cs.Env
@@ -47,19 +48,19 @@ def _get_credentials(vm_info: Optional[Dict] = None) -> Dict[str, str]:
     password = get_env("CLOUDPODS_PASSWORD") or (vm_info or {}).get("cloudpods_password", "")
     if keystone_url and username and password:
         return {"keystone_url": keystone_url, "username": username, "password": password}
-    # 回退到 create_server.Env 默认凭据（如 secrets 未配置时）
+    # Fallback to create_server.Env defaults (when secrets not configured)
     return _default_credentials()
 
 
 class EnvPool:
-    """CloudPods 环境资源池。
+    """CloudPods environment resource pool.
 
-    负责：
-      - 扫描资源池（按前缀列出 server）
-      - 申请一套可用环境（find -> verify -> create -> verify）
-      - 释放（标记归还，不删除）
-      - 统一清理（删除池中所有本批次环境）
-    线程安全：内部用锁保护已分配/已释放集合。
+    Responsibilities:
+      - Scan pool (list servers by prefix)
+      - Acquire an available env (find -> verify -> create -> verify)
+      - Release (mark as returned, no delete)
+      - Batch cleanup (delete all envs used in this batch)
+    Thread-safe: internal lock protects acquired/released sets.
     """
 
     def __init__(
@@ -71,17 +72,17 @@ class EnvPool:
         self.cfg = cfg
         self.repo_root = repo_root
         self.env_prefix = cfg.get("env_prefix", "openruyi-func")
-        # 默认 SSH 探测函数（可由调用方注入便于测试）
+        # Default SSH probe function (caller can inject for testing)
         self.ssh_probe = ssh_probe or default_ssh_probe
         self._lock = threading.Lock()
-        self._acquired: set = set()          # 当前被测试套占用的 env key
-        self._created: set = set()           # 本批次新创建（统一清理时删除）
-        self._used_pool: set = set()         # 本批次使用过的池内环境（含创建）
+        self._acquired: set = set()          # env keys currently held by test suites
+        self._created: set = set()           # newly created in this batch (cleanup on teardown)
+        self._used_pool: set = set()         # all envs used in this batch (including created)
         self._cp: Optional[CloudPodsClient] = None
         self._credentials: Dict[str, str] = {}
 
     # ------------------------------------------------------------------
-    # CloudPods 客户端（懒加载）
+    # CloudPods client (lazy init)
     # ------------------------------------------------------------------
     def _get_client(self) -> Optional[CloudPodsClient]:
         if self._cp is not None:
@@ -90,8 +91,8 @@ class EnvPool:
         if not creds["keystone_url"] or not creds["username"] or not creds["password"]:
             logger.error("Missing CloudPods credentials")
             return None
-        # 密码可能是 XOR+Base64 加密串（create_server.Env 默认值等），
-        # 先尝试解密；解密失败则视为明文原样使用。
+        # Password may be XOR+Base64 encrypted string (create_server.Env defaults, etc.),
+        # try decrypting first; if decryption fails, treat as plaintext.
         try:
             from core.cloudpods import decrypt_password
             decrypted = decrypt_password(creds["password"])
@@ -112,20 +113,20 @@ class EnvPool:
         return self._cp
 
     # ------------------------------------------------------------------
-    # 资源池扫描
+    # Resource pool scan
     # ------------------------------------------------------------------
     def list_pool(self) -> List[Dict]:
-        """列出资源池中所有符合前缀的 server（含状态）。"""
+        """List all servers in pool matching the prefix (including status)."""
         cp = self._get_client()
         if cp is None:
             return []
         return cp.list_servers(name_prefix=self.env_prefix)
 
     def find_available_env(self, spec: Dict) -> Optional[Dict]:
-        """在资源池中查找一套满足 spec 且未被占用的环境。
+        """Find an env in pool that matches spec and is not already acquired.
 
-        匹配条件（近似）：名称前缀匹配、server 状态 running、
-        QEMU 端口 SSH 可达。返回 env 描述 dict 或 None。
+        Match criteria (approximate): name prefix match, server status running,
+        QEMU port SSH reachable. Returns env description dict or None.
         """
         cp = self._get_client()
         if cp is None:
@@ -142,7 +143,7 @@ class EnvPool:
             with self._lock:
                 if sid in self._acquired:
                     continue
-            # 尝试用 spec 探测可用性（SSH）
+            # Try probing availability with spec (SSH)
             if self._probe_env(sid, name, spec):
                 ips = self._get_ips(sid)
                 host_ip = ips[0] if ips else ""
@@ -158,9 +159,9 @@ class EnvPool:
         return None
 
     def _probe_env(self, server_id: str, name: str, spec: Dict) -> bool:
-        """探测环境是否可用：SSH 到 host（22）和 QEMU（12055+）。
+        """Probe env availability: SSH to host (22) and QEMU (12055+).
 
-        2.4：无法 SSH 则视为不可用（调用方负责删除重建）。
+        2.4: If SSH fails, treat as unavailable (caller responsible for delete and recreate).
         """
         try:
             ips = self._get_ips(server_id)
@@ -173,7 +174,7 @@ class EnvPool:
             ssh_user = spec.get("qemu_ssh_user", self.cfg.get("qemu_ssh_user", "openruyi"))
             ssh_pass = spec.get("qemu_ssh_password",
                                 self.cfg.get("qemu_ssh_password", "openruyi"))
-            # 优先探测 QEMU SSH（真正执行测试的入口）
+            # Prefer probing QEMU SSH first (the actual test execution entry)
             if self.ssh_probe(host_ip, qemu_port, ssh_user, ssh_pass):
                 logger.info("[pool] %s (QEMU %s:%s) is usable", name, host_ip, qemu_port)
                 return True
@@ -202,15 +203,16 @@ class EnvPool:
         return ips
 
     # ------------------------------------------------------------------
-    # 申请 / 创建 / 释放 / 清理
+    # Acquire / Create / Release / Cleanup
     # ------------------------------------------------------------------
     def acquire(self, suite_name: str, spec: Dict) -> Optional[Dict]:
-        """申请一套可用环境。
+        """Acquire an available env.
 
-        流程：资源池查找 -> 找到则验证 -> 未找到则创建（最多 retries 次，
-        创建后验证，不可用则删除重建）。
+        Flow: pool lookup -> found → verify -> not found → create (up to retries,
+        verify after creation, delete and recreate if unusable).
 
-        线程安全：find+标记在锁内原子完成，避免并发抢占同一环境。
+        Thread-safe: find+mark done atomically inside lock to avoid concurrent
+        acquisition of the same env.
         """
         retries = int(self.cfg.get("env_verify_retries", 2))
         for attempt in range(1, retries + 1):
@@ -220,14 +222,14 @@ class EnvPool:
                             env["name"], attempt)
                 return env
 
-            # 未找到可用环境：创建一套
+            # No usable env found: create one
             logger.info("[pool] no usable env in pool, creating new (attempt %s)", attempt)
             created = self._create_env(spec)
             if created is None:
                 logger.error("[pool] create env failed (attempt %s)", attempt)
                 time.sleep(5)
                 continue
-            # 创建成功后验证（若失败，删除后下一轮重建）
+            # After creation, verify (if fails, delete so next round recreates)
             if self._probe_env(created["server_id"], created["name"], spec):
                 with self._lock:
                     self._acquired.add(created["server_id"])
@@ -246,7 +248,7 @@ class EnvPool:
         return None
 
     def _find_and_acquire(self, spec: Dict) -> Optional[Dict]:
-        """在锁内完成「查找 + 标记占用」，返回 env dict 或 None。"""
+        """Complete find + mark-acquired inside lock, return env dict or None."""
         cp = self._get_client()
         if cp is None:
             return None
@@ -262,8 +264,9 @@ class EnvPool:
             with self._lock:
                 if sid in self._acquired:
                     continue
-                # 探测（可能耗时）不在锁内；但标记占用要在锁内且需
-                # 二次确认，避免探测期间被其他线程抢先。
+                # Probe (potentially slow) is outside lock; but mark-acquired
+                # must be inside lock with double-check to prevent another
+                # thread from seizing it during probe.
                 self._acquired.add(sid)
             if self._probe_env(sid, name, spec):
                 ips = self._get_ips(sid)
@@ -289,7 +292,7 @@ class EnvPool:
                     "from_pool": True,
                 }
             else:
-                # 2.4：池中有虚拟机但不可用（无法 SSH）→ 删除后重建
+                # 2.4: Pooled VM exists but not usable (SSH unavailable) → delete and recreate
                 with self._lock:
                     self._acquired.discard(sid)
                     self._used_pool.add(sid)
@@ -300,9 +303,9 @@ class EnvPool:
         return None
 
     def _create_env(self, spec: Dict) -> Optional[Dict]:
-        """创建一套环境（1 host + 1 QEMU），返回 env dict 或 None。"""
+        """Create an env (1 host + 1 QEMU), return env dict or None."""
         try:
-            # 复用 launch-qemu-env 的 launch_env
+            # Reuse launch-qemu-env's launch_env
             from commands.launch_qemu_env import launch_env
 
             launch_spec = dict(spec)
@@ -335,13 +338,13 @@ class EnvPool:
             return None
 
     def release(self, server_id: str) -> None:
-        """释放对环境资源的控制（归还池），但不删除（2.5）。"""
+        """Release control of the env resource (return to pool), no delete (2.5)."""
         with self._lock:
             self._acquired.discard(server_id)
         logger.info("[pool] released env %s (not deleted)", server_id)
 
     def delete_env(self, server_id: str) -> bool:
-        """删除单个环境（2.4 不可用时重建前调用）。"""
+        """Delete a single env (called before recreate when 2.4 unusable)."""
         return self._delete_env(server_id)
 
     def _delete_env(self, server_id: str) -> bool:
@@ -358,9 +361,9 @@ class EnvPool:
             return False
 
     def cleanup_all(self) -> int:
-        """统一删除资源池中本批次使用过的所有环境（2.6）。
+        """Delete all envs used in this batch from pool (2.6).
 
-        返回删除成功的数量。
+        Returns number of successfully deleted envs.
         """
         cp = self._get_client()
         if cp is None:
@@ -379,7 +382,7 @@ class EnvPool:
 
 def default_ssh_probe(host: str, port: int, user: str, password: str,
                       timeout: int = 30) -> bool:
-    """默认 SSH 探测：尝试建立连接并执行简单命令。"""
+    """Default SSH probe: try to connect and execute a simple command."""
     try:
         from core.ssh import SSHClient
 

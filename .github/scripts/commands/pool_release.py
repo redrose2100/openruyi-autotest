@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""pool-release 命令：释放池环境（删除 CloudPods VM 并重建，确保无残留）。"""
+"""pool-release command: release pool environment (delete CloudPods VM and rebuild to ensure no leftovers)."""
 from __future__ import annotations
 
 import json
@@ -12,29 +12,29 @@ logger = logging.getLogger("ci_cli.commands.pool_release")
 
 
 class PoolReleaseCommand(BaseCommand):
-    """释放池环境：删除 CloudPods VM 并重建一台新 VM 放回池中"""
+    """Release pool environment: delete CloudPods VM and rebuild a new one into the pool"""
 
     name = "pool-release"
-    description = "释放 CI 预置池环境（删旧建新，确保 CloudPods 无残留）"
+    description = "Release CI pre-provisioned pool environment (delete old, build new, ensure no CloudPods leftovers)"
 
     def setup_parser(self, parser):
         parser.add_argument("--server-id", default="",
-                            help="待释放的 CloudPods server ID")
+                            help="CloudPods server ID to release")
         parser.add_argument("--qemu-num", type=int, default=1,
-                            help="QEMU 数量（1→池A, 2→池B），默认 1")
+                            help="QEMU count (1→Pool A, 2→Pool B), default 1")
         parser.add_argument("--pool-info", default="",
-                            help="pool acquire 时生成的 JSON 文件（含 server_id）")
+                            help="JSON file generated during pool acquire (contains server_id)")
 
     def run(self, args) -> int:
         server_id = args.server_id
         qemu_num = args.qemu_num
 
-        # 支持从 pool_info / vm_info 文件读取
+        # Support reading from pool_info / vm_info file
         if args.pool_info:
             try:
                 with open(args.pool_info, "r", encoding="utf-8") as f:
                     info = json.load(f)
-                # vm_info 格式：_pool 子对象
+                # vm_info format: _pool sub-object
                 pm = info.get("_pool", {})
                 if not server_id:
                     server_id = pm.get("server_id", info.get("server_id", ""))

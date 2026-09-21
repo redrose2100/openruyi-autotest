@@ -1,23 +1,23 @@
 # ============================================================
-# Functional 全量测试流水线（手动触发）
+# Functional full test pipeline (manual trigger)
 #
-# 触发条件：GitHub 页面手动触发（workflow_dispatch）
+# Trigger: GitHub manual trigger (workflow_dispatch)
 #
-# 流程：
-#   1. 检出代码
-#   2. 安装依赖（paramiko/requests）
-#   3. 执行 .github/scripts/cli.py run-functional：
-#        - 发现 tests/functional 下全部测试套
-#        - 并发执行（默认 20，可在配置文件中调整）
-#        - 每个测试套从 CloudPods 资源池申请环境（无则创建）
-#        - 执行完成后释放（不删除）
-#        - 全部完成后统一清理资源池中的虚拟机
-#   4. 生成报告到 reports/functional/<YYYY-MM-DD>/
-#   5. 上传报告为 workflow artifact
+# Workflow:
+#   1. Checkout code
+#   2. Install dependencies (paramiko/requests)
+#   3. Run .github/scripts/cli.py run-functional:
+#        - Discover all test suites under tests/functional
+#        - Run concurrently (default 20, configurable)
+#        - Each suite requests an env from CloudPods pool (create if needed)
+#        - Release after completion (no delete)
+#        - Clean up all pool VMs after all suites finish
+#   4. Generate report to reports/functional/<YYYY-MM-DD>/
+#   5. Upload report as workflow artifact
 #
-# 手动触发参数（可选）：
-#   suite    - 只执行指定的测试套（逗号分隔，空=全部）
-#   no_cleanup - 执行完成后保留资源池中的虚拟机（调试用）
+# Manual trigger parameters (optional):
+#   suite      - Run only specified test suites (comma-separated, empty=all)
+#   no_cleanup - Keep pool VMs after completion (for debugging)
 #
 # Runner: self-hosted (10.20.238.253, openruyi-github-runner)
 # ============================================================
@@ -27,12 +27,12 @@ on:
   workflow_dispatch:
     inputs:
       suite:
-        description: '只执行指定的测试套（逗号分隔，留空=全部）'
+        description: 'Run only specified test suites (comma-separated, empty=all)'
         required: false
         default: ''
         type: string
       no_cleanup:
-        description: '执行完成后保留资源池中的虚拟机（调试用）'
+        description: 'Keep pool VMs after completion (for debugging)'
         required: false
         default: false
         type: boolean
@@ -63,7 +63,7 @@ jobs:
           fetch-depth: 0
 
       # --------------------------------------------------------
-      # 步骤 1：确保 runner 上有依赖（幂等）
+      # Step 1: Ensure runner has dependencies (idempotent)
       # --------------------------------------------------------
       - name: Ensure Python deps
         run: |
@@ -71,7 +71,7 @@ jobs:
             python3 -m pip install --user paramiko requests 2>&1 | tail -3
 
       # --------------------------------------------------------
-      # 步骤 2：执行 functional 全量测试
+      # Step 2: Run functional full test
       # --------------------------------------------------------
       - name: Run functional tests
         id: run
@@ -93,36 +93,36 @@ jobs:
           CLOUDPODS_PASSWORD: ${{ secrets.CLOUDPODS_PASSWORD }}
 
       # --------------------------------------------------------
-      # 步骤 3：在 GitHub Actions 页面直接展示测试报告（Job Summary）
-      #   - $GITHUB_STEP_SUMMARY 中的 Markdown 会在 run 页面直接渲染，
-      #     无需下载 artifact 即可查看汇总表格和详细结果。
+      # Step 3: Show test report as Job Summary on GitHub Actions page
+      #   - Markdown in $GITHUB_STEP_SUMMARY renders directly on the run page,
+      #     no need to download artifact to view summary table and details.
       # --------------------------------------------------------
       - name: Publish test report as Job Summary
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          # 找到最新一份报告（reports/functional/YYYY-MM-DD/report.md）
+          # Find the latest report (reports/functional/YYYY-MM-DD/report.md)
           REPORT_MD=$(ls -1t reports/functional/*/report.md 2>/dev/null | head -1 || true)
           if [ -z "$REPORT_MD" ]; then
             echo "No report.md found, skip Job Summary" >> "$GITHUB_STEP_SUMMARY"
-            echo "## ⚠️ Functional 测试报告未生成" >> "$GITHUB_STEP_SUMMARY"
-            echo "（没有生成 report.md，请查看上方日志定位原因）" >> "$GITHUB_STEP_SUMMARY"
+            echo "## ⚠️ Functional test report not generated" >> "$GITHUB_STEP_SUMMARY"
+            echo "(No report.md was generated, check logs above for details)" >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           {
-            echo "## 📊 Functional 测试报告"
+            echo "## 📊 Functional Test Report"
             echo ""
-            echo "<details><summary>点击查看详细结果</summary>"
+            echo "<details><summary>Click to view detailed results</summary>"
             echo ""
             cat "$REPORT_MD"
             echo ""
             echo "</details>"
           } >> "$GITHUB_STEP_SUMMARY"
-          echo "Job Summary 已发布：$REPORT_MD"
+          echo "Job Summary published: $REPORT_MD"
 
       # --------------------------------------------------------
-      # 步骤 4：上传报告为 artifact（完整 HTML 版本可下载）
+      # Step 4: Upload report as artifact (full HTML version downloadable)
       # --------------------------------------------------------
       - name: Upload functional report
         if: always()

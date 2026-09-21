@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-"""持久化 CI 预置环境池（双池架构）。
+"""Persistent CI pre-provisioned environment pool (dual-pool architecture).
 
-池 A: 1 QEMU/VM, 最多 20 台（默认单服务器场景）
-池 B: 2 QEMU/VM, 最多 5 台, SKU c16m16（双服务器场景）
+Pool A: 1 QEMU/VM, max 20 (default single-server scenario)
+Pool B: 2 QEMU/VM, max 5, SKU c16m16 (dual-server scenario)
 
-生命周期：
-  - 持久化：跨 CI run 保留，provision 是幂等的
-  - 任务到来 → 根据 server 数判定池 → 先查后建 → 用完 release（删除旧 VM + 重建新 VM 放回池）
-  - 故障自愈：probe 失败 → 删除重建
-  - 镜像变化（riscv64 URL hash 变化）→ 全池重建
+Lifecycle:
+  - Persistent: preserved across CI runs; provision is idempotent
+  - Task arrives → determine pool by server count → check then create → release on completion (delete old VM + rebuild new VM back to pool)
+  - Self-healing: probe fails → delete and rebuild
+  - Image change (riscv64 URL hash change) → full pool rebuild
 """
 from __future__ import annotations
 
@@ -26,19 +26,19 @@ from core.config import get_env
 
 logger = logging.getLogger("ci_cli.pool")
 
-# ── 池 A 配置 ──
+# ── Pool A config ──
 POOL_A_PREFIX = "openruyi-ci-pool-1q"
 POOL_A_MAX = 20
 POOL_A_SKU = "ecs.g1.c8m8"
 POOL_A_QEMU_NUM = 1
 
-# ── 池 B 配置 ──
+# ── Pool B config ──
 POOL_B_PREFIX = "openruyi-ci-pool-2q"
 POOL_B_MAX = 5
 POOL_B_SKU = "ecs.g1.c16m16"
 POOL_B_QEMU_NUM = 2
 
-# ── 凭据 ──
+# ── Credentials ──
 def _get_credentials() -> Dict[str, str]:
     keystone_url = get_env("CLOUDPODS_KEYSTONE_URL")
     username = get_env("CLOUDPODS_USER")
@@ -56,9 +56,9 @@ def _get_credentials() -> Dict[str, str]:
         return {"keystone_url": "", "username": "", "password": ""}
 
 
-# ── 镜像版本 ──
+# ── Image version ──
 def _get_image_url() -> str:
-    """从 create_server.Env 读取 riscv64 镜像 URL。"""
+    """Read riscv64 image URL from create_server.Env."""
     try:
         from cloudpods import create_server as cs
         return getattr(cs.Env, "riscv_image_url", "")
@@ -67,20 +67,20 @@ def _get_image_url() -> str:
 
 
 def _compute_image_hash(image_url: str, work_dir: str = "/tmp") -> str:
-    """下载镜像并计算 sha256（持久化镜像版本标识）。"""
+    """Download image and compute sha256 (persistent image version identifier)."""
     import os
     import tempfile
     import subprocess
     if not image_url:
         return ""
     cache_file = os.path.join(work_dir, ".ci_pool_image.sha256")
-    # 如果缓存文件存在且不超过 24h，直接读取
+    # If cache file exists and is less than 24h old, read directly
     if os.path.exists(cache_file):
         mtime = os.path.getmtime(cache_file)
         if time.time() - mtime < 86400:
             with open(cache_file, "r") as f:
                 return f.read().strip()
-    # 下载 + 计算
+    # Download + compute
     logger.info("[pool] computing image hash for %s ...", image_url)
     fd, tmp = tempfile.mkstemp(suffix=".qcow2.xz")
     os.close(fd)
@@ -108,7 +108,7 @@ def _compute_image_hash(image_url: str, work_dir: str = "/tmp") -> str:
             pass
 
 
-# ── 池条目 ──
+# ── Pool entries ──
 POOL_META_FILE = "/tmp/.ci_pool_meta.json"
 _pool_lock = threading.Lock()
 
@@ -130,7 +130,7 @@ def _save_meta(meta: Dict[str, Any]) -> None:
         json.dump(meta, f, indent=2)
 
 
-# ── CloudPods 客户端（懒加载） ──
+# ── CloudPods client (lazy) ──
 _cp_cache: Optional[CloudPodsClient] = None
 
 
@@ -157,10 +157,10 @@ def _get_cp() -> Optional[CloudPodsClient]:
     return _cp_cache
 
 
-# ── SSH 探测 ──
+# ── SSH probe ──
 def _ssh_probe(host: str, ports: List[int], user: str = "openruyi",
                password: str = "openruyi", timeout: int = 30) -> bool:
-    """探测 QEMU SSH 是否可用。所有 port 都可达才算健康。"""
+    """Probe QEMU SSH availability. All ports must be reachable."""
     try:
         from core.ssh import SSHClient
         for port in ports:
@@ -176,13 +176,13 @@ def _ssh_probe(host: str, ports: List[int], user: str = "openruyi",
         return False
 
 
-# ── 创建一套环境 ──
+# ── Create one env ──
 def _create_env(qemu_num: int, sku: str, pool_prefix: str) -> Optional[Dict]:
-    """创建一套环境：1 host + qemu_num 个 QEMU VM。返回 env dict 或 None。"""
+    """Create one env: 1 host + qemu_num QEMU VMs. Returns env dict or None."""
     from commands.launch_qemu_env import launch_env
     from cloudpods import create_server as cs
 
-    # 保存原始 prefix 并临时覆盖
+    # Save original prefix and temporarily override
     orig_prefix = cs.Env.server_name_prefix
     cs.Env.server_name_prefix = pool_prefix
 
@@ -230,7 +230,7 @@ def _delete_env(server_id: str) -> bool:
         return False
 
 
-# ── 池扫描 ──
+# ── Pool scan ──
 def _list_servers(prefix: str) -> List[Dict]:
     cp = _get_cp()
     if cp is None:
@@ -261,9 +261,9 @@ def _get_server_ip(server_id: str) -> str:
     return ""
 
 
-# ── 池定义 ──
+# ── Pool definition ──
 class CIPool:
-    """CI 持久化预置池（单池）。"""
+    """CI persistent pre-provisioned pool (single pool)."""
 
     def __init__(self, prefix: str, max_count: int, qemu_num: int, sku: str):
         self.prefix = prefix
@@ -273,22 +273,23 @@ class CIPool:
         self._acquired: Set[str] = set()
         self._lock = threading.Lock()
 
-    # ── 查询 ──
+    # ── Query ──
     def list_all(self) -> List[Dict]:
         return _list_servers(self.prefix)
 
     def count(self) -> int:
         return len(self.list_all())
 
-    # ── 申请 ──
+    # ── Acquire ──
     def acquire(self, timeout: int = 600) -> Optional[Dict]:
-        """从池中申请一套可用环境。无可用则尝试创建。排队等待直到超时。"""
+        """Acquire an available env from pool. Try to create if none available.
+        Queue and wait until timeout."""
         deadline = time.time() + timeout
         while time.time() < deadline:
             env = self._find_and_acquire()
             if env:
                 return env
-            # 没有可用 → 创建
+            # None available → create
             if self.count() < self.max_count:
                 created = _create_env(self.qemu_num, self.sku, self.prefix)
                 if created:
@@ -343,31 +344,32 @@ class CIPool:
                     "host_ssh_password": "ISRCpassword@123",
                 }
             else:
-                # probe 失败 → 删除重建
+                # probe failed → delete and rebuild
                 logger.warning("[pool:%s] %s probe failed, deleting", self.prefix, sid[:12])
                 _delete_env(sid)
         return None
 
-    # ── 释放 ──
+    # ── Release ──
     def release(self, server_id: str) -> Optional[Dict]:
-        """释放环境回池：仅从已申请集合中移除，不删除 VM。
+        """Release env back to pool: only remove from acquired set, do not delete VM.
 
-        VM 保留在 CloudPods 中供下次 acquire 复用；_find_and_acquire()
-        中有 SSH probe 健康检查，不健康的 VM 会在 scan 时被自动删除重建。
+        VM stays in CloudPods for reuse by next acquire; _find_and_acquire()
+        has SSH probe health check, unhealthy VMs are auto-deleted and rebuilt
+        during scan.
 
         Returns:
-            原 server_id（始终返回非 None 表示释放成功）。
+            server_id (always returns non-None indicating release success).
         """
         with self._lock:
             self._acquired.discard(server_id)
         logger.info("[pool:%s] released %s (VM kept, will be reused)", self.prefix, server_id[:12])
         return {"server_id": server_id}
 
-    # ── 镜像版本检测 ──
+    # ── Image version check ──
     def image_version(self, work_dir: str = "/tmp") -> str:
         return _compute_image_hash(_get_image_url(), work_dir)
 
-    # ── 清理 ──
+    # ── Cleanup ──
     def delete_all(self) -> int:
         servers = self.list_all()
         deleted = 0
@@ -380,9 +382,9 @@ class CIPool:
         logger.info("[pool:%s] deleted %d servers", self.prefix, deleted)
         return deleted
 
-    # ── 健康检测 ──
+    # ── Health check ──
     def probe_all(self) -> List[Dict]:
-        """扫描所有池内 server 的健康状态。"""
+        """Scan health status of all servers in pool."""
         result = []
         servers = self.list_all()
         qemu_ports = [12055 + i for i in range(self.qemu_num)]
@@ -399,7 +401,7 @@ class CIPool:
         return result
 
 
-# ── 双池管理 ──
+# ── Dual-pool management ──
 def _build_pools() -> Dict[str, CIPool]:
     return {
         "1q": CIPool(POOL_A_PREFIX, POOL_A_MAX, POOL_A_QEMU_NUM, POOL_A_SKU),
@@ -408,7 +410,7 @@ def _build_pools() -> Dict[str, CIPool]:
 
 
 def get_pool(qemu_num: int) -> Optional[CIPool]:
-    """根据需要的 QEMU 数量返回对应的池。1→池A, 2→池B。"""
+    """Return the corresponding pool based on required QEMU count. 1 → Pool A, 2 → Pool B."""
     pools = _build_pools()
     if qemu_num == 1:
         return pools["1q"]

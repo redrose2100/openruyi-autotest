@@ -1,8 +1,8 @@
-# 功能测试覆盖详情 - 软件包索引
+# Functional Test Coverage Details - Package Index
 
-共 **202** 个软件包
+**202** packages total
 
-| 软件包 | 测试套数 | 测试点数 |
+| Package | Test Suites | Test Points |
 |--------|:---:|:---:|
 | [acl](acl.md) | 55 | 55 |
 | [atf](atf.md) | 2 | 3 |

@@ -3,8 +3,6 @@
 > Commit message and Merge Request standards for the openruyi-autotest project.
 > Follows the [Conventional Commits](https://www.conventionalcommits.org/) industry standard.
 
-> :cn: [中文版 (Chinese Version)](commit_guide_zh.md)
-
 ---
 
 ## 1. Commit Message Standards

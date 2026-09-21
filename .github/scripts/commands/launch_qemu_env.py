@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-launch-qemu-env 命令
+launch-qemu-env command
 
-流水线步骤 3：根据 compute-requirements 输出的规格 JSON，在 CloudPods 上
-创建 KVM 虚拟机并在其中启动 openRuyi RISC-V QEMU 虚拟机。
+Pipeline step 3: Based on the spec JSON output by compute-requirements, create
+KVM VMs on CloudPods and launch openRuyi RISC-V QEMU VMs inside them.
 
-实现方式：直接 import scripts/cloudpods/create_server.py（复制进来的库），
-用规格 JSON 覆盖 Env 类的属性，再调用 create_qemu_server() 主流程。
-随后解析日志输出，提取 host IP / QEMU SSH 端口 / 凭据写入 vm_info.json。
+Implementation: directly import scripts/cloudpods/create_server.py (the copied-in
+library), override Env class properties with the spec JSON, then call the
+create_qemu_server() main workflow.
+Afterwards parse log output, extract host IP / QEMU SSH port / credentials
+and write them to vm_info.json.
 
-用法：
+Usage:
   python3 .github/scripts/cli.py launch-qemu-env \
       --requirements vm_requirements.json --output vm_info.json
 """
@@ -31,7 +33,7 @@ logger = logging.getLogger("ci_cli.commands.launch_qemu_env")
 
 
 def apply_spec_to_env(env_cls, spec: dict) -> list:
-    """把规格 JSON 覆盖到 Env 类属性上，返回实际生效的字段列表。"""
+    """Apply spec JSON to Env class properties, return list of fields actually set."""
     applied = []
     mapping = {
         "cloudpods_server_num": "cloudpods_server_num",
@@ -48,10 +50,10 @@ def apply_spec_to_env(env_cls, spec: dict) -> list:
     for spec_key, env_attr in mapping.items():
         if spec_key in spec and spec[spec_key] is not None and spec[spec_key] != "":
             val = spec[spec_key]
-            # create_server.py 中 riscv_qemu_disks 是 JSON 字符串（如 '[20,20]'）
+            # In create_server.py, riscv_qemu_disks is a JSON string (e.g. '[20,20]')
             if env_attr == "riscv_qemu_disks":
                 if isinstance(val, str):
-                    pass  # 已是 JSON 字符串，原样传入
+                    pass  # Already a JSON string, pass through as-is
                 elif isinstance(val, list):
                     val = json.dumps(val)
                 else:
@@ -63,8 +65,8 @@ def apply_spec_to_env(env_cls, spec: dict) -> list:
 
 def parse_hosts_from_log(log_text: str) -> dict:
     """
-    从 create_qemu_server 的日志中解析 host/QEMU 信息。
-    日志格式（create_server.py 结尾输出）：
+    Parse host/QEMU info from create_qemu_server log output.
+    Log format (create_server.py final output):
       CloudPods Server ID(s): [uuid1, uuid2]
       Total 1 host(s), 2 QEMU VM(s)
       --- Host 0: 10.20.40.x ---
@@ -73,13 +75,13 @@ def parse_hosts_from_log(log_text: str) -> dict:
     """
     result = {"hosts": [], "server_ids": [], "raw_log_tail": log_text[-3000:]}
 
-    # server IDs（create_server.py 日志格式为 ['uuid1', 'uuid2']，含引号需剥掉）
+    # server IDs (create_server.py log format is ['uuid1', 'uuid2'], strip quotes)
     m = re.search(r"CloudPods Server ID\(s\):\s*\[([^\]]*)\]", log_text)
     if m:
         ids = [x.strip().strip("'\"").strip() for x in m.group(1).split(",") if x.strip()]
         result["server_ids"] = ids
     else:
-        # 失败路径：末尾不会打印 CloudPods Server ID(s):，回退到创建时的行
+        # Failure path: final output won't include CloudPods Server ID(s):, fall back to creation-time line
         m2 = re.search(r"Created servers:\s*\[([^\]]*)\]", log_text)
         if m2:
             ids = [x.strip().strip("'\"").strip() for x in m2.group(1).split(",") if x.strip()]
@@ -101,7 +103,7 @@ def parse_hosts_from_log(log_text: str) -> dict:
         if bm:
             bridge_ips = [x.strip() for x in bm.group(1).split(",") if x.strip()]
 
-        # server id per host（按顺序对应）
+        # server id per host (in order)
         server_id = result["server_ids"][idx] if idx < len(result["server_ids"]) else ""
 
         result["hosts"].append({
@@ -115,9 +117,9 @@ def parse_hosts_from_log(log_text: str) -> dict:
 
 
 def launch_env(spec: dict, logger=None, iscas_disable: bool = True) -> dict:
-    """在 CloudPods 上创建一套 QEMU 环境（1 host + 若干 QEMU VM）。
+    """Create a QEMU environment on CloudPods (1 host + several QEMU VMs).
 
-    可直接被 CLI 命令或 functional 模块复用。返回 vm_info 字典：
+    Can be reused directly by CLI commands or the functional module. Returns a vm_info dict:
       {
         "hosts": [{"host_ip", "server_id", "qemu_ports", "qemu_bridge_ips",
                    "ssh_user", "ssh_password", "host_ssh_user", "host_ssh_password"}],
@@ -126,19 +128,20 @@ def launch_env(spec: dict, logger=None, iscas_disable: bool = True) -> dict:
         "ok": bool,
       }
     """
-    # 直接 import 复制进来的 create_server 库（不再动态加载）
+    # Directly import the copied-in create_server library (no more dynamic loading)
     from cloudpods import create_server as cs
 
     env_cls = cs.Env
 
     # ------------------------------------------------------------
-    # 主机侧 yum 仓库修复（不修改 create_server.py）：
-    #   ISCAS 镜像的 EPOL 仓库路径 404（正确是 EPOL/main/），且
-    #   Everything 仓库极慢（~35KB/s），会导致 dnf makecache 失败。
-    #   通过 monkey-patch SSHClient.exec 拦截 iscas-mirror.repo 的
-    #   写入，将 enabled=1 全部改为 enabled=0（禁用 ISCAS 仓库），
-    #   makecache 走默认 openEuler.repo 的 baseurl
-    #   （repo.openeuler.org，已验证 200 且速度快）。
+    # Host-side yum repo fix (without modifying create_server.py):
+    #   The ISCAS mirror EPOL repo path returns 404 (the correct path is EPOL/main/),
+    #   and the Everything repo is extremely slow (~35KB/s), which causes
+    #   dnf makecache to fail.
+    #   Monkey-patch SSHClient.exec to intercept iscas-mirror.repo writes,
+    #   changing enabled=1 to enabled=0 (disabling ISCAS repos),
+    #   so makecache uses the default openEuler.repo baseurl
+    #   (repo.openeuler.org, verified as 200 and fast).
     # ------------------------------------------------------------
     if iscas_disable:
         orig_exec = cs.SSHClient.exec
@@ -151,7 +154,7 @@ def launch_env(spec: dict, logger=None, iscas_disable: bool = True) -> dict:
 
         cs.SSHClient.exec = patched_exec
 
-    # 环境变量优先（runner 机器上注入的 CloudPods 凭据）
+    # Environment variables take priority (CloudPods credentials injected on the runner machine)
     for env_key, attr in [
         ("CLOUDPODS_KEYSTONE_URL", "cloudpods_keystone_url"),
         ("CLOUDPODS_USER", "cloudpods_user"),
@@ -164,20 +167,20 @@ def launch_env(spec: dict, logger=None, iscas_disable: bool = True) -> dict:
     if logger:
         logger.info(f"Applied spec fields to Env: {applied}")
 
-    # 捕获 create_server 的日志输出
+    # Capture create_server log output
     log_capture = io.StringIO()
     log_handler = logging.StreamHandler(log_capture)
     log_handler.setFormatter(logging.Formatter("%(asctime)s | %(levelname)s | %(message)s"))
     cs.log.addHandler(log_handler)
 
-    # 同时让原 logger 输出到控制台
+    # Also attach console handler to original logger
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(logging.Formatter("%(asctime)s | %(levelname)s | %(message)s"))
     cs.log.addHandler(console_handler)
 
     ok = cs.create_qemu_server(env_cls)
 
-    # 获取捕获的日志
+    # Get captured log output
     captured = log_capture.getvalue()
     cs.log.removeHandler(log_handler)
     cs.log.removeHandler(console_handler)
@@ -185,7 +188,7 @@ def launch_env(spec: dict, logger=None, iscas_disable: bool = True) -> dict:
     if not ok:
         if logger:
             logger.error(f"create_qemu_server FAILED, tail of log:\n{captured[-3000:]}")
-        # 仍然尝试解析已创建的服务器用于清理
+        # Still try to parse already-created servers for cleanup
         info = parse_hosts_from_log(captured)
         return {**info, "spec": spec, "ok": False}
 
@@ -196,7 +199,7 @@ def launch_env(spec: dict, logger=None, iscas_disable: bool = True) -> dict:
             logger.error(captured[-5000:])
         return {**info, "spec": spec, "ok": False}
 
-    # 补充凭据信息（从 Env）
+    # Augment with credential info (from Env)
     for host in info["hosts"]:
         host["ssh_user"] = env_cls.riscv_default_username
         host["ssh_password"] = env_cls.riscv_default_password
@@ -205,7 +208,7 @@ def launch_env(spec: dict, logger=None, iscas_disable: bool = True) -> dict:
 
     vm_info = {**info, "spec": spec, "ok": True}
 
-    # 补充 CloudPods 凭据（供 cleanup-cloudpods 无环境变量时回退）
+    # Augment with CloudPods credentials (fallback for cleanup-cloudpods when env vars absent)
     vm_info["cloudpods_keystone_url"] = env_cls.cloudpods_keystone_url
     vm_info["cloudpods_user"] = env_cls.cloudpods_user
     vm_info["cloudpods_password"] = env_cls.cloudpods_password
@@ -221,10 +224,10 @@ def launch_env(spec: dict, logger=None, iscas_disable: bool = True) -> dict:
 
 
 class LaunchQemuEnvCommand(BaseCommand):
-    """创建 CloudPods 主机并在其中启动 QEMU 虚拟机"""
+    """Create CloudPods hosts and launch QEMU VMs inside them"""
 
     name = "launch-qemu-env"
-    description = "在 CloudPods 创建 KVM 主机并启动 openRuyi RISC-V QEMU 虚拟机"
+    description = "Create KVM hosts on CloudPods and launch openRuyi RISC-V QEMU VMs"
 
     def setup_parser(self, parser):
         parser.add_argument("--requirements", required=True, help="Path to vm_requirements.json")

@@ -7,10 +7,11 @@ rlJournalStart
     rlPhaseStartSetup
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+        rlRun "echo '${TEST_SERVER_1_PASSWORD:-openruyi}' | sudo -S dnf install -y flex 2>/dev/null || rpm -q flex" 0 "Ensure flex is installed"
     rlPhaseEnd
 
     rlPhaseStartTest "Check main tool executability"
-        rlRun "which flex 2>/dev/null || which flex 2>/dev/null" 0 "Check flex is installed"
+        rlRun "which flex 2>/dev/null" 0 "Check flex binary exists"
         rlRun "flex --help >/dev/null 2>&1 || flex -h >/dev/null 2>&1 || flex --help >/dev/null 2>&1" 0 "Check flex basic executability"
     rlPhaseEnd
 

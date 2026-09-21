@@ -7,10 +7,11 @@ rlJournalStart
     rlPhaseStartSetup
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+        rlRun "echo '${TEST_SERVER_1_PASSWORD:-openruyi}' | sudo -S dnf install -y swig 2>/dev/null || rpm -q swig" 0 "Ensure swig is installed"
     rlPhaseEnd
 
     rlPhaseStartTest "Check main tool executability"
-        rlRun "which swig 2>/dev/null || which swig 2>/dev/null" 0 "Check swig is installed"
+        rlRun "which swig 2>/dev/null" 0 "Check swig binary exists"
         rlRun "swig --help >/dev/null 2>&1 || swig -h >/dev/null 2>&1 || swig --help >/dev/null 2>&1" 0 "Check swig basic executability"
     rlPhaseEnd
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""pool-acquire 命令：从预置池中申请一套环境。"""
+"""pool-acquire command: acquire an environment from the pre-provisioned pool."""
 from __future__ import annotations
 
 import json
@@ -12,18 +12,18 @@ logger = logging.getLogger("ci_cli.commands.pool_acquire")
 
 
 class PoolAcquireCommand(BaseCommand):
-    """从 CI 预置池申请环境（阻塞等待直到成功或超时）"""
+    """Acquire an environment from the CI pre-provisioned pool (blocking until success or timeout)"""
 
     name = "pool-acquire"
-    description = "从 CI 预置池中申请一套 QEMU 环境"
+    description = "Acquire a QEMU environment from the CI pre-provisioned pool"
 
     def setup_parser(self, parser):
         parser.add_argument("--requirements", default="vm_requirements.json",
-                            help="Path to vm_requirements.json（含 server_count）")
+                            help="Path to vm_requirements.json (contains server_count)")
         parser.add_argument("--server-count", type=int, default=0,
-                            help="直接指定 QEMU 数量（1→池A, 2→池B），0=从 requirements 读取")
+                            help="Directly specify QEMU count (1→pool A, 2→pool B), 0=read from requirements")
         parser.add_argument("--timeout", type=int, default=600,
-                            help="最大等待秒数，默认 600")
+                            help="Max wait seconds, default 600")
         parser.add_argument("--output", default="pool_env.json",
                             help="Output pool env JSON path")
 
@@ -50,7 +50,7 @@ class PoolAcquireCommand(BaseCommand):
             self.log_error("Pool acquire failed/timeout")
             return 1
 
-        # 包装为 vm_info 兼容格式
+        # Wrap into vm_info compatible format
         vm_info = {
             "ok": True,
             "hosts": [{
@@ -61,7 +61,7 @@ class PoolAcquireCommand(BaseCommand):
                 "host_ssh_user": env.get("host_ssh_user", "root"),
                 "host_ssh_password": env.get("host_ssh_password", ""),
             }],
-            # 池化元信息（供 release 使用）
+            # Pool metadata (for release use)
             "_pool": {
                 "server_id": env["server_id"],
                 "qemu_num": server_count,

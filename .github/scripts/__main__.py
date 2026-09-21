@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-支持 `python3 -m scripts <command>` 方式调用（从仓库根目录）。
+Supports `python3 -m scripts <command>` invocation (from repo root).
 """
 from __future__ import annotations
 

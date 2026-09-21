@@ -4,8 +4,6 @@
 >
 > **Related Documents**: [Commit & MR Standards](commit_guide.md) · [User Guide](user_guide.md)
 
-> :cn: [中文版 (Chinese Version)](development-guide_zh.md)
-
 ---
 
 ## 1. Test Framework Overview

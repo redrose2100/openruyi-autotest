@@ -1,13 +1,13 @@
-# 安全测试覆盖详情
+# Security Test Coverage Details
 
-> 最后更新: 2026-06-15 | 自动生成
-> 测试环境: openRuyi RISC-V (10.20.237.192)
+> Last updated: 2026-06-15 | Auto-generated
+> Test environment: openRuyi RISC-V (10.20.237.192)
 
-共 **2** 个安全测试套件，**106** 个测试用例，**124** 个功能点
+**2** security test suites total, **106** test cases, **124** feature points
 
-## 安全测试套件一览
+## Security Test Suites Overview
 
-| 测试套件 | 用例数 | 功能点 | PASS | FAIL | SKIP | TIMEOUT | 类型 |
+| Test Suite | Cases | Feature Points | PASS | FAIL | SKIP | TIMEOUT | Type |
 |----------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | [nmap](#nmap) | 8 | 26 | 8 | 0 | 0 | 0 | rlRun |
 | [cve](#cve) | 98 | 98 | 74 | 0 | 24 | 0 | LTP (runltp) |
@@ -17,86 +17,86 @@
 ## nmap
 
 <details>
-<summary><b>nmap — 8 个用例 / 26 个功能点</b></summary>
+<summary><b>nmap — 8 cases / 26 feature points</b></summary>
 
 #### test_nmap_basic_scan
 
-- TCP 端口扫描 (常用端口)
-- UDP 端口扫描 (DNS)
-- TCP 端口扫描 (1-100)
+- TCP port scan (common ports)
+- UDP port scan (DNS)
+- TCP port scan (1-100)
 
 #### test_nmap_service_detection
 
-- SSH 服务版本检测
-- 服务版本探测
+- SSH service version detection
+- Service version probe
 
 #### test_nmap_os_detection
 
-- 操作系统指纹识别
-- 限制型 OS 检测
+- OS fingerprint identification
+- Limited OS detection
 
 #### test_nmap_script_scan
 
-- NSE banner 脚本
-- NSE HTTP 头检测
-- NSE SSH 认证方法检测
-- NSE SSL 密码套件枚举
+- NSE banner script
+- NSE HTTP header detection
+- NSE SSH auth method detection
+- NSE SSL cipher suite enumeration
 
 #### test_nmap_firewall_evasion
 
-- 分片包扫描 (fragment)
-- 随机数据填充扫描
-- 错误校验和探测
+- Fragmented packet scan (fragment)
+- Random data padding scan
+- Bad checksum probe
 
 #### test_nmap_network_discovery
 
-- Ping 扫描 (主机发现)
-- ICMP Echo 发现
-- TCP SYN Ping 发现
+- Ping scan (host discovery)
+- ICMP Echo discovery
+- TCP SYN Ping discovery
 
 #### test_nmap_ssl_analysis
 
-- SSL 证书分析
-- Heartbleed 漏洞检测
-- SSLv2 支持检测
+- SSL certificate analysis
+- Heartbleed vulnerability detection
+- SSLv2 support detection
 
 #### test_nmap_output_formats
 
-- 普通格式输出 (-oN)
-- XML 格式输出 (-oX)
-- Grepable 格式输出 (-oG)
-- 全格式输出 (-oA)
-- 普通输出文件存在
-- XML 输出文件存在
-- Grepable 输出文件存在
+- Normal format output (-oN)
+- XML format output (-oX)
+- Grepable format output (-oG)
+- All formats output (-oA)
+- Normal output file exists
+- XML output file exists
+- Grepable output file exists
 
 </details>
 
-## 安全测试覆盖场景
+## Security Test Coverage Scenarios
 
-| 场景类别 | 覆盖内容 | nmap 命令示例 |
+| Scenario Category | Coverage | nmap Command Example |
 |----------|---------|-------------|
-| **端口扫描** | TCP/UDP 端口发现 | `nmap -T4 -p 1-100` / `nmap -sU -p 53` |
-| **服务检测** | 服务版本识别 | `nmap -sV -p 22` |
-| **OS 指纹** | 操作系统识别 | `nmap -O --osscan-limit` |
-| **NSE 脚本** | 漏洞/信息探测 | `nmap --script=banner,ssl-enum-ciphers` |
-| **规避技术** | 防火墙/IDS 绕过 | `nmap -f` / `nmap --data-length` / `nmap --badsum` |
-| **主机发现** | 存活主机探测 | `nmap -sn` / `nmap -PE` / `nmap -PS` |
-| **SSL/TLS** | 证书/密码分析 | `nmap --script=ssl-cert,ssl-heartbleed,sslv2` |
-| **输出格式** | 多格式报告 | `nmap -oN/-oX/-oG/-oA` |
+| **Port Scan** | TCP/UDP port discovery | `nmap -T4 -p 1-100` / `nmap -sU -p 53` |
+| **Service Detection** | Service version identification | `nmap -sV -p 22` |
+| **OS Fingerprint** | Operating system identification | `nmap -O --osscan-limit` |
+| **NSE Scripts** | Vulnerability/info probe | `nmap --script=banner,ssl-enum-ciphers` |
+| **Evasion Techniques** | Firewall/IDS bypass | `nmap -f` / `nmap --data-length` / `nmap --badsum` |
+| **Host Discovery** | Live host detection | `nmap -sn` / `nmap -PE` / `nmap -PS` |
+| **SSL/TLS** | Certificate/cipher analysis | `nmap --script=ssl-cert,ssl-heartbleed,sslv2` |
+| **Output Formats** | Multi-format reports | `nmap -oN/-oX/-oG/-oA` |
 
 ---
 
 ## cve
 
 <details>
-<summary><b>cve — 98 个用例 / 98 个功能点（74P / 24S / 0F）</b></summary>
+<summary><b>cve — 98 cases / 98 feature points (74P / 24S / 0F)</b></summary>
 
-> **数据来源**: [LTP (Linux Test Project)](https://github.com/linux-test-project/ltp) runtest/cve
-> **测试方式**: `sudo ./runltp -f cve` 原生运行（93 个），另有 5 个新 CVE 直接运行 LTP 二进制
-> **实事求是**: PASS=系统已修复该漏洞；SKIP=测试不适用或二进制不存在；FAIL=0 表示系统对所有已知 CVE 已修复
+> **Source**: [LTP (Linux Test Project)](https://github.com/linux-test-project/ltp) runtest/cve
+> **Test method**: `sudo ./runltp -f cve` native run (93), plus 5 new CVEs run LTP binary directly
+> **Honest results**: PASS = system has patched this vulnerability; SKIP = test not applicable or binary not available; FAIL = 0 means system is patched for all known CVEs
 
-### PASS（系统已修复，74 个）
+### PASS (system patched, 74)
 
 | CVE ID | CVE ID | CVE ID | CVE ID |
 |--------|--------|--------|--------|
@@ -120,66 +120,66 @@
 | cve-2022-0185 | cve-2022-4378 | cve-2023-0461 | cve-2023-31248 |
 | cve-2025-21756 | cve-2025-38236 |
 
-### SKIP（不适用或二进制不可用，24 个）
+### SKIP (not applicable or binary unavailable, 24)
 
-| CVE ID | 原因 |
+| CVE ID | Reason |
 |--------|------|
-| cve-2011-2496 | RISC-V 不适用 |
-| cve-2015-3290 | RISC-V 不适用 |
-| cve-2017-5754 | RISC-V 不适用 (Meltdown) |
-| cve-2017-7616 | RISC-V 不适用 |
-| cve-2017-15537 | RISC-V 不适用 |
-| cve-2017-17053 | RISC-V 不适用 |
-| cve-2017-17805 | RISC-V 不适用 |
-| cve-2017-18075 | RISC-V 不适用 |
-| cve-2018-7566 | RISC-V 不适用 |
-| cve-2018-8897 | RISC-V 不适用 |
-| cve-2018-10124 | RISC-V 不适用 |
-| cve-2018-1000199 | RISC-V 不适用 |
-| cve-2018-1000204 | RISC-V 不适用 |
-| cve-2020-25704 | RISC-V 不适用 |
-| cve-2021-3444 | RISC-V 不适用 |
-| cve-2021-4204 | RISC-V 不适用 |
-| cve-2021-22555 | RISC-V 不适用 |
-| cve-2022-23222 | RISC-V 不适用 |
-| cve-2023-1829 | RISC-V 不适用 |
-| cve-2026-31431 | LTP 二进制不可用 |
-| cve-2026-43284 | LTP 二进制不可用 |
-| cve-2026-43494 | LTP 二进制不可用 |
-| cve-2026-46300 | LTP 二进制不可用 |
-| cve-2026-46300-skb-segment | LTP 二进制不可用 |
+| cve-2011-2496 | RISC-V not applicable |
+| cve-2015-3290 | RISC-V not applicable |
+| cve-2017-5754 | RISC-V not applicable (Meltdown) |
+| cve-2017-7616 | RISC-V not applicable |
+| cve-2017-15537 | RISC-V not applicable |
+| cve-2017-17053 | RISC-V not applicable |
+| cve-2017-17805 | RISC-V not applicable |
+| cve-2017-18075 | RISC-V not applicable |
+| cve-2018-7566 | RISC-V not applicable |
+| cve-2018-8897 | RISC-V not applicable |
+| cve-2018-10124 | RISC-V not applicable |
+| cve-2018-1000199 | RISC-V not applicable |
+| cve-2018-1000204 | RISC-V not applicable |
+| cve-2020-25704 | RISC-V not applicable |
+| cve-2021-3444 | RISC-V not applicable |
+| cve-2021-4204 | RISC-V not applicable |
+| cve-2021-22555 | RISC-V not applicable |
+| cve-2022-23222 | RISC-V not applicable |
+| cve-2023-1829 | RISC-V not applicable |
+| cve-2026-31431 | LTP binary unavailable |
+| cve-2026-43284 | LTP binary unavailable |
+| cve-2026-43494 | LTP binary unavailable |
+| cve-2026-46300 | LTP binary unavailable |
+| cve-2026-46300-skb-segment | LTP binary unavailable |
 
-### 新旧对比
+### Old vs New Comparison
 
-| 指标 | 旧方案（直接二进制） | 新方案（runltp -f cve） |
+| Metric | Old (direct binary) | New (runltp -f cve) |
 |------|:---:|:---:|
 | PASS | 38 | **74** (+36) |
 | FAIL | 7 | **0** (-7) |
 | SKIP | 47 | 19 (-28) |
 | TIMEOUT | 6 | **0** (-6) |
-| 通过率 | 38.8% | **75.5%** |
+| Pass Rate | 38.8% | **75.5%** |
 
 </details>
 
 ---
 
-## 运行安全测试
+## Running Security Tests
 
 ```bash
-# 单独运行 nmap 安全测试
+# Run nmap security tests individually
 cd tests/security/nmap && bash test.sh
 
-# 运行 CVE 安全测试（需 LTP 环境）
+# Run CVE security tests (requires LTP environment)
 cd tests/security/cve && bash run_all.sh
 
-# 在服务器上运行
+# Run on server
 ssh openruyi@10.20.237.192 -p 12055
 cd /path/to/tests/security/nmap && bash test.sh
 ```
 
-## 安全说明
+## Security Notes
 
-- 所有测试仅针对 localhost (127.0.0.1) 执行，不会扫描外部网络
-- 部分功能（OS 指纹识别）需要 root 权限，非 root 环境下会自动跳过
-- 扫描使用 `-T4` 和 `--host-timeout` 参数控制时间
-- 如发现危险端口开放（telnet 23、FTP 21、RDP 3389 等），测试会发出警告
+- All tests run against localhost (127.0.0.1) only; no external network scanning
+- Some features (OS fingerprint) require root privileges; automatically skipped in non-root environments
+- Scans use `-T4` and `--host-timeout` parameters to control timing
+- If dangerous ports are found open (telnet 23, FTP 21, RDP 3389, etc.), tests will emit a warning

@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-CloudPods API 客户端（共享库）。
+CloudPods API client (shared library).
 
-设计要点：
-  * 从 tools/cloudpods/create_server.py 的 CloudPodsClient 提取，供多个命令复用
-    （launch-qemu-env 创建/等待，cleanup-cloudpods 删除），避免重复实现。
-  * 保持与原 CloudPodsClient 完全兼容的方法签名（create_server.py 中同名类
-    仍是权威实现，此处为面向命令的轻量封装 + 凭据解密工具）。
+Design highlights:
+  * Extracted from tools/cloudpods/create_server.py's CloudPodsClient for reuse across
+    multiple commands (launch-qemu-env create/wait, cleanup-cloudpods delete), avoiding
+    duplicate implementations.
+  * Maintains full method signature compatibility with the original CloudPodsClient
+    (the same-named class in create_server.py remains the canonical implementation;
+    this is a command-oriented lightweight wrapper + credential decryption utility).
 """
 from __future__ import annotations
 
@@ -32,7 +34,7 @@ def derive_key(master_key: str) -> bytes:
 
 
 def decrypt_password(encrypted: str, master_key: str = _MASTER_KEY) -> str:
-    """解密 XOR+Base64 加密的密码。"""
+    """Decrypt XOR+Base64 encrypted password."""
     key = derive_key(master_key)
     encrypted_bytes = __import__("base64").b64decode(encrypted)
     decrypted = bytes(
@@ -42,7 +44,7 @@ def decrypt_password(encrypted: str, master_key: str = _MASTER_KEY) -> str:
 
 
 class CloudPodsClient:
-    """CloudPods REST API 客户端（精简版，供 CI 命令使用）。"""
+    """CloudPods REST API client (lightweight, for CI command usage)."""
 
     def __init__(
         self,
@@ -62,7 +64,7 @@ class CloudPodsClient:
         self._compute_url = f"{self._endpoints.get('region2', '')}/"
 
     # ------------------------------------------------------------------
-    # 会话
+    # Session
     # ------------------------------------------------------------------
     def _get_session(self) -> Optional[requests.Session]:
         session = requests.Session()
@@ -110,7 +112,7 @@ class CloudPodsClient:
                 name = ep.get("service_name", "")
                 ep_url = ep.get("url", "")
                 if name and ep_url:
-                    # 优先 IP 形式 endpoint（跨平台兼容）
+                    # Prefer IP-form endpoint (cross-platform compatible)
                     if name in endpoints:
                         existing = endpoints[name]
                         if not re.match(r"https?://\d+\.\d+\.\d+\.\d+", existing) and re.match(
@@ -134,7 +136,7 @@ class CloudPodsClient:
             return None
 
     # ------------------------------------------------------------------
-    # 服务器生命周期
+    # Server lifecycle
     # ------------------------------------------------------------------
     def create_server_by_guest_image(
         self,
@@ -150,7 +152,7 @@ class CloudPodsClient:
         hypervisor: str = "kvm",
         bios: str = "BIOS",
     ) -> List[str]:
-        """创建一个/多个 KVM 虚拟机，返回 server_id 列表。"""
+        """Create one or more KVM VMs, return list of server_id."""
         if disks is None:
             disks = []
         if nets_list is None:
@@ -217,20 +219,20 @@ class CloudPodsClient:
         return None
 
     def list_servers(self, name_prefix: str = "", limit: int = 0) -> List[Dict]:
-        """按名称前缀列出 CloudPods 服务器（精简字段）。
+        """List CloudPods servers by name prefix (abbreviated fields).
 
-        CloudPods API 的 name 参数为精确匹配，而服务器名称格式为
-        ``{prefix}-{uuid_suffix}``（generate_name 机制），因此不在 API
-        层传 name 参数，获取全部 server 后在客户端按前缀过滤。
+        The CloudPods API name parameter does exact match, while server names are
+        formatted as ``{prefix}-{uuid_suffix}`` (generate_name mechanism), so the API
+        cannot filter by prefix directly. Fetch all servers then filter by prefix client-side.
 
-        返回 list，每项含 id / name / status / ips 等关键字段；
-        查询失败返回空列表。
+        Returns a list, each item containing id / name / status / ips and other key fields;
+        returns empty list on query failure.
         """
         params: Dict = {"scope": "system", "details": "false"}
         if limit:
             params["limit"] = limit
-        # 不传 name 参数：CloudPods API name 是精确匹配，而服务器命名格式为
-        # openruyi-ci-pool-1q-xxxxxxxx，前缀匹配不到。改为客户端过滤。
+        # Don't pass name param: CloudPods API name is exact match, but server naming format
+        # is openruyi-ci-pool-1q-xxxxxxxx, which won't match a prefix. Filter client-side instead.
         rs = self._request("GET", "/servers", params=params)
         if rs is None or rs.status_code != 200:
             logger.error("List servers failed: status=%s",
@@ -269,7 +271,7 @@ class CloudPodsClient:
         return nics[0].get("ip_addr")
 
     def wait_for_server_is_on(self, server_id: str, timeout: int = 1800) -> bool:
-        """等待服务器进入 running 状态。"""
+        """Wait for the server to enter running status."""
         logger.info("Waiting for server %s to be running (timeout=%ss)...",
                     server_id, timeout)
         start = time.time()

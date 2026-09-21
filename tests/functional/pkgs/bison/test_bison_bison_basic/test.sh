@@ -7,10 +7,11 @@ rlJournalStart
     rlPhaseStartSetup
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+        rlRun "echo '${TEST_SERVER_1_PASSWORD:-openruyi}' | sudo -S dnf install -y bison 2>/dev/null || rpm -q bison" 0 "Ensure bison is installed"
     rlPhaseEnd
 
     rlPhaseStartTest "Check main tool executability"
-        rlRun "which bison 2>/dev/null || which bison 2>/dev/null" 0 "Check bison is installed"
+        rlRun "which bison 2>/dev/null" 0 "Check bison binary exists"
         rlRun "bison --help >/dev/null 2>&1 || bison -h >/dev/null 2>&1 || bison --help >/dev/null 2>&1" 0 "Check bison basic executability"
     rlPhaseEnd
 

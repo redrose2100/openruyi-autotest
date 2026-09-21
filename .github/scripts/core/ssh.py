@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-统一 SSH 客户端（paramiko）。
+Unified SSH client (paramiko).
 
-设计说明：run_tests_in_qemu.py 原来的 SSHClient.exec 返回 (code, stdout, stderr)
-三元组；create_server.py 的 SSHClient.exec 返回 ExecResult。这里统一为
-ExecResult（含 code/stdout/stderr 属性），便于命令间共享。为避免破坏
-create_server.py（原样复制），core.ssh 提供与 create_server 一致语义的
-SSHClient，同时新增 put_file 等扩展方法。
+Design notes: run_tests_in_qemu.py's original SSHClient.exec returns a
+(code, stdout, stderr) triple; create_server.py's SSHClient.exec returns
+ExecResult. We unify on ExecResult (with code/stdout/stderr attributes)
+for easy sharing between commands. To avoid breaking create_server.py
+(copied verbatim), core.ssh provides an SSHClient with semantics consistent
+with create_server, while adding put_file and other extension methods.
 """
 from __future__ import annotations
 
@@ -21,7 +22,7 @@ import paramiko
 
 @dataclass
 class ExecResult:
-    """SSH 命令执行结果。"""
+    """SSH command execution result."""
 
     code: int
     stdout: str
@@ -35,12 +36,12 @@ class ExecResult:
     def output(self) -> str:
         return self.stdout + ("\n[stderr]\n" + self.stderr if self.stderr else "")
 
-    def __str__(self) -> str:  # 兼容 create_server.py 的 print(result) 用法
+    def __str__(self) -> str:  # For compatibility with create_server.py's print(result) usage
         return self.output
 
 
 class SSHClient:
-    """paramiko SSH 客户端封装，exec 返回 ExecResult。"""
+    """paramiko SSH client wrapper, exec returns ExecResult."""
 
     def __init__(
         self,
@@ -69,11 +70,12 @@ class SSHClient:
         )
 
     def exec(self, cmd: str, timeout: int = 600) -> ExecResult:
-        """执行命令，返回 ExecResult(code, stdout, stderr)。
+        """Execute a command, returning ExecResult(code, stdout, stderr).
 
-        超时（channel.settimeout 到期或调用方 timeout 到期）返回
-        ExecResult(124, 已收集输出, "[timeout]")，不抛异常，避免
-        上层（如 run_tests_direct）因单个用例超时丢失整套已执行结果。
+        On timeout (channel.settimeout expiry or caller timeout expiry), returns
+        ExecResult(124, collected_output, "[timeout]"), does NOT raise an exception,
+        so the upper layer (e.g. run_tests_direct) won't lose already-collected suite
+        results due to a single case timeout.
         """
         transport = self.ssh.get_transport()
         if transport is None:
@@ -109,7 +111,7 @@ class SSHClient:
                     try:
                         data = channel.recv(65536)
                     except socket.timeout:
-                        # channel.settimeout 到期：返回已收集输出（124 = timeout）
+                        # channel.settimeout expired: return collected output (124 = timeout)
                         try:
                             channel.close()
                         except Exception:  # noqa: BLE001
@@ -156,7 +158,7 @@ class SSHClient:
                             stderr_buf.append(err.decode("utf-8", "ignore"))
                     break
             except socket.timeout:
-                # select 或 recv 期间 channel.settimeout 到期
+                # channel.settimeout expired during select or recv
                 try:
                     channel.close()
                 except Exception:  # noqa: BLE001
@@ -167,7 +169,7 @@ class SSHClient:
                     "".join(stderr_buf) + "\n[timeout]",
                 )
             except (EOFError, OSError) as exc:
-                # 连接中断：返回已收集输出（255 = 连接错误）
+                # Connection lost: return collected output (255 = connection error)
                 try:
                     channel.close()
                 except Exception:  # noqa: BLE001
@@ -196,9 +198,9 @@ class SSHClient:
             return False
 
     def exec_script(self, script: str, timeout: int = 120) -> ExecResult:
-        """安全执行一段 shell 脚本：base64 编码传输，规避引号/转义问题。
+        """Safely execute a shell script: base64-encoded transfer to avoid quoting/escaping issues.
 
-        适用于需要在远端执行多行、含单双引号的脚本场景。
+        Useful for executing multi-line scripts with single/double quotes on the remote.
         """
         import base64
 
@@ -226,10 +228,10 @@ def wait_ssh_ready(
     connect_timeout: int = 10,
     quiet: bool = True,
 ) -> Optional[SSHClient]:
-    """轮询等待 SSH 可达，返回已连接的 SSHClient（或 None）。
+    """Poll and wait for SSH to become reachable, returning a connected SSHClient (or None).
 
-    与 create_server.py 的 wait_for_sshable 语义一致，但复用 core.ssh 客户端，
-    成功时直接返回可用的连接，避免重复连接。
+    Same semantics as create_server.py's wait_for_sshable, but reuses the core.ssh client,
+    returning a usable connection directly on success to avoid reconnecting.
     """
     import logging
     import time
@@ -256,7 +258,7 @@ def wait_ssh_ready(
                     logger.info("%s:%s SSH OK after %ss", ip, port, i)
                     return ssh
             except Exception:  # noqa: BLE001
-                pass  # 静默重试
+                pass  # Retry silently
             finally:
                 if ssh is not None:
                     try:

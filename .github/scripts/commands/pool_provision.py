@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""pool-provision 命令：幂等创建 / 补齐双池环境。"""
+"""pool-provision command: idempotent creation / replenishment of dual-pool environments."""
 from __future__ import annotations
 
 import json
@@ -18,10 +18,10 @@ logger = logging.getLogger("ci_cli.commands.pool_provision")
 
 
 class PoolProvisionCommand(BaseCommand):
-    """幂等创建 / 补齐 CI 预置环境池"""
+    """Idempotently create / replenish the CI pre-provisioned environment pools"""
 
     name = "pool-provision"
-    description = "幂等创建/补齐 CI 预置环境池（池A=1QEMU×20, 池B=2QEMU×5）"
+    description = "Idempotently create/replenish CI pre-provisioned pools (PoolA=1QEMU×20, PoolB=2QEMU×5)"
 
     def setup_parser(self, parser):
         parser.add_argument("--output", default="pool_info.json",
@@ -35,13 +35,13 @@ class PoolProvisionCommand(BaseCommand):
             self.log_error("No riscv_image_url found in Env")
             return 1
 
-        # 镜像版本检测
+        # Image version detection
         current_hash = _compute_image_hash(image_url, args.image_work_dir)
         if not current_hash:
             self.log_error("Failed to compute image hash")
             return 1
 
-        # 读取已记录版本
+        # Read previously recorded version
         from pool.core import _load_meta, _save_meta
         meta = _load_meta()
         saved_hash = meta.get("image_hash", "")
@@ -53,12 +53,12 @@ class PoolProvisionCommand(BaseCommand):
         meta["image_hash"] = current_hash
         _save_meta(meta)
 
-        # 补齐池 A
+        # Replenish pool A
         self._fill_pool("A", POOL_A_PREFIX, POOL_A_MAX, POOL_A_QEMU_NUM, POOL_A_SKU)
-        # 补齐池 B
+        # Replenish pool B
         self._fill_pool("B", POOL_B_PREFIX, POOL_B_MAX, POOL_B_QEMU_NUM, POOL_B_SKU)
 
-        # 输出池信息
+        # Output pool info
         pool_info = {
             "image_hash": current_hash,
             "pool_a": self._pool_status(POOL_A_PREFIX),

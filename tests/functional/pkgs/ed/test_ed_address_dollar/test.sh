@@ -6,6 +6,7 @@ rlJournalStart
     rlPhaseStartSetup "Environment setup"
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+        rlRun "echo '${TEST_SERVER_1_PASSWORD:-openruyi}' | sudo -S dnf install -y ed 2>/dev/null || rpm -q ed" 0 "Ensure ed is installed"
     rlPhaseEnd
 
     rlPhaseStartTest "address last line with $"

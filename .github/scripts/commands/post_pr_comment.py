@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-post-pr-comment 命令
+post-pr-comment command
 
-流水线步骤 5：将测试结果汇总发布为 PR 评论。
+Pipeline step 5: Aggregate test results and publish as a PR comment.
 
-输入：test_results.json
-输出：PR 评论（GitHub API）
+Input: test_results.json
+Output: PR comment (GitHub API)
 
-依赖环境变量：
+Required environment variables:
   GITHUB_TOKEN        # github.token
   GITHUB_REPOSITORY   # owner/repo
-  PR_NUMBER           # PR 编号
+  PR_NUMBER           # PR number
 """
 from __future__ import annotations
 
@@ -27,23 +27,23 @@ logger = logging.getLogger("ci_cli.commands.post_pr_comment")
 
 
 def build_comment(results: dict) -> str:
-    """生成 PR 评论 Markdown"""
+    """Generate PR comment Markdown"""
     summary = results.get("summary", {})
     ok = results.get("ok", False)
 
     lines = []
-    lines.append("## 🤖 自动测试验证报告")
+    lines.append("## 🤖 Automated Test Verification Report")
     lines.append("")
-    lines.append(f"**结果**: {'✅ 全部通过' if ok else '❌ 存在失败'}  \n")
+    lines.append(f"**Result**: {'✅ All Passed' if ok else '❌ Has Failures'}  \n")
     lines.append(
-        f"**汇总**: 通过 `{summary.get('pass', 0)}` / 失败 `{summary.get('fail', 0)}`"
-        f" / 错误 `{summary.get('error', 0)}` / 跳过 `{summary.get('skip', 0)}`"
-        f" / 总计 `{summary.get('total', 0)}`"
+        f"**Summary**: Passed `{summary.get('pass', 0)}` / Failed `{summary.get('fail', 0)}`"
+        f" / Error `{summary.get('error', 0)}` / Skipped `{summary.get('skip', 0)}`"
+        f" / Total `{summary.get('total', 0)}`"
     )
     lines.append("")
-    lines.append("### 详细结果")
+    lines.append("### Detailed Results")
     lines.append("")
-    lines.append("| 状态 | 测试路径 | Host:Port |")
+    lines.append("| Status | Test Path | Host:Port |")
     lines.append("|------|----------|-----------|")
     for r in results.get("results", []):
         status = r.get("status", "?")
@@ -54,10 +54,10 @@ def build_comment(results: dict) -> str:
         )
     lines.append("")
 
-    # 附上失败详情（最多 3 个，截断）
+    # Include failure details (max 3, truncated)
     fails = [r for r in results.get("results", []) if r.get("status") in ("fail", "error")]
     if fails:
-        lines.append("### 失败详情")
+        lines.append("### Failure Details")
         lines.append("")
         for r in fails[:3]:
             lines.append(f"**{r.get('test_path', '')}**")
@@ -70,10 +70,10 @@ def build_comment(results: dict) -> str:
 
 
 class PostPrCommentCommand(BaseCommand):
-    """将测试结果发布为 PR 评论"""
+    """Publish test results as a PR comment"""
 
     name = "post-pr-comment"
-    description = "将 test_results.json 汇总为 GitHub PR 评论"
+    description = "Aggregate test_results.json into a GitHub PR comment"
 
     def setup_parser(self, parser):
         parser.add_argument("--results", default="test_results.json",

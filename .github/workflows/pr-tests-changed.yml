@@ -1,21 +1,21 @@
 # ============================================================
-# PR 测试验证流水线
+# PR test verification pipeline
 #
-# 触发条件：
-#   1. 有 PR 提交（open / synchronize / reopened）
-#   2. PR 中 tests/ 目录下有文件改动
+# Trigger conditions:
+#   1. PR commits (open / synchronize / reopened)
+#   2. Files under tests/ are changed in the PR
 #
-# 流程：
-#   1. 检查 PR 中 tests/ 下改动的文件
-#   2. 根据改动脚本涉及的测试元数据计算 VM 规格
-#      （QEMU 数量、CPU、内存、网卡、磁盘、server_count）
-#   3. 从持久化 CI 预置池中申请环境（池A=1q×20 / 池B=2q×5）
-#   4. 在 QEMU 中模拟手工测试方式执行被修改的脚本
-#   5. 释放环境回池（不删除 VM，标记为空闲供复用）
+# Workflow:
+#   1. Check changed files under tests/ in the PR
+#   2. Compute VM spec from test metadata of changed scripts
+#      (QEMU count, CPU, memory, NICs, disks, server_count)
+#   3. Request env from persistent CI pre-provisioned pool (pool A=1q×20 / pool B=2q×5)
+#   4. Execute changed scripts in QEMU simulating manual test flow
+#   5. Release env back to pool (no VM deletion, mark as idle for reuse)
 #
-# 注意：不发布 PR 评论。fork 仓库提交的 PR 中 GITHUB_TOKEN 为只读，
-#   且自定义 secrets 不传递给 fork PR，调用评论 API 会 403 失败。
-#   结果以 workflow 日志 / check run 形式呈现。
+# Note: No PR comment is posted. For fork PRs, GITHUB_TOKEN is read-only
+#   and custom secrets are not passed to fork PRs, causing 403 on comment API.
+#   Results are shown as workflow log / check run.
 #
 # Runner: self-hosted (10.20.238.253, openruyi-github-runner)
 # ============================================================
@@ -35,7 +35,7 @@ permissions:
 
 jobs:
   verify-tests-changed:
-    # 仅在 PR 改动 tests/ 目录时运行
+    # Only run when PR changes tests/ directory
     if: ${{ github.event.pull_request }}
     runs-on: [self-hosted, Linux, X64, openEuler]
     timeout-minutes: 600
@@ -56,7 +56,7 @@ jobs:
           fetch-depth: 0
 
       # --------------------------------------------------------
-      # 步骤 0：确保 runner 上有 paramiko（幂等）
+      # Step 0: Ensure paramiko on runner (idempotent)
       # --------------------------------------------------------
       - name: Ensure paramiko on runner
         run: |
@@ -64,7 +64,7 @@ jobs:
             python3 -m pip install --user paramiko 2>&1 | tail -3
 
       # --------------------------------------------------------
-      # 步骤 1：收集 tests/ 下改动的文件
+      # Step 1: Collect changed files under tests/
       # --------------------------------------------------------
       - name: Get changed files under tests/
         id: changed
@@ -76,7 +76,7 @@ jobs:
           cat changed_files.txt
           COUNT=$(wc -l < changed_files.txt)
           echo "count=$COUNT" >> "$GITHUB_OUTPUT"
-          # 无改动时输出空，供后续步骤短路
+          # Output empty when no changes, for downstream steps to short-circuit
           if [ "$COUNT" -eq 0 ]; then
             echo "No tests/ changes in this PR."
             echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -85,7 +85,7 @@ jobs:
           fi
 
       # --------------------------------------------------------
-      # 步骤 2：计算 VM 资源规格
+      # Step 2: Compute VM resource spec
       # --------------------------------------------------------
       - name: Compute VM requirements
         id: compute
@@ -98,7 +98,7 @@ jobs:
           cat vm_requirements.json
 
       # --------------------------------------------------------
-      # 步骤 3：从 CI 预置池中申请环境
+      # Step 3: Acquire env from CI pre-provisioned pool
       # --------------------------------------------------------
       - name: Acquire environment from CI pool
         id: pool-acquire
@@ -117,7 +117,7 @@ jobs:
           CLOUDPODS_PASSWORD: ${{ secrets.CLOUDPODS_PASSWORD }}
 
       # --------------------------------------------------------
-      # 步骤 4：在 QEMU 中执行被修改的测试脚本
+      # Step 4: Execute changed test scripts in QEMU
       # --------------------------------------------------------
       - name: Run tests in QEMU (simulate manual testing)
         id: run-tests
@@ -133,7 +133,7 @@ jobs:
           cat test_results.json || true
 
       # --------------------------------------------------------
-      # 步骤 5：释放环境回池（不删除 VM，总是执行）
+      # Step 5: Release env back to pool (no VM delete, always runs)
       # --------------------------------------------------------
       - name: Release environment back to pool
         if: always()

@@ -7,10 +7,11 @@ rlJournalStart
     rlPhaseStartSetup
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+        rlRun "echo '${TEST_SERVER_1_PASSWORD:-openruyi}' | sudo -S dnf install -y xmlto 2>/dev/null || rpm -q xmlto" 0 "Ensure xmlto is installed"
     rlPhaseEnd
 
     rlPhaseStartTest "Check main tool executability"
-        rlRun "which xmlto 2>/dev/null || which xmlto 2>/dev/null" 0 "Check xmlto is installed"
+        rlRun "which xmlto 2>/dev/null" 0 "Check xmlto binary exists"
         rlRun "xmlto --help >/dev/null 2>&1 || xmlto -h >/dev/null 2>&1 || xmlto --help >/dev/null 2>&1" 0 "Check xmlto basic executability"
     rlPhaseEnd
 

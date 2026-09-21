@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-cleanup-cloudpods 命令
+cleanup-cloudpods command
 
-流水线步骤 6：清理流水线创建的 CloudPods 云平台虚拟机（无论成败）。
+Pipeline step 6: Clean up CloudPods cloud platform VMs created by the pipeline (regardless of success/failure).
 
-输入：vm_info.json（含 server_ids）
-依赖：core.cloudpods.CloudPodsClient（复用凭据）
+Input: vm_info.json (contains server_ids)
+Depends on: core.cloudpods.CloudPodsClient (reuses credentials)
 """
 from __future__ import annotations
 
@@ -22,10 +22,10 @@ logger = logging.getLogger("ci_cli.commands.cleanup_cloudpods")
 
 
 class CleanupCloudpodsCommand(BaseCommand):
-    """删除流水线创建的 CloudPods 虚拟机"""
+    """Delete CloudPods VMs created by the pipeline"""
 
     name = "cleanup-cloudpods"
-    description = "根据 vm_info.json 删除流水线创建的 CloudPods 虚拟机"
+    description = "Delete CloudPods VMs created by the pipeline based on vm_info.json"
 
     def setup_parser(self, parser):
         parser.add_argument("--vm-info", required=True, help="Path to vm_info.json")
@@ -40,13 +40,13 @@ class CleanupCloudpodsCommand(BaseCommand):
             vm_info = json.load(f)
 
         server_ids: List[str] = vm_info.get("server_ids", [])
-        # 防御：某些版本可能带引号（如 'uuid'），统一剥掉
+        # Defensive: some versions may wrap in quotes (e.g. 'uuid'), strip them uniformly
         server_ids = [str(s).strip().strip("'\"").strip() for s in server_ids if str(s).strip()]
         if not server_ids:
             self.log_info("No server_ids to clean up")
             return 0
 
-        # 凭据：环境变量优先，其次 vm_info（launch 时写入的）
+        # Credentials: env vars first, then vm_info (written during launch)
         keystone_url = get_env("CLOUDPODS_KEYSTONE_URL") or vm_info.get("cloudpods_keystone_url", "")
         username = get_env("CLOUDPODS_USER") or vm_info.get("cloudpods_user", "")
         password_enc = get_env("CLOUDPODS_PASSWORD") or vm_info.get("cloudpods_password", "")
@@ -56,7 +56,7 @@ class CleanupCloudpodsCommand(BaseCommand):
                            "(CLOUDPODS_KEYSTONE_URL / CLOUDPODS_USER / CLOUDPODS_PASSWORD)")
             return 1
 
-        # 密码可能已解密（明文）或仍是加密串：尝试解密，失败则原样使用
+        # Password may be decrypted (plaintext) or still encrypted: try decrypt, fall back to raw
         password = password_enc
         try:
             password = decrypt_password(password_enc)

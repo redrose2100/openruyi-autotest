@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-统一日志组件。
+Unified logging component.
 
-设计要点：
-  * 所有命令统一使用 get_logger() 获取 logger，避免各自创建 handler 导致重复输出。
-  * CLI 入口（core.base.CommandRegistry.main）统一调用 setup_logging() 配置根日志；
-    命令模块内使用 logging.getLogger("ci.<command>")，无需自行配置。
-  * 支持文件日志（--log-file）与结构化日志（--log-format json），供 CI 侧收集。
+Design highlights:
+  * All commands use get_logger() to obtain a logger, avoiding duplicate output from
+    individually created handlers.
+  * The CLI entry point (core.base.CommandRegistry.main) calls setup_logging() to
+    configure root logging; command modules use logging.getLogger("ci.<command>")
+    without needing their own configuration.
+  * Supports file logging (--log-file) and structured logging (--log-format json)
+    for CI-side collection.
 """
 from __future__ import annotations
 
@@ -16,7 +19,7 @@ import sys
 from datetime import datetime
 from typing import Optional
 
-# 供 create_server.py 复制版使用的 logger 名（其内部使用 logging.getLogger("create_server")）
+# Logger name used by the create_server.py copy (it uses logging.getLogger("create_server") internally)
 CREATE_SERVER_LOGGER = "create_server"
 CLI_LOGGER = "ci_cli"
 
@@ -30,12 +33,12 @@ _LEVELS = {
 
 
 def parse_level(name: str) -> int:
-    """把 'DEBUG'/'INFO'/'WARNING'/'ERROR' 字符串转为 logging 级别。"""
+    """Convert 'DEBUG'/'INFO'/'WARNING'/'ERROR' strings to logging levels."""
     return _LEVELS.get(str(name).upper(), logging.INFO)
 
 
 class JsonFormatter(logging.Formatter):
-    """JSON 日志格式器：每条日志输出为一行 JSON。"""
+    """JSON log formatter: each log entry is output as one line of JSON."""
 
     def format(self, record: logging.LogRecord) -> str:
         payload = {
@@ -55,13 +58,13 @@ def setup_logging(
     log_format: str = "text",
     quiet: bool = False,
 ) -> None:
-    """配置根日志（幂等：多次调用会先清理已存在的 handlers）。
+    """Configure root logging (idempotent: subsequent calls first clean up existing handlers).
 
-    参数：
-      level      — 日志级别名称（DEBUG/INFO/WARNING/ERROR）
-      log_file   — 若指定，同时输出到该文件
-      log_format — 'text' 或 'json'
-      quiet      — 若为 True，则不在控制台输出（仅文件）
+    Parameters:
+      level      — Log level name (DEBUG/INFO/WARNING/ERROR)
+      log_file   — If specified, also output to this file
+      log_format — 'text' or 'json'
+      quiet      — If True, suppress console output (file only)
     """
     root = logging.getLogger()
     for h in list(root.handlers):
@@ -85,5 +88,5 @@ def setup_logging(
 
 
 def get_logger(name: str) -> logging.Logger:
-    """获取统一 logger（推荐命令内使用）。"""
+    """Get the unified logger (recommended for use inside commands)."""
     return logging.getLogger(name)

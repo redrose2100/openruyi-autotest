@@ -2,10 +2,10 @@
 """
 CloudPods RISC-V QEMU Server Creator
 
-在 CloudPods 上创建一个 x86_64 KVM 虚拟机，在上面安装 QEMU，
-下载 RISC-V 固件和镜像，启动 QEMU 并等待 SSH 可达。
+Create an x86_64 KVM VM on CloudPods, install QEMU on it,
+download RISC-V firmware and image, launch QEMU and wait for SSH ready.
 
-参考: os-autotest-runner (E:\code\mugen-generator\os-autotest-runner)
+Reference: os-autotest-runner (E:\code\mugen-generator\os-autotest-runner)
 """
 
 import json
@@ -81,7 +81,7 @@ class ExecResult:
 
 
 class SSHClient:
-    """基于 paramiko 的 SSH 客户端"""
+    """Paramiko-based SSH client."""
 
     def __init__(self, ip: str = "127.0.0.1", port: int = 22,
                  username: str = "root", password: str = "",
@@ -128,8 +128,8 @@ class SSHClient:
         return self.__connect()
 
     def exec(self, cmd: str, timeout: int = 60) -> ExecResult:
-        """执行命令，返回 ExecResult（若设了 sudo_password 则自动通过管道注入密码）"""
-        # 自动将 sudo xxx 转为 echo 'pw' | sudo -S xxx，避免交互式密码提示
+        """Execute command, return ExecResult (auto-inject sudo password via pipe if set)."""
+        # Auto-convert sudo xxx to echo 'pw' | sudo -S xxx to avoid interactive password prompt
         if self.__sudo_password and cmd.startswith("sudo "):
             cmd = f"echo '{self.__sudo_password}' | sudo -S {cmd[5:]}"
 
@@ -174,7 +174,7 @@ class SSHClient:
                         stderr_parts.append(err_data.decode('utf-8', 'ignore'))
 
                 if channel.exit_status_ready():
-                    # 命令已退出，排空剩余数据
+                    # Command has exited, drain remaining data
                     while True:
                         r2, _, _ = _select.select([channel], [], [], 0.2)
                         if channel not in r2:
@@ -189,14 +189,14 @@ class SSHClient:
                             stderr_parts.append(err_data.decode('utf-8', 'ignore'))
                     break
 
-                # 检查 transport 存活
+                # Check transport alive
                 if not transport.is_active():
                     log.error(f"{self.ip}:{self.port} | SSH transport died during exec")
                     return ExecResult(self.ip, self.port, 255,
                                       ''.join(stdout_parts),
                                       ''.join(stderr_parts) + "\n[ssh disconnected]")
 
-                # 长时间任务输出进度信息
+                # Long-running task progress info
                 if time.time() - last_progress > 120:
                     last_progress = time.time()
                     log.info(f"{self.ip}:{self.port} | still running... ({int(elapsed)}s elapsed)")
@@ -209,7 +209,7 @@ class SSHClient:
             return ExecResult(self.ip, self.port, 255, "", str(e))
 
     def put_file(self, local_path: str, remote_path: str) -> bool:
-        """上传文件到远端"""
+        """Upload file to remote."""
         try:
             sftp = self.__ssh.open_sftp()
             sftp.put(local_path, remote_path)
@@ -225,7 +225,7 @@ class SSHClient:
 # CloudPods API Client
 # ============================================================
 class CloudPodsClient:
-    """CloudPods REST API 客户端 (精简版)"""
+    """CloudPods REST API client (simplified)."""
 
     def __init__(self, keystone_url: str, username: str, password: str,
                  domain: str = "default", project: str = "system"):
@@ -332,7 +332,7 @@ class CloudPodsClient:
         hypervisor: str = "kvm",
         bios: str = "BIOS",
     ) -> List[str]:
-        """创建一个/多个 KVM 虚拟机，返回 server_id 列表"""
+        """Create one or more KVM VMs, return list of server IDs."""
         if disks is None:
             disks = []
         if nets_list is None:
@@ -415,7 +415,7 @@ class CloudPodsClient:
         return nics[0].get("ip_addr")
 
     def wait_for_server_is_on(self, server_id: str, timeout: int = 1800) -> bool:
-        """等待服务器进入 running 状态"""
+        """Wait for the server to enter running status."""
         log.info(f"Waiting for server {server_id} to be running (timeout={timeout}s)...")
         start = time.time()
         running_count = 0
@@ -476,9 +476,9 @@ def is_ssh_connection_lost(exit_code: int) -> bool:
 
 def wait_for_sshable(ip: str, port: int, username: str, password: str,
                      timeout: int = 3600, interval: int = 10) -> bool:
-    """等待 SSH 可达（直接尝试 exec，不依赖 is_sshable 独立连接）"""
+    """Wait for SSH to become reachable (try exec directly, no separate is_sshable connection)."""
     log.info(f"Waiting for {ip}:{port} SSH (timeout={timeout}s)...")
-    # 抑制 paramiko 内部的 banner/连接错误日志
+    # Suppress paramiko internal banner/connection error logs
     paramiko_logger = logging.getLogger("paramiko")
     old_level = paramiko_logger.level
     paramiko_logger.setLevel(logging.CRITICAL)
@@ -488,7 +488,7 @@ def wait_for_sshable(ip: str, port: int, username: str, password: str,
             try:
                 ssh = SSHClient(ip=ip, port=port, username=username, password=password,
                                 connect_timeout=10, quiet=True)
-                # 直接 exec 测试；若 __connect() 失败，transport 为空，exec 返回 255
+                # Direct exec test; if __connect() fails, transport is empty, exec returns 255
                 if username == "root":
                     rs = ssh.exec("ls /", timeout=60)
                     success = rs.exit_code == 0
@@ -500,7 +500,7 @@ def wait_for_sshable(ip: str, port: int, username: str, password: str,
                     log.info(f"{ip}:{port} SSH OK after {i}s")
                     return True
             except Exception:
-                pass  # 静默重试
+                pass  # Retry silently
             finally:
                 if ssh:
                     try:
@@ -515,7 +515,7 @@ def wait_for_sshable(ip: str, port: int, username: str, password: str,
 
 
 def try_install_rpm(ssh: SSHClient, rpm: str, max_retries: int = 3) -> bool:
-    """尝试安装 RPM 包"""
+    """Try to install an RPM package"""
     check = ssh.exec(f"rpm -q {rpm}", timeout=60)
     if check.exit_code == 0:
         log.info(f"{ssh.ip}:{ssh.port} | {rpm} already installed")
@@ -538,7 +538,7 @@ def try_install_rpm(ssh: SSHClient, rpm: str, max_retries: int = 3) -> bool:
 
 def try_wget(ssh: SSHClient, url: str, save_dir: str = "/opt",
              max_retries: int = 3, timeout: int = 7200) -> bool:
-    """使用 wget 下载文件，带重试和进度监控"""
+    """Download a file using wget, with retries and progress monitoring"""
     filename = url.split("/")[-1]
     filepath = f"{save_dir}/{filename}"
     log.info(f"{ssh.ip}:{ssh.port} | downloading {url} -> {filepath}")
@@ -562,7 +562,7 @@ def try_wget(ssh: SSHClient, url: str, save_dir: str = "/opt",
                 if current == prev_size:
                     stable_count += 1
                     if stable_count >= 5:
-                        # 检查 wget 进程是否还在
+                        # Check if wget process is still running
                         pid_rs = ssh.exec(f"pgrep -f 'wget.*{filename}'", timeout=60)
                         if not pid_rs.stdout.strip():
                             log.info(f"{ssh.ip}:{ssh.port} | download finished (size={current})")
@@ -582,7 +582,7 @@ def try_wget(ssh: SSHClient, url: str, save_dir: str = "/opt",
                     log.warning(f"{ssh.ip}:{ssh.port} | file still 0 after {elapsed}s, retrying...")
                     break
 
-        # 清理并重试
+        # Clean up and retry
         ssh.exec(f"sudo pkill -f 'wget.*{filename}' 2>/dev/null; sudo rm -f {filepath} {filepath}.wget-log")
         log.warning(f"{ssh.ip}:{ssh.port} | download attempt {retry + 1} failed, retrying...")
         time.sleep(20)
@@ -596,18 +596,18 @@ def try_wget(ssh: SSHClient, url: str, save_dir: str = "/opt",
 # ============================================================
 def create_qemu_server(env: "Env") -> bool:
     """
-    主要流程：
-    1. 在 CloudPods 上创建 N 台 x86_64 KVM 虚拟机
-    2. 等待所有虚拟机运行并获取 IP
-    3. 对每台 CloudPods host：
-       - 等待 SSH 可达
-       - 安装 QEMU、下载 RISC-V 固件和镜像
-       - 创建 bridge + TAP 设备
-       - 启动 M 个 QEMU RISC-V 虚拟机
-       - 等待 QEMU 内 RISC-V 虚拟机 SSH 可达
-       - 配置 QEMU 虚拟网卡 (bridge IP)，使同 host 的 QEMU VM 可互通
-       - 收集 bridge IP 列表
-    4. 汇总输出所有 host 及其 QEMU VM 信息
+    Main workflow:
+    1. Create N x86_64 KVM VMs on CloudPods
+    2. Wait for all VMs to be running and get their IPs
+    3. For each CloudPods host:
+       - Wait for SSH
+       - Install QEMU, download RISC-V firmware and images
+       - Create bridge + TAP devices
+       - Start M QEMU RISC-V VMs
+       - Wait for QEMU-internal RISC-V VM SSH
+       - Configure QEMU virtual NIC (bridge IP), so QEMU VMs on same host can communicate
+       - Collect bridge IP list
+    4. Summarize and output all host and QEMU VM info
     """
     # ---- Step 1: Connect to CloudPods ----
     log.info("=" * 60)
@@ -627,7 +627,7 @@ def create_qemu_server(env: "Env") -> bool:
     log.info(f"Step 2: Creating {env.cloudpods_server_num} CloudPods server(s)...")
     log.info("=" * 60)
     nets = env.cloudpods_kvm_net_list.split(",")
-    # 创建虚拟机时只使用第一个网卡
+    # When creating VMs, only use the first NIC
     create_nets = nets[:1]
     vm_uuid = str(uuid.uuid4())
     vm_name = f"{env.server_name_prefix}-{vm_uuid.split('-', 1)[1]}"
@@ -697,9 +697,10 @@ def create_qemu_server(env: "Env") -> bool:
         # ---- Step 6: Add ISCAS mirror repo (non-destructive) & install packages ----
         log.info(f"[Host {host_idx}] Step 6: Adding ISCAS mirror repo & installing packages...")
         if env.delete_default_yum_repos.lower() == "yes":
-            # 非破坏性方式：新增 ISCAS 镜像源 repo 文件，优先级高于原始仓库。
-            # 如果 ISCAS 不可达，dnf 会自动使用原始 repo.openeuler.org 作为回退。
-            # 不再使用 sed 破坏性替换原始 repo 文件。
+            # Non-destructive approach: add ISCAS mirror repo file with higher priority than
+            # the original repos. If ISCAS is unreachable, dnf will automatically fall back
+            # to the original repo.openeuler.org. No longer uses sed to destructively replace
+            # original repo files.
             host_ssh.exec("sudo tee /etc/yum.repos.d/iscas-mirror.repo > /dev/null << 'ISCAEOF'\n"
                 "[iscas-OS]\n"
                 "name=ISCAS Mirror - OS\n"
@@ -733,9 +734,10 @@ def create_qemu_server(env: "Env") -> bool:
                 "priority=1\n"
                 "skip_if_unavailable=1\n"
                 "ISCAEOF", timeout=60)
-            # 注释掉 openEuler.repo 中的 metalink= 行，因为 mirrors.openeuler.org
-            # 在某些网络环境下不可达，dnf 等待 metalink 超时会导致安装极慢（每个 repo ~60s）。
-            # baseurl (repo.openeuler.org) 和 ISCAS mirror 均可正常访问。
+            # Comment out metalink= lines in openEuler.repo because mirrors.openeuler.org
+            # is unreachable in some network environments; dnf waiting for metalink timeout
+            # makes installation extremely slow (~60s per repo).
+            # baseurl (repo.openeuler.org) and ISCAS mirror are both reachable.
             host_ssh.exec("sudo sed -i '/^metalink=/s/^/#/' /etc/yum.repos.d/openEuler.repo", timeout=30)
             host_ssh.exec("sudo dnf clean all", timeout=3600)
             host_ssh.exec("sudo dnf makecache", timeout=600)
@@ -833,7 +835,8 @@ priority=1"""
         virt_code_name = env.riscv_virt_code_url.split("/")[-1]
         virt_vars_name = env.riscv_virt_vars_url.split("/")[-1]
 
-        # 保留原始 VARS 模板副本（每个 VM 需要独立的 VARS 文件，否则 UEFI 变量冲突导致无法启动）
+        # Keep the original VARS template copy (each VM needs its own VARS file,
+        # otherwise UEFI variable conflicts prevent boot)
         host_ssh.exec(f"sudo cp /opt/{virt_vars_name} /opt/{virt_vars_name}.template")
 
         # ---- Step 11: Create bridge and TAP devices ----
@@ -895,7 +898,7 @@ priority=1"""
         log.info(f"  Total required: {qemu_cpu * env.riscv_qemu_num}C / {qemu_memory * env.riscv_qemu_num}G, SKU={env.server_sku}")
 
         for i in range(env.riscv_qemu_num):
-            # 每个 VM 需要独立的 UEFI VARS 文件（可读写），共享会导致 UEFI 变量损坏
+            # Each VM needs its own UEFI VARS file (read-write); sharing causes UEFI variable corruption
             per_vm_vars = f"RISCV_VIRT_VARS_{i}.fd"
             host_ssh.exec(f"sudo cp /opt/{virt_vars_name}.template /opt/{per_vm_vars}")
 
@@ -1029,9 +1032,9 @@ priority=1"""
 
             # Configure yum repos inside guest
             if env.delete_default_yum_repos.lower() == "yes":
-                # 注释掉 metalink，强制走 baseurl；使用通配符适配镜像的 repo 文件名
+                # Comment out metalink, force baseurl; use wildcard to match image repo file names
                 vm_ssh.exec("sudo sed -i 's/^metalink=/#metalink=/g' /etc/yum.repos.d/*.repo")
-                vm_ssh.exec("sudo sed -i 's/^#metalink=/metalink=/g' /etc/yum.repos.d/*.repo")  # 取消已注释的
+                vm_ssh.exec("sudo sed -i 's/^#metalink=/metalink=/g' /etc/yum.repos.d/*.repo")  # Uncomment commented ones
                 vm_ssh.exec("sudo sed -i 's/metalink=/#metalink=/g' /etc/yum.repos.d/*.repo")
             if env.add_yum_repos:
                 for idx, repo_url in enumerate(env.add_yum_repos.split(",")):
@@ -1115,14 +1118,14 @@ skip_if_unavailable=1"""
 # Env Configuration Class
 # ============================================================
 class Env:
-    """配置类 —— 修改这里的变量来适配不同环境"""
+    """Configuration class — modify variables here to adapt to different environments"""
 
-    # ---- CloudPods 连接 ----
+    # ---- CloudPods Connection ----
     cloudpods_keystone_url: str = "https://10.20.40.101:30500/v3"
     cloudpods_user: str = "admin"
     cloudpods_password: str = "0Ub4/mK058E="
 
-    # ---- CloudPods 虚拟机规格 ----
+    # ---- CloudPods VM Spec ----
     os_version: str = "openRuyi-RVA23"
     os_arch: str = "riscv64"
     guest_image_id: str = "6f59c2c8-73f8-449b-8546-b6cf2b5564a0"
@@ -1138,15 +1141,15 @@ class Env:
         "b7272573-29ea-4e46-8c27-22b81503aee6"
     )
 
-    # ---- 虚拟机 SSH 凭据 ----
+    # ---- VM SSH Credentials ----
     cloudpods_server_user: str = "root"
     cloudpods_server_password: str = "ISRCpassword@123"
 
-    # ---- YUM 源 ----
+    # ---- YUM Repos ----
     delete_default_yum_repos: str = "yes"
     add_yum_repos: str = "https://diamond.oerv.ac.cn/openruyi/riscv64/"
 
-    # ---- RISC-V QEMU 资源 ----
+    # ---- RISC-V QEMU Resources ----
     riscv_bios: str = "uefi"
     riscv_default_username: str = "openruyi"
     riscv_default_password: str = "openruyi"
@@ -1154,16 +1157,16 @@ class Env:
     riscv_virt_code_url: str = "https://s3.develop.oepkgs.net/demo/RISCV_VIRT_CODE.fd"
     riscv_virt_vars_url: str = "https://s3.develop.oepkgs.net/demo/RISCV_VIRT_VARS.fd"
 
-    # ---- 新增变量 ----
-    cloudpods_server_num: int = 1       # CloudPods 虚拟机的数量
-    riscv_qemu_num: int = 2             # QEMU 中 RISC-V 虚拟机的数量
-    riscv_qemu_cpu: int = 8             # 每个 QEMU VM 分配的 CPU 核数
-    riscv_qemu_memory: int = 8          # 每个 QEMU VM 分配的内存（GB）
-    riscv_qemu_net_num: int = 1         # 每个 QEMU VM 需要的额外网卡数量（默认 1）
-    riscv_qemu_disks: str = ""          # 额外磁盘列表，JSON 格式，如 '[20,20]'（默认空 = 不额外增加）
+    # ---- Additional Variables ----
+    cloudpods_server_num: int = 1       # Number of CloudPods VMs
+    riscv_qemu_num: int = 2             # Number of RISC-V VMs in QEMU
+    riscv_qemu_cpu: int = 8             # CPU cores allocated per QEMU VM
+    riscv_qemu_memory: int = 8          # Memory allocated per QEMU VM (GB)
+    riscv_qemu_net_num: int = 1         # Extra NICs needed per QEMU VM (default 1)
+    riscv_qemu_disks: str = ""          # Extra disk list, JSON format, e.g. '[20,20]' (default empty = none)
 
-    # ---- 超时 ----
-    testsuite_max_timeout: int = 10800  # QEMU SSH 等待超时（秒）
+    # ---- Timeouts ----
+    testsuite_max_timeout: int = 10800  # QEMU SSH wait timeout (seconds)
 
 
 # ============================================================

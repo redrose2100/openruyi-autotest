@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-仓库根目录查找与打包工具。
+Repo root directory discovery and packaging utilities.
 
-关键点：runner 的 checkout 目录是
+Key point: the runner checkout directory is
   /home/github-runner/actions-runner/_work/<repo>/<repo>/
-（仓库根 = .github 的上一级），因此向上查找 .git 目录。
+(repo root = parent of .github), so search upward for the .git directory.
 """
 from __future__ import annotations
 
@@ -19,17 +19,17 @@ from typing import List, Optional
 
 
 def find_repo_root(start: Optional[Path] = None) -> Path:
-    """向上查找包含 .git 的目录作为仓库根。"""
+    """Walk upward to find the directory containing .git as the repo root."""
     start = start or Path(__file__).resolve().parent.parent
     for p in [start, *start.parents]:
         if (p / ".git").exists() or (p / ".git").is_file():
             return p
-    # 兜底：.github/scripts/ 上溯三级
+    # Fallback: go up 3 levels from .github/scripts/
     return start.parents[2] if len(start.parents) >= 3 else start
 
 
 def get_changed_files(base_sha: str, head_sha: str, path_filter: str = "") -> List[str]:
-    """获取 base..head 之间改动的文件（可用 path_filter 限定，如 tests/）。"""
+    """Get files changed between base..head (optionally filter by path, e.g. tests/)."""
     cmd = ["git", "diff", "--name-only", base_sha, head_sha]
     if path_filter:
         cmd += ["--", path_filter]
@@ -40,7 +40,7 @@ def get_changed_files(base_sha: str, head_sha: str, path_filter: str = "") -> Li
 
 
 def package_repo(repo_root: Path, excludes: Optional[List[str]] = None) -> str:
-    """把仓库打包为 tar.gz（排除 .git 与无关大目录），返回临时文件路径。"""
+    """Package the repo as tar.gz (excluding .git and irrelevant directories), return temp file path."""
     excludes = excludes or [".git", "docs", ".github", "unittests"]
     fd, tmp = tempfile.mkstemp(suffix=".tar.gz")
     os.close(fd)
@@ -54,7 +54,7 @@ def package_repo(repo_root: Path, excludes: Optional[List[str]] = None) -> str:
 
 
 def ensure_on_path(module_root: Optional[Path] = None) -> None:
-    """确保仓库根在 sys.path，以便 import tools/cloudpods 等模块。"""
+    """Ensure the repo root is on sys.path so modules like tools/cloudpods can be imported."""
     root = module_root or find_repo_root()
     root_str = str(root)
     if root_str not in sys.path:

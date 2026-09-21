@@ -7,10 +7,11 @@ rlJournalStart
     rlPhaseStartSetup
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+        rlRun "echo '${TEST_SERVER_1_PASSWORD:-openruyi}' | sudo -S dnf install -y iptables 2>/dev/null || rpm -q iptables" 0 "Ensure iptables is installed"
     rlPhaseEnd
 
     rlPhaseStartTest "Check main tool executability"
-        rlRun "which iptables 2>/dev/null || which iptables 2>/dev/null" 0 "Check iptables is installed"
+        rlRun "which iptables 2>/dev/null" 0 "Check iptables binary exists"
         rlRun "iptables --help >/dev/null 2>&1 || iptables -h >/dev/null 2>&1 || iptables --help >/dev/null 2>&1" 0 "Check iptables basic executability"
     rlPhaseEnd
 

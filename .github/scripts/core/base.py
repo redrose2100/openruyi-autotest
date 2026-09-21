@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-命令基类与注册机制。
+Command base class and registration mechanism.
 
-设计要点：
-  * 每个 CI 命令是一个继承 BaseCommand 的类，放在 commands/ 目录下一个文件一个命令。
-  * CommandRegistry 通过包内文件自动发现命令类并注册，无需手工维护命令列表。
-  * 命令之间通过共享的 core 基础组件（SSH、GitHub API、日志等）协作，彼此解耦。
+Design highlights:
+  * Each CI command is a class inheriting BaseCommand, one command per file under commands/.
+  * CommandRegistry auto-discovers and registers command classes from package files;
+    no manual maintenance of the command list required.
+  * Commands collaborate through shared core components (SSH, GitHub API, logging, etc.)
+    while remaining decoupled from each other.
 """
 from __future__ import annotations
 
@@ -17,10 +19,10 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Type
 
-# scripts 目录（core/base.py 的上级）
+# scripts directory (parent of core/base.py)
 SCRIPTS_DIR = Path(__file__).resolve().parent.parent
 
-# 保证 `python3 cli.py` / `python3 -m scripts` 都能以绝对包名 import
+# Ensure both `python3 cli.py` and `python3 -m scripts` can import using absolute package names
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
@@ -30,58 +32,58 @@ logger = logging.getLogger("ci_cli")
 
 
 class BaseCommand:
-    """所有 CI 子命令的基类。
+    """Base class for all CI sub-commands.
 
-    子类需要定义:
-      name        — 命令行名称（默认取类名的 snake_case）
-      description — 帮助信息
+    Subclasses should define:
+      name        — CLI name (defaults to snake_case of class name)
+      description — Help text
 
-    并实现:
-      setup_parser(parser)  — 添加自定义参数（可选）
-      run(args)             — 命令主逻辑，返回 0 成功 / 非 0 失败
+    and implement:
+      setup_parser(parser)  — Add custom arguments (optional)
+      run(args)             — Main command logic, returns 0 for success / non-zero for failure
     """
 
-    #: 命令名；不指定时由类名自动推导（CamelCase -> snake_case）
+    #: Command name; auto-derived from class name if not specified (CamelCase -> snake_case)
     name: Optional[str] = None
-    #: 一行帮助说明
+    #: One-line help description
     description: str = ""
-    #: 命令执行超时（秒），None 表示不限制
+    #: Command execution timeout (seconds); None means unlimited
     timeout: Optional[int] = None
 
     def setup_parser(self, parser: argparse.ArgumentParser) -> None:
-        """子类可在此添加自己的参数。"""
+        """Subclass can add its own arguments here."""
 
     def run(self, args: argparse.Namespace) -> int:
-        """命令主逻辑。返回 0 表示成功。"""
+        """Main command logic. Return 0 for success."""
         raise NotImplementedError
 
     # ------------------------------------------------------------------
-    # 生命周期钩子
+    # Lifecycle hooks
     # ------------------------------------------------------------------
     def on_start(self, args: argparse.Namespace) -> None:
-        """run 之前调用，可用于初始化。"""
+        """Called before run, for initialization."""
 
     def on_finish(self, args: argparse.Namespace, exit_code: int) -> None:
-        """run 之后调用，可用于清理。"""
+        """Called after run, for cleanup."""
 
     # ------------------------------------------------------------------
-    # 工具方法
+    # Utility methods
     # ------------------------------------------------------------------
     @property
     def repo_root(self) -> Path:
-        """仓库根目录（.github 的上一级，即 .git 所在目录）。"""
+        """Repo root directory (parent of .github, i.e. the directory containing .git)."""
         from core.repo import find_repo_root
 
         return find_repo_root()
 
     @property
     def scripts_dir(self) -> Path:
-        """scripts 目录。"""
+        """scripts directory."""
         return SCRIPTS_DIR
 
     @property
     def github_dir(self) -> Path:
-        """.github 目录。"""
+        """.github directory."""
         return SCRIPTS_DIR.parent
 
     def log_info(self, msg: str, *args: object) -> None:
@@ -98,7 +100,7 @@ class BaseCommand:
 
     @classmethod
     def camel_to_snake(cls, name: str) -> str:
-        """CamelCase -> snake_case，用于自动推导命令名。"""
+        """CamelCase -> snake_case, for auto-deriving command names."""
         import re
 
         s1 = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", name)
@@ -106,7 +108,7 @@ class BaseCommand:
 
 
 def _iter_command_modules() -> List[str]:
-    """列出 commands/ 目录下所有 .py 模块名（跳过 _ 开头）。"""
+    """List all .py module names under commands/ (skip names starting with _)."""
     commands_dir = SCRIPTS_DIR / "commands"
     if not commands_dir.is_dir():
         return []
@@ -114,21 +116,21 @@ def _iter_command_modules() -> List[str]:
 
 
 class CommandRegistry:
-    """命令注册表：自动发现 commands/ 目录中的命令类。"""
+    """Command registry: auto-discovers command classes from the commands/ directory."""
 
     def __init__(self) -> None:
         self._commands: Dict[str, Type[BaseCommand]] = {}
 
     # ------------------------------------------------------------------
-    # 发现与注册
+    # Discovery and registration
     # ------------------------------------------------------------------
     def discover(self) -> None:
-        """扫描 commands/ 目录，自动注册所有 BaseCommand 子类。"""
+        """Scan commands/ directory, auto-register all BaseCommand subclasses."""
         for module_name in _iter_command_modules():
             try:
                 module = importlib.import_module(f"commands.{module_name}")
-            except Exception as exc:  # noqa: BLE001 - 单个命令失败不应拖垮整个 CLI
-                logger.error("加载命令模块 %s 失败: %s", module_name, exc)
+            except Exception as exc:  # noqa: BLE001 - a single command failure should not bring down the whole CLI
+                logger.error("Failed to load command module %s: %s", module_name, exc)
                 continue
 
             for _, obj in inspect.getmembers(module, inspect.isclass):
@@ -140,14 +142,14 @@ class CommandRegistry:
                     self.register(obj)
 
     def register(self, cmd_cls: Type[BaseCommand]) -> None:
-        """注册一个命令类（显式或自动调用）。"""
+        """Register a command class (called explicitly or automatically)."""
         name = cmd_cls.name or BaseCommand.camel_to_snake(cmd_cls.__name__)
         if name in self._commands:
-            logger.warning("命令 %s 重复注册，覆盖", name)
+            logger.warning("Command %s registered twice, overwriting", name)
         self._commands[name] = cmd_cls
 
     # ------------------------------------------------------------------
-    # 查询
+    # Query
     # ------------------------------------------------------------------
     @property
     def commands(self) -> Dict[str, Type[BaseCommand]]:
@@ -160,20 +162,20 @@ class CommandRegistry:
         return sorted(self._commands.keys())
 
     # ------------------------------------------------------------------
-    # 构建 argparse 顶层解析器
+    # Build argparse top-level parser
     # ------------------------------------------------------------------
     def build_parser(self, prog: Optional[str] = None) -> argparse.ArgumentParser:
         parser = argparse.ArgumentParser(
             prog=prog or "ci-cli",
-            description="openruyi-autotest CI 命令集合",
+            description="openruyi-autotest CI command collection",
         )
         parser.add_argument(
             "--verbose", "-v", action="count", default=0,
-            help="提高日志级别（-v INFO, -vv DEBUG）",
+            help="Increase log level (-v INFO, -vv DEBUG)",
         )
         parser.add_argument(
             "--log-file", default=None,
-            help="同时将日志写入该文件（文件始终记录到 DEBUG）",
+            help="Also write logs to this file (file always records at DEBUG)",
         )
         sub = parser.add_subparsers(dest="command", metavar="<command>", required=True)
 
@@ -181,25 +183,25 @@ class CommandRegistry:
             cmd_cls = self._commands[name]
             sub_parser = sub.add_parser(name, help=cmd_cls.description)
             sub_parser.set_defaults(_cmd_cls=cmd_cls)
-            # 实例化（不执行）以调用 setup_parser
+            # Instantiate (without executing) to call setup_parser
             cmd_cls().setup_parser(sub_parser)
 
         return parser
 
     # ------------------------------------------------------------------
-    # 执行入口
+    # Execution entry point
     # ------------------------------------------------------------------
     def main(self, argv: Optional[List[str]] = None) -> int:
-        """注册所有命令、解析参数并执行。返回进程退出码。"""
+        """Register all commands, parse arguments, and execute. Returns process exit code."""
         self.discover()
         if not self._commands:
-            logger.error("未发现任何命令，请检查 commands/ 目录")
+            logger.error("No commands discovered, check commands/ directory")
             return 2
 
         parser = self.build_parser()
         args = parser.parse_args(argv)
 
-        # 日志级别（统一走 core.logging.setup_logging）
+        # Log level (unified via core.logging.setup_logging)
         level = logging.WARNING
         if args.verbose >= 2:
             level = logging.DEBUG
@@ -214,10 +216,10 @@ class CommandRegistry:
             cmd.on_start(args)
             exit_code = cmd.run(args) or 0
         except KeyboardInterrupt:
-            logger.error("命令被中断")
+            logger.error("Command interrupted")
             exit_code = 130
         except Exception as exc:  # noqa: BLE001
-            logger.error("命令 %s 执行失败: %s", cmd_cls.name or cmd_cls.__name__, exc)
+            logger.error("Command %s execution failed: %s", cmd_cls.name or cmd_cls.__name__, exc)
             if args.verbose >= 2:
                 logger.debug("traceback:", exc_info=True)
             exit_code = 1
@@ -225,12 +227,12 @@ class CommandRegistry:
             try:
                 cmd.on_finish(args, exit_code)
             except Exception:  # noqa: BLE001
-                logger.exception("on_finish 回调失败")
+                logger.exception("on_finish callback failed")
         return exit_code
 
 
 def run_cli(argv: Optional[List[str]] = None) -> int:
-    """供 `python3 -m scripts` 或 cli.py 调用的便捷入口。"""
+    """Convenience entry point for `python3 -m scripts` or cli.py."""
     registry = CommandRegistry()
     return registry.main(argv)
 

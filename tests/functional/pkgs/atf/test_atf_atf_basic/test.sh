@@ -7,10 +7,11 @@ rlJournalStart
     rlPhaseStartSetup
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+        rlRun "echo '${TEST_SERVER_1_PASSWORD:-openruyi}' | sudo -S dnf install -y atf 2>/dev/null || rpm -q atf" 0 "Ensure atf is installed"
     rlPhaseEnd
 
     rlPhaseStartTest "Check main tool executability"
-        rlRun "which atf 2>/dev/null || which atf 2>/dev/null" 0 "Check atf is installed"
+        rlRun "which atf 2>/dev/null" 0 "Check atf binary exists"
         rlRun "atf --help >/dev/null 2>&1 || atf -h >/dev/null 2>&1 || atf --help >/dev/null 2>&1" 0 "Check atf basic executability"
     rlPhaseEnd
 

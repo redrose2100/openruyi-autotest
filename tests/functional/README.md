@@ -6,7 +6,7 @@ This directory contains functional test cases for each package, Uses ACL sub-dir
 
 - **202 packages**, **561 test cases**, **1,692 functional points**
 - All test scripts have been verified on openEuler RISC-V server
-- See [Functional test coverage details](../../docs/coverage/functional-coverage.md)
+- See [Functional test coverage details](../../docs/coverage/functional/)
 
 ## directory structure
 

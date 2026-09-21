@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-compute-requirements 命令
+compute-requirements command
 
-流水线步骤 2：根据 PR 中 tests/ 目录下改动的文件，解析其所属测试套/用例的
-FMF 元数据（extra-hardware-require 继承链 + require 包列表 + tier），
-计算在 CloudPods 上创建 openRuyi QEMU 虚拟机所需的资源规格。
+Pipeline step 2: Based on changed files under tests/ in the PR, resolve their
+FMF metadata (extra-hardware-require inheritance chain + require package list + tier),
+and compute the resource spec needed to create openRuyi QEMU VMs on CloudPods.
 
-用法：
+Usage:
   python3 .github/scripts/cli.py compute-requirements \
       --repo <repo_root> --changed-files <file> --output <vm_requirements.json>
 """
@@ -20,7 +20,7 @@ from typing import Dict, List, Optional, Set, Tuple
 from core.base import BaseCommand
 
 # ------------------------------------------------------------
-# 默认资源规格（无显式需求时的基准值）
+# Default resource spec (baseline when no explicit requirements)
 # ------------------------------------------------------------
 DEFAULT_SPEC = {
     "cloudpods_server_num": 1,
@@ -32,35 +32,35 @@ DEFAULT_SPEC = {
     "server_sku": "ecs.g1.c8m8",
 }
 
-# 需要更多资源的测试类型规则（按路径关键字匹配）
+# Rules for test types needing more resources (matched by path keyword)
 EXTRA_RESOURCE_RULES = [
     {
         "pattern": r"performance|unixbench|mmtests|fio|iozone|stream|lmbench|sysbench",
         "cpu": 8, "memory": 8, "qemu_num": 1, "net": 0, "disk": 0,
-        "reason": "性能基准测试需要更多 CPU/内存",
+        "reason": "Performance benchmarks need more CPU/memory",
     },
     {
         "pattern": r"compatibility/ltp_posix",
         "cpu": 4, "memory": 4, "qemu_num": 1, "net": 0, "disk": 0,
-        "reason": "LTP POSIX 兼容性测试",
+        "reason": "LTP POSIX compatibility tests",
     },
     {
         "pattern": r"reliability/stress-ng|reliability/trinity",
         "cpu": 8, "memory": 8, "qemu_num": 1, "net": 0, "disk": 0,
-        "reason": "压力测试需要更多资源",
+        "reason": "Stress tests need more resources",
     },
     {
         "pattern": r"feature/k8s",
         "cpu": 8, "memory": 16, "qemu_num": 1, "net": 1, "disk": 20,
-        "reason": "K8s 集群测试需要较多资源",
+        "reason": "K8s cluster tests need much more resources",
     },
 ]
 
-# QEMU 数量分档（用例多时拆分为多台 QEMU 并行）
+# QEMU count tiers (split into multiple QEMU instances when many test cases)
 QEMU_NUM_TIERS = [(0, 1), (5, 2), (10, 4), (20, 8)]
 
-# CloudPods 平台实际存在的规格（从 /serverskus 查询，2026-09-09）
-# cpu: [内存 GB 列表]
+# SKUs actually available on CloudPods platform (from /serverskus query, 2026-09-09)
+# cpu: [memory GB list]
 AVAILABLE_SKU_MEM_BY_CPU = {
     1: [1, 2, 4, 8],
     2: [2, 4, 8, 12, 16],
@@ -73,15 +73,15 @@ AVAILABLE_SKU_MEM_BY_CPU = {
     128: [256],
 }
 
-# 平台可用的 CPU 核数（升序）
+# Available CPU core counts on the platform (ascending)
 AVAILABLE_CPU = sorted(AVAILABLE_SKU_MEM_BY_CPU.keys())
 
 
 # ------------------------------------------------------------
-# FMF 元数据解析工具
+# FMF metadata parsing utilities
 # ------------------------------------------------------------
 def find_fmf_ancestors(test_dir: Path) -> List[Path]:
-    """向上查找包含 main.fmf 的目录链（从最近的测试目录到 tests/ 根）。"""
+    """Walk upward from the test directory to find the chain of directories containing main.fmf (up to tests/ root)."""
     ancestors = []
     cur = test_dir
     while True:
@@ -95,7 +95,7 @@ def find_fmf_ancestors(test_dir: Path) -> List[Path]:
 
 
 def parse_fmf_value(raw: str) -> str:
-    """清理 fmf 字段值中的引号/注释。"""
+    """Clean quotes/comments from fmf field values."""
     raw = raw.strip()
     raw = re.sub(r"#.*$", "", raw).strip()
     raw = raw.strip('"').strip("'")
@@ -103,10 +103,10 @@ def parse_fmf_value(raw: str) -> str:
 
 
 def parse_server_require(test_dir: Path) -> int:
-    """就近原则解析 server: 字段（测试目录 -> 逐层上溯 -> 默认 1）。
+    """Nearest-match parsing of server: field (test dir -> upward traversal -> default 1).
 
-    从 test_dir 自身开始向上查找 main.fmf 中的 server: 字段，
-    以最先找到的为准；都找不到则返回默认值 1。
+    Starting from test_dir itself, search upward for server: field in main.fmf;
+    use the first match found; return default 1 if none found.
     """
     cur = test_dir
     while True:
@@ -129,11 +129,11 @@ def parse_server_require(test_dir: Path) -> int:
         if cur.name == "tests" or cur.parent == cur:
             break
         cur = cur.parent
-    return 1  # 默认
+    return 1  # default
 
 
 def parse_hardware_require(fmf_files: List[Path]) -> Dict[str, str]:
-    """沿继承链（子 -> 父）解析 extra-hardware-require 各字段，合并返回。"""
+    """Follow the inheritance chain (child -> parent) to parse extra-hardware-require fields and merge."""
     hw: Dict[str, str] = {}
     for fmf in fmf_files:
         try:
@@ -158,7 +158,7 @@ def parse_hardware_require(fmf_files: List[Path]) -> Dict[str, str]:
 
 
 def parse_require(fmf_files: List[Path]) -> List[str]:
-    """收集 require 中的包名（排除 /path 形式，即排除依赖用例）。"""
+    """Collect package names from require (exclude /path form, i.e. exclude dependent test cases)."""
     pkgs: Set[str] = set()
     for fmf in fmf_files:
         try:
@@ -185,7 +185,7 @@ def parse_require(fmf_files: List[Path]) -> List[str]:
 
 
 def parse_num(raw: str, default: int) -> int:
-    """把 '>= 4' / '4' / '8 GiB' 等解析为整数。"""
+    """Parse strings like '>= 4' / '4' / '8 GiB' into integers."""
     if not raw:
         return default
     m = re.search(r"(\d+)", raw)
@@ -193,7 +193,7 @@ def parse_num(raw: str, default: int) -> int:
 
 
 def pick_sku(cpu: int, memory: int) -> str:
-    """根据总 CPU/内存需求选择平台上真实存在的 SKU（ecs.g1.cXmY）。"""
+    """Select a real SKU (ecs.g1.cXmY) from the platform based on total CPU/memory requirements."""
     sku_cpu = next((c for c in AVAILABLE_CPU if c >= cpu), AVAILABLE_CPU[-1])
     mems = AVAILABLE_SKU_MEM_BY_CPU[sku_cpu]
     sku_mem = next((m for m in mems if m >= memory), mems[-1])
@@ -201,7 +201,7 @@ def pick_sku(cpu: int, memory: int) -> str:
 
 
 def compute_spec(changed_files: List[str], repo_root: Path) -> Tuple[List[str], List[str], Dict]:
-    """核心：从改动文件列表计算测试路径与资源规格。"""
+    """Core: compute test paths and resource spec from the list of changed files."""
     tests_root = repo_root / "tests"
 
     test_paths: List[str] = []
@@ -219,7 +219,7 @@ def compute_spec(changed_files: List[str], repo_root: Path) -> Tuple[List[str], 
         if not path.exists():
             continue
 
-        # 定位到该文件所属的测试目录
+        # Locate the test directory this file belongs to
         test_dir = path if path.is_dir() else path.parent
 
         fmf_files = find_fmf_ancestors(test_dir)
@@ -227,12 +227,12 @@ def compute_spec(changed_files: List[str], repo_root: Path) -> Tuple[List[str], 
             continue
         all_fmf_files.extend(fmf_files)
 
-        # 判断是"用例"还是"测试套"
+        # Determine whether it's a "test case" or a "test suite"
         is_case = (test_dir / "test.sh").exists()
         if is_case:
             case_count += 1
 
-        # 找到 fmf path（从 main.fmf 的 path: 字段或目录推算）
+        # Find fmf path (from main.fmf path: field or derive from directory)
         own_fmf = test_dir / "main.fmf"
         fmf_path = ""
         if own_fmf.exists():
@@ -246,7 +246,7 @@ def compute_spec(changed_files: List[str], repo_root: Path) -> Tuple[List[str], 
             except ValueError:
                 fmf_path = "/" + str(test_dir)
 
-        # 收集资源需求
+        # Collect resource requirements
         pkgs = parse_require(fmf_files)
         all_pkgs.update(pkgs)
 
@@ -255,7 +255,7 @@ def compute_spec(changed_files: List[str], repo_root: Path) -> Tuple[List[str], 
         else:
             suite_paths.append(fmf_path)
 
-        # 检查扩展资源规则
+        # Check extended resource rules
         for rule in EXTRA_RESOURCE_RULES:
             if re.search(rule["pattern"], fmf_path, re.IGNORECASE):
                 if rule not in matched_rules:
@@ -267,7 +267,7 @@ def compute_spec(changed_files: List[str], repo_root: Path) -> Tuple[List[str], 
         return [], [], {**DEFAULT_SPEC, "packages": [], "reason": "no test dirs found",
                         "test_paths": [], "suite_paths": [], "server_count": 1}
 
-    # ---- 计算 server_count（就近原则，取全体最大值） ----
+    # ---- Compute server_count (nearest-match, take global maximum) ----
     server_count = 1
     for rel in changed_files:
         rel = rel.strip()
@@ -283,14 +283,14 @@ def compute_spec(changed_files: List[str], repo_root: Path) -> Tuple[List[str], 
     if server_count > 1:
         logger.info("Detected server_count=%d from fmf server: fields", server_count)
 
-    # ---- 计算资源规格 ----
+    # ---- Compute resource spec ----
     cpu = DEFAULT_SPEC["riscv_qemu_cpu"]
     memory = DEFAULT_SPEC["riscv_qemu_memory"]
     net = DEFAULT_SPEC["riscv_qemu_net_num"]
     disk = 0
-    qemu_num = server_count  # 池化模型：server_count 即 QEMU 数量
+    qemu_num = server_count  # Pool model: server_count equals QEMU count
 
-    # 从 FMF 继承链中取最大需求
+    # Take max requirements from FMF inheritance chain
     for fmf in all_fmf_files:
         hw = parse_hardware_require([fmf])
         cpu = max(cpu, parse_num(hw.get("cpu"), DEFAULT_SPEC["riscv_qemu_cpu"]))
@@ -298,7 +298,7 @@ def compute_spec(changed_files: List[str], repo_root: Path) -> Tuple[List[str], 
         net = max(net, parse_num(hw.get("net"), DEFAULT_SPEC["riscv_qemu_net_num"]))
         disk = max(disk, parse_num(hw.get("disk"), 0))
 
-    # 扩展规则加成（取最大的）
+    # Extended rule bonuses (take max)
     for rule in matched_rules:
         cpu = max(cpu, rule["cpu"])
         memory = max(memory, rule["memory"])
@@ -306,19 +306,19 @@ def compute_spec(changed_files: List[str], repo_root: Path) -> Tuple[List[str], 
         disk = max(disk, rule["disk"])
         net = max(net, rule["net"])
 
-    # 数据盘：每个 20G
+    # Data disks: 20G each
     disk_sizes = [20] * disk if disk > 0 else []
 
-    # QEMU 数量分档（用例多时拆分为多台 QEMU）
+    # QEMU count tiering (split into multiple QEMU instances when many test cases)
     total_items = len(test_paths) + len(suite_paths)
     for threshold, num in QEMU_NUM_TIERS:
         if total_items > threshold:
             qemu_num = max(qemu_num, num)
 
-    # SKU 选择（确保能承载 cpu*qemu_num / memory*qemu_num）
+    # SKU selection (ensure it can carry cpu*qemu_num / memory*qemu_num)
     sku = pick_sku(cpu * qemu_num, memory * qemu_num)
 
-    reason_parts = [f"{total_items} 个测试目录"]
+    reason_parts = [f"{total_items} test directories"]
     if matched_rules:
         reason_parts.append("; ".join(r["reason"] for r in matched_rules))
 
@@ -338,10 +338,10 @@ def compute_spec(changed_files: List[str], repo_root: Path) -> Tuple[List[str], 
 
 
 class ComputeRequirementsCommand(BaseCommand):
-    """根据 tests/ 改动文件计算 CloudPods QEMU VM 资源规格"""
+    """Compute CloudPods QEMU VM resource spec based on tests/ changed files"""
 
     name = "compute-requirements"
-    description = "根据 tests/ 改动文件计算 VM 资源规格（QEMU 数量/CPU/内存/网卡/磁盘）"
+    description = "Compute VM resource spec (QEMU count/CPU/memory/NICs/disk) based on tests/ changed files"
 
     def setup_parser(self, parser):
         parser.add_argument("--repo", required=True, help="Repository root path")

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""pool-status 命令：查看双池状态与健康信息。"""
+"""pool-status command: view dual-pool status and health info."""
 from __future__ import annotations
 
 import json
@@ -16,10 +16,10 @@ logger = logging.getLogger("ci_cli.commands.pool_status")
 
 
 class PoolStatusCommand(BaseCommand):
-    """列出双池中所有 VM 及健康状态"""
+    """List all VMs and health status in both pools"""
 
     name = "pool-status"
-    description = "列出 CI 预置环境池状态及健康信息"
+    description = "List CI pre-provisioned env pool status and health info"
 
     def setup_parser(self, parser):
         parser.add_argument("--output", default="",

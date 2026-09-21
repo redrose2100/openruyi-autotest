@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-GitHub API 封装（用 requests，避免 urllib 302 丢 auth 的问题）。
+GitHub API wrapper (uses requests to avoid urllib dropping auth on 302 redirects).
 """
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ GITHUB_API = "https://api.github.com"
 
 
 class GitHubClient:
-    """GitHub REST API 轻量封装。"""
+    """GitHub REST API lightweight wrapper."""
 
     def __init__(
         self,
@@ -38,7 +38,7 @@ class GitHubClient:
         return bool(self.token and self.repository and self.pr_number)
 
     # ------------------------------------------------------------------
-    # 基础请求
+    # Basic request
     # ------------------------------------------------------------------
     def request(self, method: str, path: str, body: Optional[Dict] = None) -> Optional[Dict[str, Any]]:
         url = path if path.startswith("http") else f"{GITHUB_API}/repos/{self.repository}{path}"
@@ -62,10 +62,10 @@ class GitHubClient:
         return self.request("POST", path, body)
 
     # ------------------------------------------------------------------
-    # 评论
+    # Comments
     # ------------------------------------------------------------------
     def post_pr_comment(self, body: str) -> Optional[str]:
-        """发布 PR 评论，成功返回 html_url。"""
+        """Post a PR comment; returns html_url on success."""
         if not self.configured:
             print("Missing GITHUB_TOKEN / GITHUB_REPOSITORY / PR_NUMBER")
             return None

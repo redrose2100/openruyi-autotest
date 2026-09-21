@@ -70,6 +70,55 @@ jobs:
           fi
           echo "OK: no 'openEuler' found in docs/"
 
+  chinese-detect:
+    name: Chinese character detection (docs/, .github/, root .md)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect Chinese characters
+        run: |
+          # Regex matches CJK Unified Ideographs (U+4E00–U+9FFF),
+          # CJK Extension A (U+3400–U+4DBF), and common full-width punctuation
+          CHINESE_RE='[\x{4e00}-\x{9fff}\x{3400}-\x{4dbf}\x{3000}-\x{303f}\x{ff00}-\x{ffef}]'
+
+          violations=0
+
+          # Check docs/ directory
+          echo "::group::Scanning docs/"
+          while IFS= read -r -d '' file; do
+            if grep -Pn "$CHINESE_RE" "$file" 2>/dev/null; then
+              violations=$((violations + 1))
+            fi
+          done < <(find docs/ -type f \( -name "*.md" -o -name "*.txt" -o -name "*.sh" -o -name "*.py" \) -print0)
+          echo "::endgroup::"
+
+          # Check README.md and other root .md files
+          echo "::group::Scanning root *.md"
+          while IFS= read -r -d '' file; do
+            if grep -Pn "$CHINESE_RE" "$file" 2>/dev/null; then
+              violations=$((violations + 1))
+            fi
+          done < <(find . -maxdepth 1 -name "*.md" -print0)
+          echo "::endgroup::"
+
+          # Check .github/ directory (scripts, workflows)
+          echo "::group::Scanning .github/"
+          while IFS= read -r -d '' file; do
+            if grep -Pn "$CHINESE_RE" "$file" 2>/dev/null; then
+              violations=$((violations + 1))
+            fi
+          done < <(find .github/ -type f \( -name "*.py" -o -name "*.sh" -o -name "*.yml" -o -name "*.yaml" -o -name "*.md" \) -print0)
+          echo "::endgroup::"
+
+          if [ "$violations" -gt 0 ]; then
+            echo "::error::Found $violations file(s) with Chinese characters. All docs, scripts, and workflows must be in English."
+            exit 1
+          fi
+          echo "OK: no Chinese characters found"
+
   full:
     name: Full checks (lib logic + bash -n + static quality)
     runs-on: ubuntu-latest

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-"""functional 测试套/用例发现。
+"""Functional test suite/case discovery.
 
-扫描 tests/functional/pkgs/ 下每个测试套目录：
-  - 测试套 = 直接子目录（含 main.fmf）
-  - 用例 = 套目录下的 test_* 子目录（含 main.fmf + test.sh）
+Scans each test suite directory under tests/functional/pkgs/:
+  - Test suite = direct subdirectory (containing main.fmf)
+  - Test case = test_* subdirectory within a suite (containing main.fmf + test.sh)
 
-同时从套目录 main.fmf 继承链解析：
-  - 资源规格（extra-hardware-require / require 包）
-  - 功能点数量（统计 rlRun / rlAssertGrep 调用）
+Also resolves from the suite directory main.fmf inheritance chain:
+  - Resource specs (extra-hardware-require / require packages)
+  - Feature point count (by counting rlRun / rlAssertGrep calls)
 """
 from __future__ import annotations
 
@@ -20,10 +20,10 @@ PLANS_ROOT = "plans"
 
 
 # ------------------------------------------------------------
-# fmf 元数据解析（轻量，兼容 compute_requirements 的解析方式）
+# fmf metadata parsing (lightweight, compatible with compute_requirements parsing approach)
 # ------------------------------------------------------------
 def find_fmf_ancestors(test_dir: Path) -> List[Path]:
-    """向上查找包含 main.fmf 的目录链（从最近的测试目录到 tests/ 根）。"""
+    """Walk upward to find the main.fmf ancestor chain (from nearest test dir to tests/ root)."""
     ancestors: List[Path] = []
     cur = test_dir
     while True:
@@ -44,7 +44,7 @@ def parse_fmf_value(raw: str) -> str:
 
 
 def parse_hardware_require(fmf_files: List[Path]) -> Dict[str, str]:
-    """沿继承链（子 -> 父）解析 extra-hardware-require 各字段，合并返回。"""
+    """Resolve extra-hardware-require fields along the inheritance chain (child -> parent), merge and return."""
     hw: Dict[str, str] = {}
     for fmf in fmf_files:
         try:
@@ -69,7 +69,7 @@ def parse_hardware_require(fmf_files: List[Path]) -> Dict[str, str]:
 
 
 def parse_require(fmf_files: List[Path]) -> List[str]:
-    """收集 require 中的包名（排除 /path 形式，即排除依赖用例）。"""
+    """Collect package names from require (exclude /path forms, i.e. exclude dependent cases)."""
     pkgs: set = set()
     for fmf in fmf_files:
         try:
@@ -96,7 +96,7 @@ def parse_require(fmf_files: List[Path]) -> List[str]:
 
 
 def parse_num(raw: str, default: int) -> int:
-    """把 '>= 4' / '4' / '8 GiB' 等解析为整数。"""
+    """Parse strings like '>= 4' / '4' / '8 GiB' into an integer."""
     if not raw:
         return default
     m = re.search(r"(\d+)", raw)
@@ -104,9 +104,9 @@ def parse_num(raw: str, default: int) -> int:
 
 
 # ------------------------------------------------------------
-# 功能点统计
+# Feature point counting
 # ------------------------------------------------------------
-# beakerlib 断言/检查类调用都计为一个功能点
+# Every beakerlib assertion/check call counts as one feature point
 POINT_PATTERNS = [
     re.compile(r"\brlRun\b"),
     re.compile(r"\brlAssertGrep\b"),
@@ -124,7 +124,7 @@ POINT_PATTERNS = [
 
 
 def count_test_points(script_path: Path) -> int:
-    """统计脚本中的功能点数量（rlRun/断言调用次数）。"""
+    """Count feature points in a script (number of rlRun/assertion calls)."""
     if not script_path.exists():
         return 0
     try:
@@ -144,17 +144,17 @@ def count_test_points(script_path: Path) -> int:
 
 
 # ------------------------------------------------------------
-# 测试套/用例模型
+# Test suite/case models
 # ------------------------------------------------------------
 class FuncCase:
-    """一个 functional 测试用例（test_* 子目录）。"""
+    """A functional test case (test_* subdirectory)."""
 
     def __init__(self, suite_name: str, path: Path, fmf_path: str):
         self.suite_name = suite_name
-        self.path = path  # 仓库内相对路径（Path）
+        self.path = path  # Relative path within repo
         self.fmf_path = fmf_path  # /tests/functional/pkgs/xxx/test_xxx
         self.name = path.name
-        self.script = None  # 主脚本（main.fmf test: 或 test.sh）
+        self.script = None  # Main script (main.fmf test: or test.sh)
         self.test_points = 0
 
     def to_dict(self) -> Dict:
@@ -167,7 +167,7 @@ class FuncCase:
 
 
 class FuncSuite:
-    """一个 functional 测试套（pkgs/ 下的包目录）。"""
+    """A functional test suite (package directory under pkgs/)."""
 
     def __init__(self, name: str, path: Path, fmf_path: str):
         self.name = name
@@ -190,10 +190,11 @@ class FuncSuite:
 
 
 def discover_suites(repo_root: Path, cfg: Dict) -> Tuple[List[FuncSuite], List[str]]:
-    """发现所有 functional 测试套。
+    """Discover all functional test suites.
 
-    返回 (suites, errors)；errors 为发现过程中无法解析的套目录名。
-    支持 cfg 中的 suite_include / suite_exclude 过滤（按套名）。
+    Returns (suites, errors); errors are suite directory names that could not
+    be parsed during discovery.
+    Supports suite_include / suite_exclude filtering from cfg (by suite name).
     """
     root = repo_root / SUITE_ROOT
     errors: List[str] = []
@@ -221,8 +222,8 @@ def discover_suites(repo_root: Path, cfg: Dict) -> Tuple[List[FuncSuite], List[s
 
 
 def build_suite(suite_dir: Path, repo_root: Path) -> FuncSuite:
-    """构建单个测试套对象（套本身可带用例子目录）。"""
-    # 相对 fmf path：从仓库根计算
+    """Build a single test suite object (suite can contain test case subdirectories)."""
+    # Relative fmf path: compute from repo root
     try:
         rel = suite_dir.relative_to(repo_root).as_posix()
         fmf_path = "/" + rel
@@ -231,12 +232,12 @@ def build_suite(suite_dir: Path, repo_root: Path) -> FuncSuite:
 
     suite = FuncSuite(name=suite_dir.name, path=suite_dir, fmf_path=fmf_path)
 
-    # 解析套级硬件/包需求（含继承链）
+    # Resolve suite-level hardware/package requirements (including inheritance chain)
     fmf_ancestors = find_fmf_ancestors(suite_dir)
     suite.hardware = parse_hardware_require(fmf_ancestors)
     suite.require_pkgs = parse_require(fmf_ancestors)
 
-    # 发现用例：套目录下的 test_* 子目录
+    # Discover cases: test_* subdirectories within the suite directory
     for child in sorted(suite_dir.iterdir()):
         if not child.is_dir() or not child.name.startswith("test_"):
             continue
@@ -249,7 +250,7 @@ def build_suite(suite_dir: Path, repo_root: Path) -> FuncSuite:
                 path=child,
                 fmf_path="/" + rel_case,
             )
-            # 主脚本：main.fmf 的 test: 字段，或 test.sh
+            # Main script: main.fmf test: field, or test.sh
             script = _resolve_case_script(child)
             case.script = script
             case.test_points = count_test_points(script) if script else 0
@@ -262,7 +263,7 @@ def build_suite(suite_dir: Path, repo_root: Path) -> FuncSuite:
 
 
 def _resolve_case_script(case_dir: Path):
-    """解析用例主脚本路径（main.fmf test: 字段优先，其次 test.sh）。"""
+    """Resolve the case main script path (main.fmf test: field first, then test.sh)."""
     fmf = case_dir / "main.fmf"
     if fmf.exists():
         try:

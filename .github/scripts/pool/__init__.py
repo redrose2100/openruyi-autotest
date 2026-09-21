@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-"""持久化 CI 预置环境池（双池）。"""
+"""Persistent CI pre-provisioned environment pool (dual-pool)."""

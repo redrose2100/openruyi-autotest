@@ -7,10 +7,11 @@ rlJournalStart
     rlPhaseStartSetup
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+        rlRun "echo '${TEST_SERVER_1_PASSWORD:-openruyi}' | sudo -S dnf install -y kyua 2>/dev/null || rpm -q kyua" 0 "Ensure kyua is installed"
     rlPhaseEnd
 
     rlPhaseStartTest "Check main tool executability"
-        rlRun "which kyua 2>/dev/null || which kyua 2>/dev/null" 0 "Check kyua is installed"
+        rlRun "which kyua 2>/dev/null" 0 "Check kyua binary exists"
         rlRun "kyua --help >/dev/null 2>&1 || kyua -h >/dev/null 2>&1 || kyua --help >/dev/null 2>&1" 0 "Check kyua basic executability"
     rlPhaseEnd
 

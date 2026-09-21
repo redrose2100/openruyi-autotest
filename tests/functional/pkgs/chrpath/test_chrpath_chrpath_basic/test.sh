@@ -7,10 +7,11 @@ rlJournalStart
     rlPhaseStartSetup
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+        rlRun "echo '${TEST_SERVER_1_PASSWORD:-openruyi}' | sudo -S dnf install -y chrpath 2>/dev/null || rpm -q chrpath" 0 "Ensure chrpath is installed"
     rlPhaseEnd
 
     rlPhaseStartTest "Check main tool executability"
-        rlRun "which chrpath 2>/dev/null || which chrpath 2>/dev/null" 0 "Check chrpath is installed"
+        rlRun "which chrpath 2>/dev/null" 0 "Check chrpath binary exists"
         rlRun "chrpath --help >/dev/null 2>&1 || chrpath -h >/dev/null 2>&1 || chrpath --help >/dev/null 2>&1" 0 "Check chrpath basic executability"
     rlPhaseEnd
 

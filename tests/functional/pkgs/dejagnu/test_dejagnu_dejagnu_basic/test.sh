@@ -7,10 +7,11 @@ rlJournalStart
     rlPhaseStartSetup
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+        rlRun "echo '${TEST_SERVER_1_PASSWORD:-openruyi}' | sudo -S dnf install -y dejagnu 2>/dev/null || rpm -q dejagnu" 0 "Ensure dejagnu is installed"
     rlPhaseEnd
 
     rlPhaseStartTest "Check main tool executability"
-        rlRun "which dejagnu 2>/dev/null || which dejagnu 2>/dev/null" 0 "Check dejagnu is installed"
+        rlRun "which dejagnu 2>/dev/null" 0 "Check dejagnu binary exists"
         rlRun "dejagnu --help >/dev/null 2>&1 || dejagnu -h >/dev/null 2>&1 || dejagnu --help >/dev/null 2>&1" 0 "Check dejagnu basic executability"
     rlPhaseEnd
 

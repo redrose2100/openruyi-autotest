@@ -2,8 +2,6 @@
 
 > For **clean server** environments, getting started from scratch.
 
-> :cn: [中文版 (Chinese Version)](user_guide_zh.md)
-
 ---
 
 ## 1. Environment Setup

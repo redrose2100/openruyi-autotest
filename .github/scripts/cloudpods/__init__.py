@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-cloudpods 包：CloudPods 云平台 + openRuyi QEMU 环境创建核心库。
+cloudpods package: CloudPods cloud platform + openRuyi QEMU env creation core lib.
 
-由 tools/cloudpods/create_server.py 复制而来，作为新架构的库被命令使用。
-原脚本入口 (if __name__ == "__main__") 在复制时保留，但 CI 统一通过
-scripts 的 cli.py 调用 commands/launch_qemu_env.py 等命令。
+Copied from tools/cloudpods/create_server.py, used as a library by commands in
+the new architecture. The original script entry point (if __name__ == "__main__")
+is preserved in the copy, but CI uniformly calls commands/launch_qemu_env.py etc.
+via scripts cli.py.
 """

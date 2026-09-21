@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
-"""functional 测试套执行器。
+"""Functional test suite executor.
 
-对单个测试套（如 acl）在已申请的环境（QEMU VM）中执行其全部用例：
+Execute all test cases for a single test suite (e.g. acl) in an acquired
+environment (QEMU VM):
 
-  1. 将仓库打包（排除 docs/.github/unittests 等）并上传到环境
-  2. 在 QEMU 内准备执行环境（tmt / beakerlib，复用 run_tests_in_qemu 逻辑）
-  3. 配置 topology.env（指向本机）
-  4. 以 tmt 执行该测试套（--name /tests/functional/pkgs/<suite>）：
-     - 套级用例（套目录自身的 test.sh）作为套内 case
-     - 子用例 test_* 各自执行
-  5. 解析输出得到每个用例的 pass/fail/error/skip 与功能点明细
+  1. Package the repo (excluding docs/.github/unittests etc.) and upload to env
+  2. Prepare execution environment inside QEMU (tmt / beakerlib, reusing
+     run_tests_in_qemu logic)
+  3. Configure topology.env (pointing to local host)
+  4. Execute the test suite via tmt (--name /tests/functional/pkgs/<suite>):
+     - Suite-level test cases (the suite directory's own test.sh) as suite cases
+     - Sub-test-cases test_* each executed separately
+  5. Parse output to get each case's pass/fail/error/skip and feature point details
 
-复用 run_tests_in_qemu 的：remote_prepare_env / remote_setup_topology /
-run_tmt_tests（按 --name 过滤）/ run_tests_direct（tmt 不可用时）。
+Reuses run_tests_in_qemu's: remote_prepare_env / remote_setup_topology /
+run_tmt_tests (filtered by --name) / run_tests_direct (when tmt unavailable).
 """
 from __future__ import annotations
 
@@ -30,7 +32,7 @@ from core.ssh import SSHClient
 
 logger = logging.getLogger("ci_cli.functional.executor")
 
-# 复用 run_tests_in_qemu 的远程准备/执行函数
+# Reuse run_tests_in_qemu's remote prep / execution functions
 from commands.run_tests_in_qemu import (
     _setup_ruamel_pure_python,
     remote_prepare_env,
@@ -42,7 +44,7 @@ _REMOTE_DIR = "/home/openruyi/openruyi-autotest"
 
 
 def package_repo(repo_root: Path, excludes: Optional[List[str]] = None) -> str:
-    """把仓库打包为 tar.gz（排除 .git 与无关目录），返回临时文件路径。"""
+    """Package repo as tar.gz (excluding .git and irrelevant dirs), return temp file path."""
     fd, tmp = tempfile.mkstemp(suffix=".tar.gz")
     os.close(fd)
 
@@ -63,7 +65,7 @@ def _exec3(ssh: SSHClient, cmd: str, **kw):
 
 
 def ensure_tar(ssh: SSHClient, ssh_pw: str) -> bool:
-    """确保 QEMU 内有 tar（最小系统可能缺失）。"""
+    """Ensure tar is available in QEMU (minimal systems may lack it)."""
     ssh.exec(f"echo '{ssh_pw}' | sudo -S true")
     code, out, err = _exec3(ssh, "command -v tar", timeout=30)
     if code == 0:
@@ -77,7 +79,7 @@ def ensure_tar(ssh: SSHClient, ssh_pw: str) -> bool:
 
 
 def upload_repo(ssh: SSHClient, tarball: str, ssh_pw: str) -> bool:
-    """上传并解压仓库到 QEMU 内固定目录。"""
+    """Upload and extract repo tarball to a fixed directory inside QEMU."""
     ssh.exec(f"rm -rf {_REMOTE_DIR}")
     ssh.exec("mkdir -p /home/openruyi")
     if not ssh.put_file(tarball, "/home/openruyi/repo.tar.gz"):
@@ -100,13 +102,13 @@ def run_suite_on_env(
     suite_name: str,
     timeout: int = 5400,
 ) -> Dict:
-    """在已连接的环境上执行一个测试套的全部用例。
+    """Execute all test cases for a single test suite in the connected environment.
 
-    suite_fmf_path: 套的 fmf path（/tests/functional/pkgs/acl）
-    cases: 套下所有用例 dict 列表，每项含
+    suite_fmf_path: FMF path of the suite (/tests/functional/pkgs/acl)
+    cases: list of dicts for all cases under the suite, each containing
            {"case", "fmf_path", "test_points", ...}
 
-    返回结果 dict：
+    Returns result dict:
       {
         "suite": suite_name,
         "cases": [{"case","fmf_path","status","test_points","fail_reason","output"}],
@@ -120,7 +122,7 @@ def run_suite_on_env(
         "error": None,
     }
 
-    # 1. 准备执行环境（tmt/beakerlib）
+    # 1. Prepare execution environment (tmt/beakerlib)
     exec_mode = remote_prepare_env(ssh, ssh_pw)
     if not exec_mode:
         result["error"] = "prepare env failed"
@@ -128,12 +130,12 @@ def run_suite_on_env(
         return result
     result["exec_mode"] = exec_mode
 
-    # 2. 配置 topology.env（指向本机）
+    # 2. Configure topology.env (pointing to localhost)
     remote_setup_topology(ssh, ssh_pw, "127.0.0.1")
 
     case_fmf_paths = [c["fmf_path"] for c in cases]
 
-    # 3. 执行：tmt 或 direct
+    # 3. Execute: tmt or direct
     suite_results: List[Dict] = []
     try:
         if exec_mode == "tmt":
@@ -143,13 +145,14 @@ def run_suite_on_env(
             suite_results = _run_direct_suite(ssh, ssh_pw, suite_fmf_path,
                                               case_fmf_paths, timeout)
     except Exception as exc:  # noqa: BLE001
-        # 单个用例失败不应丢弃整套已执行结果：记录异常并继续归一化
+        # A single case failure should not discard already-collected suite results:
+        # log the exception and continue normalization
         logger.error("[exec] %s: suite execution raised, "
                      "keeping %d partial result(s): %s",
                      suite_name, len(suite_results), exc)
         result["error"] = f"partial: {exc}"
 
-    # 4. 归一化结果（补全 fail_reason / test_points）
+    # 4. Normalize results (fill in fail_reason / test_points)
     case_by_path = {c["fmf_path"]: c for c in cases}
     for r in suite_results:
         case = case_by_path.get(r["fmf_path"], {})
@@ -168,9 +171,9 @@ def run_suite_on_env(
 
 def _run_tmt_suite(ssh: SSHClient, ssh_pw: str, suite_fmf_path: str,
                    case_fmf_paths: List[str], timeout: int) -> List[Dict]:
-    """用 tmt 执行整个测试套（套自身 + 所有子用例）。"""
+    """Execute the entire test suite via tmt (suite itself + all sub-cases)."""
     results: List[Dict] = []
-    # tmt --name 匹配子树：传套路径即可覆盖所有子用例
+    # tmt --name matches subtrees: passing the suite path covers all sub-cases
     cmd = (
         f"cd {_REMOTE_DIR} && "
         f"echo '{ssh_pw}' | sudo -S true && "
@@ -183,12 +186,12 @@ def _run_tmt_suite(ssh: SSHClient, ssh_pw: str, suite_fmf_path: str,
     logger.info("[exec] %s: tmt exit=%s, output len=%s", suite_fmf_path, code,
                 len(output))
 
-    # 解析 tmt 树状输出中的用例状态
+    # Parse case statuses from tmt tree-style output
     parsed = _parse_tmt_output(output, case_fmf_paths)
     if parsed:
         return parsed
 
-    # 解析失败：整套标记
+    # Parse failed: mark entire suite
     status = "fail" if (code != 0 or "fail" in output.lower()) else "pass"
     results.append({
         "fmf_path": suite_fmf_path,
@@ -200,17 +203,17 @@ def _run_tmt_suite(ssh: SSHClient, ssh_pw: str, suite_fmf_path: str,
 
 
 def _parse_tmt_output(output: str, case_fmf_paths: List[str]) -> List[Dict]:
-    """解析 tmt 树状输出，返回每个用例的结果。"""
+    """Parse tmt tree-style output, returning results for each case."""
     results: List[Dict] = []
     lines = output.splitlines()
     current_test = None
     current_fail_reason: List[str] = []
-    # 干扰行前缀（tmt 各阶段标题等），排除这些不当作失败原因
+    # Noise line prefixes (tmt stage headers etc.), exclude as non-failure reasons
     _NOISE = (
         "discover", "provision", "prepare", "execute", "report", "plan",
         "summary", "1 test", "total", "Result", "How", "finish",
     )
-    pending_result: Optional[Dict] = None  # 等待捕获失败详情的已解析结果
+    pending_result: Optional[Dict] = None  # Parsed result awaiting failure detail capture
     for line in lines:
         m = re.match(r"^\s*(/tests/\S+)\s*$", line)
         if m:
@@ -228,14 +231,14 @@ def _parse_tmt_output(output: str, case_fmf_paths: List[str]) -> List[Dict]:
                     "output": "",
                 }
                 results.append(res)
-                # 若失败，后续行可能是失败详情（output: ...），挂起等待捕获
+                # If failed, subsequent lines may contain failure details (output: ...); hang to capture
                 if m2.group(1) in ("fail", "error"):
                     pending_result = res
                 else:
                     pending_result = None
                     current_test = None
                 continue
-            # 捕获挂起中的失败详情
+            # Capture failure details from the pending result
             if pending_result is not None:
                 stripped = line.strip()
                 if stripped and (stripped.startswith("output:")
@@ -246,19 +249,19 @@ def _parse_tmt_output(output: str, case_fmf_paths: List[str]) -> List[Dict]:
                 elif not stripped:
                     continue
                 else:
-                    # 非详情行（下一阶段标题等）停止捕获
+                    # Non-detail line (next stage header etc.) — stop capturing
                     pending_result = None
                     current_test = None
                     continue
             elif line.strip():
                 stripped = line.strip()
                 if not stripped.startswith(_NOISE):
-                    pass  # 其他行忽略
+                    pass  # Ignore other lines
 
-    # 过滤：只保留本套内的用例
+    # Filter: keep only cases belonging to this suite
     valid = [r for r in results if r["fmf_path"] in set(case_fmf_paths) or
              r["fmf_path"].startswith("/tests/functional/pkgs/")]
-    # 补充未出现在输出中的用例（标记为 error）
+    # Add cases missing from output (mark as error)
     covered = {r["fmf_path"] for r in valid}
     for p in case_fmf_paths:
         if p not in covered:
@@ -273,10 +276,11 @@ def _parse_tmt_output(output: str, case_fmf_paths: List[str]) -> List[Dict]:
 
 def _run_direct_suite(ssh: SSHClient, ssh_pw: str, suite_fmf_path: str,
                       case_fmf_paths: List[str], timeout: int) -> List[Dict]:
-    """tmt 不可用时直接以 beakerlib 方式执行每个用例脚本。
+    """When tmt is unavailable, execute each case script directly via beakerlib.
 
-    逐用例执行：单个用例超时/异常只标记该用例为 error，
-    不中断整个套，保证已完成的用例结果不会丢失。
+    Case-by-case execution: a single case timeout/exception only marks that
+    case as error, without aborting the entire suite, so completed case
+    results are never lost.
     """
     normalized: List[Dict] = []
     for path in case_fmf_paths:
