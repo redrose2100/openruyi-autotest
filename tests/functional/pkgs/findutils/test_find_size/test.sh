@@ -10,6 +10,7 @@ rlJournalStart
     findutilsSetup
     TmpDir=$(mktemp -d)
     rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+    rlRun "mkdir -p find_testdir" 0 "Create test directory"
 
     rlPhaseEnd
 

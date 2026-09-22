@@ -54,6 +54,9 @@ gitSetup() {
 
     rlCleanupAppend "gitCleanup"
 
+    git config --global user.email "test@example.com" 2>/dev/null
+    git config --global user.name "Test User" 2>/dev/null
+
 }
 
 

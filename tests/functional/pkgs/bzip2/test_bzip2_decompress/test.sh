@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "bunzip2 decompress"
-    rlRun "echo 'test data' > tf && bzip2 -k tf && bunzip2 -k tf.bz2 && test -f tf" 0 "bunzip2: decompress"
+    rlRun "echo 'test data' > tf && bzip2 -k tf && rm -f tf && bunzip2 -k tf.bz2 && test -f tf" 0 "bunzip2: decompress"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

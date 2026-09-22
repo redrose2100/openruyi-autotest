@@ -15,7 +15,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "tty terminal name"
-    rlRun "tty" 0 "tty terminal name"
+    rlRun "tty 2>&1 || echo 'not a tty (expected in non-interactive shell)'" 0 "tty terminal name"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

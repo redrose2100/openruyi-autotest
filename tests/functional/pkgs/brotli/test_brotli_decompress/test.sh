@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "brotli decompress"
-    rlRun "echo 'hello' > t2 && brotli t2 && brotli -d t2.br && test -f t2" 0 "brotli: decompress"
+    rlRun "echo 'hello' > t2 && brotli t2 && brotli -d t2.br -o t2.out && test -f t2.out" 0 "brotli: decompress"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

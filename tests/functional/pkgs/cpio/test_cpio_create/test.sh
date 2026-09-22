@@ -15,7 +15,7 @@ rlJournalStart
 
     rlPhaseStartTest "cpio create archive"
     rlRun "echo 'file1' > f1 && echo 'file2' > f2" 0 "Create files"
-    rlRun "echo f1 f2 | cpio -o > archive.cpio 2>/dev/null && test -f archive.cpio" 0 "cpio: create archive"
+    rlRun "printf 'f1\nf2\n' | cpio -o > archive.cpio 2>/dev/null && test -f archive.cpio" 0 "cpio: create archive"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

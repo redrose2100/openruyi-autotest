@@ -10,7 +10,7 @@ rlJournalStart
     coreutilsSetup
     TmpDir=$(mktemp -d)
     rlRun "cd $TmpDir" 0 "Enter temporary test directory"
-
+    rlRun "echo -e '1 a\n2 b\n3 c' > sorted1.txt && echo -e '1 x\n2 y\n4 z' > sorted2.txt" 0 "Create join input files"
 
     rlPhaseEnd
 

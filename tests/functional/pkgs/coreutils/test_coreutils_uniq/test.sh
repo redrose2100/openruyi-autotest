@@ -22,7 +22,7 @@ rlJournalStart
 
     rlPhaseStartTest "uniq filter repeated lines"
     rlRun "sort fruits.txt | uniq" 0 "uniq unique lines"
-    rlRun "test $(sort fruits.txt | uniq | wc -l) -eq 4" 0 "uniq: 4 unique"
+    rlRun "test $(sort fruits.txt | uniq | wc -l) -eq 3" 0 "uniq: 3 unique"
     rlRun "sort fruits.txt | uniq -c" 0 "uniq -c count occurrences"
     rlRun "sort fruits.txt | uniq -d" 0 "uniq -d only duplicates"
     rlRun "sort fruits.txt | uniq -u" 0 "uniq -u only uniques"

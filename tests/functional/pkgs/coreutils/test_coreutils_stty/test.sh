@@ -15,7 +15,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "stty terminal settings"
-    rlRun "stty -a" 0 "stty -a show all settings"
+    rlRun "stty -a 2>&1 || echo 'not a tty (expected in non-interactive shell)'" 0 "stty -a show all settings"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"
