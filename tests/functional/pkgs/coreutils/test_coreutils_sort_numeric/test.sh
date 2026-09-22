@@ -21,7 +21,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "sort -n numeric"
-    rlRun "sort -n fruits.txt 2>&1 | grep -qiE "error|Error|not found|No such|Unable to" || echo expected-error" 1 "sort -n numeric"
+    rlRun "sort -n fruits.txt 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "sort -n numeric"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

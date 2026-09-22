@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "python -u unbuffered"
-    rlRun "python3 -u -c 'print("unbuffered")'" 0 "python -u: unbuffered stdout"
+    rlRun "python3 -u -c 'print(\"unbuffered\")'" 0 "python -u: unbuffered stdout"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

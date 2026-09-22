@@ -15,7 +15,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "printf formatted output"
-    rlRun "printf "hello %s\n" world" 0 "printf format string"
+    rlRun "printf \"hello %s\n\" world" 0 "printf format string"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "bash eval dynamic execution"
-    rlRun "bash -c 'cmd="echo hello"; eval \$cmd'" 0 "bash eval: dynamic command"
+    rlRun "bash -c 'cmd=\"echo hello\"; eval \$cmd'" 0 "bash eval: dynamic command"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

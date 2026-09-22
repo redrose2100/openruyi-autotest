@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "python -O optimize"
-    rlRun "python3 -O -c 'print("ok")'" 0 "python -O: basic optimizations"
+    rlRun "python3 -O -c 'print(\"ok\")'" 0 "python -O: basic optimizations"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

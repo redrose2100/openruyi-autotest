@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "python -B no .pyc"
-    rlRun "python3 -B -c 'print("no pyc")'" 0 "python -B: don't write .pyc files"
+    rlRun "python3 -B -c 'print(\"no pyc\")'" 0 "python -B: don't write .pyc files"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

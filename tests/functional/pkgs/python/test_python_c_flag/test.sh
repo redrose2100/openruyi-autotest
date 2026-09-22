@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "python -c execute string"
-    rlRun "python3 -c 'print("hello")'" 0 "python -c: execute code string"
+    rlRun "python3 -c 'print(\"hello\")'" 0 "python -c: execute code string"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

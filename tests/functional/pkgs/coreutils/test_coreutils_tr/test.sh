@@ -21,9 +21,9 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "tr translate/delete characters"
-    rlRun "echo "UPPERCASE" | tr "A-Z" "a-z"" 0 "tr translate uppercase to lowercase"
-    rlRun "echo "abc" | tr -d "b"" 0 "tr -d delete characters"
-    rlRun "echo "a b c" | tr -s " "" 0 "tr -s squeeze repeats"
+    rlRun "echo \"UPPERCASE\" | tr \"A-Z\" \"a-z\"" 0 "tr translate uppercase to lowercase"
+    rlRun "echo \"abc\" | tr -d \"b\"" 0 "tr -d delete characters"
+    rlRun "echo \"a b c\" | tr -s \" \"" 0 "tr -s squeeze repeats"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

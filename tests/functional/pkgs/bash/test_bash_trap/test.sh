@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "bash trap signal handling"
-    rlRun "bash -c 'trap "echo trapped" EXIT; echo normal'" 0 "bash trap: EXIT trap fires"
+    rlRun "bash -c 'trap \"echo trapped\" EXIT; echo normal'" 0 "bash trap: EXIT trap fires"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

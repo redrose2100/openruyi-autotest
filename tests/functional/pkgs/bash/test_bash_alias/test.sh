@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "bash alias command alias"
-    rlRun "bash -c 'alias ll="ls -l"; alias'" 0 "bash alias: define alias"
+    rlRun "bash -c 'alias ll=\"ls -l\"; alias'" 0 "bash alias: define alias"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

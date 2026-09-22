@@ -22,7 +22,7 @@ rlJournalStart
 
     rlPhaseStartTest "stat file status"
     rlRun "stat file1.txt" 0 "stat file status"
-    rlRun "stat -c "%s %n" file1.txt" 0 "stat -c format output"
+    rlRun "stat -c \"%s %n\" file1.txt" 0 "stat -c format output"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

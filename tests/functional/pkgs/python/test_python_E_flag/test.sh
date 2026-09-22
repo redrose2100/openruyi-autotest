@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "python -E ignore env vars"
-    rlRun "python3 -E -c 'print("ignore PYTHON*")'" 0 "python -E: ignore PYTHON* env vars"
+    rlRun "python3 -E -c 'print(\"ignore PYTHON*\")'" 0 "python -E: ignore PYTHON* env vars"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

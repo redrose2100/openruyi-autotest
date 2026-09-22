@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "bash export environment variable"
-    rlRun "bash -c 'export MYVAR=hello; bash -c "echo \$MYVAR"'" 0 "bash export: variable passed to child"
+    rlRun "bash -c 'export MYVAR=hello; bash -c \"echo \$MYVAR\"'" 0 "bash export: variable passed to child"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "bash herestring <<<"
-    rlRun "bash -c 'read line <<< "hello world"; echo \$line'" 0 "bash <<<: herestring input"
+    rlRun "bash -c 'read line <<< \"hello world\"; echo \$line'" 0 "bash <<<: herestring input"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

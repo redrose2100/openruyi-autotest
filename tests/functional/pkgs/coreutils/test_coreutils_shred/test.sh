@@ -15,7 +15,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "shred secure file removal"
-    rlRun "echo "secret data" > shred_test.txt" 0 "Create file to shred"
+    rlRun "echo \"secret data\" > shred_test.txt" 0 "Create file to shred"
     rlRun "shred -n 1 -u shred_test.txt" 0 "shred remove file securely"
     rlRun "test ! -f shred_test.txt" 0 "shred: file removed"
     rlPhaseEnd

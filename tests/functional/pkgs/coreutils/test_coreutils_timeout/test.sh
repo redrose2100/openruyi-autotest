@@ -15,7 +15,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "timeout command limit"
-    rlRun "timeout 1 sleep 2 2>&1 | grep -qiE "Terminated|error" || echo timed-out" 0 "timeout kills command"
+    rlRun "timeout 1 sleep 2 2>&1 | grep -qiE \"Terminated|error\" || echo timed-out" 0 "timeout kills command"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

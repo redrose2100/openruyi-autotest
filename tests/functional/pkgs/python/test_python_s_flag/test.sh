@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "python -s no user site"
-    rlRun "python3 -s -c 'print("no user site")'" 0 "python -s: no user site dir"
+    rlRun "python3 -s -c 'print(\"no user site\")'" 0 "python -s: no user site dir"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"
