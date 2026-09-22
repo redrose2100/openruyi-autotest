@@ -64,21 +64,18 @@ jobs:
             python3 -m pip install --user paramiko 2>&1 | tail -3
 
       # --------------------------------------------------------
-      # Step 1: Collect changed files under tests/
+      # Step 1: Collect ALL pkgs test.sh files
       # --------------------------------------------------------
-      - name: Get changed files under tests/
+      - name: Get ALL pkgs test files
         id: changed
         run: |
-          BASE_SHA=${{ github.event.pull_request.base.sha }}
-          HEAD_SHA=${{ github.event.pull_request.head.sha }}
-          git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- tests/ > changed_files.txt || true
-          echo "Changed files under tests/:"
+          find tests/functional/pkgs -name 'test.sh' | sort > changed_files.txt
+          echo "All pkgs test files:"
           cat changed_files.txt
           COUNT=$(wc -l < changed_files.txt)
           echo "count=$COUNT" >> "$GITHUB_OUTPUT"
-          # Output empty when no changes, for downstream steps to short-circuit
           if [ "$COUNT" -eq 0 ]; then
-            echo "No tests/ changes in this PR."
+            echo "No pkgs test files found."
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
