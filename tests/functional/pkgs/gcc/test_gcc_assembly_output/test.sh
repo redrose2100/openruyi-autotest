@@ -11,6 +11,8 @@ rlJournalStart
     gccSetup
     TmpDir=$(mktemp -d)
     rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+    rlRun "echo '#include <stdio.h>
+int main() { printf(\"Hello\\n\"); return 0; }' > hello.c" 0 "Create hello.c"
     rlPhaseEnd
 
     rlPhaseStartTest "Assembly-output"

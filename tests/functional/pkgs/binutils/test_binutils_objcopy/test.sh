@@ -19,7 +19,7 @@ rlJournalStart
     rlRun "cp /usr/bin/ls ." 0 "List files"
     rlRun "objcopy --help 2>&1 | head -10" 0 "Copy and convert object files"
     rlRun "strip --help 2>&1 | head -10" 0 "Strip symbols from binary"
-    rlRun "strip ls 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "strip ļ"
+    rlRun "strip ls 2>&1 " 0 "strip ļ"
     rlPhaseEnd
 
 

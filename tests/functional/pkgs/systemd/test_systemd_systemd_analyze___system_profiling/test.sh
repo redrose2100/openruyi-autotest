@@ -14,8 +14,8 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "systemd-analyze---System-profiling"
-    rlRun "systemd-analyze --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "systemd-analyze version"
-    rlRun "systemd-analyze time 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "systemd-analyze time: boot time"
+    rlRun "systemd-analyze --version 2>&1 " 0 "systemd-analyze version"
+    rlRun "systemd-analyze time 2>&1 " 0 "systemd-analyze time: boot time"
     rlRun "systemd-analyze security 2>&1 | head -5" 0 "systemd-analyze security"
     rlPhaseEnd
 

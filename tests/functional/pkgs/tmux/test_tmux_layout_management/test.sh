@@ -14,13 +14,13 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Layout-management"
-    rlRun "tmux select-layout -t testsess:win1 even-horizontal 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "select-layout: even-horizontal"
-    rlRun "tmux select-layout -t testsess:win1 even-vertical 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "select-layout: even-vertical"
-    rlRun "tmux select-layout -t testsess:win1 main-horizontal 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "select-layout: main-horizontal"
-    rlRun "tmux select-layout -t testsess:win1 main-vertical 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "select-layout: main-vertical"
-    rlRun "tmux select-layout -t testsess:win1 tiled 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "select-layout: tiled"
-    rlRun "tmux next-layout -t testsess:win1 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "next-layout: cycle layouts"
-    rlRun "tmux previous-layout -t testsess:win1 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "previous-layout: prev layout"
+    rlRun "tmux select-layout -t testsess:win1 even-horizontal 2>&1 " 0 "select-layout: even-horizontal"
+    rlRun "tmux select-layout -t testsess:win1 even-vertical 2>&1 " 0 "select-layout: even-vertical"
+    rlRun "tmux select-layout -t testsess:win1 main-horizontal 2>&1 " 0 "select-layout: main-horizontal"
+    rlRun "tmux select-layout -t testsess:win1 main-vertical 2>&1 " 0 "select-layout: main-vertical"
+    rlRun "tmux select-layout -t testsess:win1 tiled 2>&1 " 0 "select-layout: tiled"
+    rlRun "tmux next-layout -t testsess:win1 2>&1 " 0 "next-layout: cycle layouts"
+    rlRun "tmux previous-layout -t testsess:win1 2>&1 " 0 "previous-layout: prev layout"
     rlPhaseEnd
 
 

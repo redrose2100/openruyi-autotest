@@ -11,6 +11,8 @@ rlJournalStart
     grepSetup
     TmpDir=$(mktemp -d)
     rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+    rlRun "echo -e 'Hello World\nHello Linux\nThis is a test\nHello everyone' > test1.txt" 0 "Create test1.txt"
+    rlRun "mkdir subdir" 0 "Create subdir for directory test"
     rlPhaseEnd
 
     rlPhaseStartTest "Error-handling"

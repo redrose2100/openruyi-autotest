@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "mke2fs --invalid 2>&1 | grep -qiE 'error|Error' || echo expected-error" 0 "mke2fs: invalid option"
+    rlRun "mke2fs --invalid 2>&1 | grep -qiE 'error|Error'" 0 "mke2fs: invalid option"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

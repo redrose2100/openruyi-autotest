@@ -11,6 +11,9 @@ rlJournalStart
     bashSetup
     TmpDir=$(mktemp -d)
     rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+    rlRun "echo '#!/bin/bash
+echo Hello from test script' > test.sh" 0 "Create test script"
+    rlRun "chmod +x test.sh" 0 "Make test script executable"
     rlPhaseEnd
 
     rlPhaseStartTest "basicscript execution"

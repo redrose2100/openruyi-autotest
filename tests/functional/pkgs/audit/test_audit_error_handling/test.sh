@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "auditctl --invalid-flag 2>&1 | grep -qiE 'error|Error|not found' || echo expected-error" 0 "audit: invalid flag"
+    rlRun "auditctl --invalid-flag 2>&1 | grep -qiE 'error|Error|not found'" 0 "audit: invalid flag"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

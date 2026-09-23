@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "dos2unix /nonexistent/file 2>&1 | grep -qiE 'error|Error|No such' || echo expected-error" 0 "dos2unix: missing file"
+    rlRun "dos2unix /nonexistent/file 2>&1 | grep -qiE 'error|Error|No such'" 0 "dos2unix: missing file"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

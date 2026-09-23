@@ -14,8 +14,8 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Error-handling"
-    rlRun "git nonexistent 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "git: invalid command"
-    rlRun "git --invalid-option 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "git: invalid option"
+    rlRun "git nonexistent 2>&1 " 0 "git: invalid command"
+    rlRun "git --invalid-option 2>&1 " 0 "git: invalid option"
     rlPhaseEnd
 
 

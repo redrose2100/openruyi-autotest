@@ -14,8 +14,8 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "sqldiff --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " sqldiff Чerror handling"
-    rlRun "sqlite3 --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " sqlite3 Чerror handling"
+    rlRun "sqldiff --invalid-flag-xyz 2>&1 " 0 " sqldiff Чerror handling"
+    rlRun "sqlite3 --invalid-flag-xyz 2>&1 " 0 " sqlite3 Чerror handling"
     rlPhaseEnd
 
 

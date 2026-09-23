@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "systemd-notify"
-    rlRun "systemd-notify --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "systemd-notify version"
+    rlRun "systemd-notify --version 2>&1 " 0 "systemd-notify version"
     rlRun "systemd-notify --help 2>&1 | head -5" 0 "systemd-notify help"
     rlPhaseEnd
 

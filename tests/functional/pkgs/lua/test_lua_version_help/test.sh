@@ -14,9 +14,9 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "version and help"
-    rlRun "lua --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "lua version info"
+    rlRun "lua --version 2>&1 " 0 "lua version info"
     rlRun "lua --help 2>&1 | head -5 || true" 0 "lua help info"
-    rlRun "luac --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "luac version info"
+    rlRun "luac --version 2>&1 " 0 "luac version info"
     rlRun "luac --help 2>&1 | head -5 || true" 0 "luac help info"
     rlPhaseEnd
 

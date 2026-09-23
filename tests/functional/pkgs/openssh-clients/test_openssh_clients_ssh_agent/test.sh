@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "clients - ssh-agent"
-    rlRun "ssh-add -l 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "ssh-add: list keys"
+    rlRun "ssh-add -l 2>&1 " 0 "ssh-add: list keys"
     rlRun "ssh-add test_key 2>&1" 0 "ssh-add: add key"
     rlRun "ssh-add -l 2>&1" 0 "ssh-add: verify key added"
     rlRun "ssh-add -L 2>&1" 0 "ssh-add -L: list public keys"

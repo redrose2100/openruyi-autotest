@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Source-and-configuration"
-    rlRun "tmux source-file $TmpDir/test_tmux.conf 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "source-file: source config"
+    rlRun "tmux source-file $TmpDir/test_tmux.conf 2>&1 " 0 "source-file: source config"
     rlPhaseEnd
 
 

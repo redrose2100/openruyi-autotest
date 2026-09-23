@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "cpio --invalid 2>&1 | grep -qiE 'error|Error' || echo expected-error" 0 "cpio: invalid option"
+    rlRun "cpio --invalid 2>&1 | grep -qiE 'error|Error'" 0 "cpio: invalid option"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

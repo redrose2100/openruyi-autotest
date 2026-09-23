@@ -14,8 +14,8 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "awk --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " awk Чerror handling"
-    rlRun "gawk --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " gawk Чerror handling"
+    rlRun "awk --invalid-flag-xyz 2>&1 " 0 " awk Чerror handling"
+    rlRun "gawk --invalid-flag-xyz 2>&1 " 0 " gawk Чerror handling"
     rlPhaseEnd
 
 

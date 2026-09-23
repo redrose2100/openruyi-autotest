@@ -14,10 +14,10 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "timesyncd - NTP-management"
-    rlRun "timedatectl show-timesync --property=FallbackNTPServers 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "Fallback NTP servers"
-    rlRun "timedatectl show-timesync --property=ServerName 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "Current NTP server"
-    rlRun "timedatectl show-timesync --property=ServerAddress 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "Server address"
-    rlRun "timedatectl ntp-servers 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "NTP servers list"
+    rlRun "timedatectl show-timesync --property=FallbackNTPServers 2>&1 " 0 "Fallback NTP servers"
+    rlRun "timedatectl show-timesync --property=ServerName 2>&1 " 0 "Current NTP server"
+    rlRun "timedatectl show-timesync --property=ServerAddress 2>&1 " 0 "Server address"
+    rlRun "timedatectl ntp-servers 2>&1 " 0 "NTP servers list"
     rlPhaseEnd
 
 

@@ -11,6 +11,8 @@ rlJournalStart
     gccSetup
     TmpDir=$(mktemp -d)
     rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+    rlRun "echo '#include <iostream>
+int main() { std::cout << \"Hello C++\" << std::endl; return 0; }' > hello2.cpp" 0 "Create hello2.cpp"
     rlPhaseEnd
 
     rlPhaseStartTest "C---compilation"

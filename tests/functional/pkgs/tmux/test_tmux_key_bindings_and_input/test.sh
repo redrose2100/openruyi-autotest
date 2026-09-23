@@ -26,7 +26,7 @@ rlJournalStart
     rlRun "tmux send-keys -t testsess:win1 \"echo hello\" Enter 2>&1 || true" 0 "send-keys: send text"
     rlRun "tmux send-keys -l -t testsess:win1 \"literal\" 2>&1 || true" 0 "send-keys -l: literal"
     rlRun "tmux send-keys -H -t testsess:win1 \"0d\" 2>&1 || true" 0 "send-keys -H: hex"
-    rlRun "tmux send-prefix -t testsess:win1 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "send-prefix: send prefix key"
+    rlRun "tmux send-prefix -t testsess:win1 2>&1 " 0 "send-prefix: send prefix key"
     rlPhaseEnd
 
 

@@ -11,6 +11,9 @@ rlJournalStart
     gccSetup
     TmpDir=$(mktemp -d)
     rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+    rlRun "echo 'int main() { return 0 }' > bad_syntax.c" 0 "Create bad_syntax.c (missing semicolon)"
+    rlRun "echo 'void foo() { bar(); }' > bad_func.c" 0 "Create bad_func.c (undefined function)"
+    rlRun "echo 'int main() { int x = \"hello\"; return 0; }' > bad_type.c" 0 "Create bad_type.c (type mismatch)"
     rlPhaseEnd
 
     rlPhaseStartTest "Error-handling"

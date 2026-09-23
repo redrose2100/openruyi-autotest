@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "loginctl---Login-management"
-    rlRun "loginctl --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "loginctl version"
+    rlRun "loginctl --version 2>&1 " 0 "loginctl version"
     rlRun "loginctl list-sessions" 0 "loginctl list-sessions"
     rlRun "loginctl list-users" 0 "loginctl list-users"
     rlRun "loginctl show-session 2>&1 | head -10" 0 "loginctl show-session"

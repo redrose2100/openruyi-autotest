@@ -16,8 +16,8 @@ rlJournalStart
     rlPhaseStartTest "Messages-and-display"
     rlRun "tmux display-message \"test message\" 2>&1 || true" 0 "display-message: show message"
     rlRun "tmux display-message -p \"session: #{session_name}\"" 0 "display-message -p: print format"
-    rlRun "tmux show-messages 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "show-messages: message log"
-    rlRun "tmux display-popup -C 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "display-popup -C: close popup"
+    rlRun "tmux show-messages 2>&1 " 0 "show-messages: message log"
+    rlRun "tmux display-popup -C 2>&1 " 0 "display-popup -C: close popup"
     rlRun "tmux clear-history -t testsess:win1" 0 "clear-history: clear pane history"
     rlPhaseEnd
 

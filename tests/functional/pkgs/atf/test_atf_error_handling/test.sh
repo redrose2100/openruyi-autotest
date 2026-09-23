@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "atf-sh --invalid 2>&1 | grep -qiE 'error|Error' || echo expected-error" 0 "atf: invalid option"
+    rlRun "atf-sh --invalid 2>&1 | grep -qiE 'error|Error'" 0 "atf: invalid option"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

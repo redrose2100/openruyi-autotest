@@ -11,6 +11,11 @@ rlJournalStart
     gccSetup
     TmpDir=$(mktemp -d)
     rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+    rlRun "echo '#include <stdio.h>
+int main() { printf(\"Hello\\n\"); return 0; }' > hello.c" 0 "Create hello.c"
+    rlRun "echo '#include <math.h>
+#include <stdio.h>
+int main() { printf(\"%f\", sin(1.0)); return 0; }' > math_test.c" 0 "Create math_test.c"
     rlPhaseEnd
 
     rlPhaseStartTest "Linking-and-libraries"

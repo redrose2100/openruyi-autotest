@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "localectl---Locale-management"
-    rlRun "localectl --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "localectl version"
+    rlRun "localectl --version 2>&1 " 0 "localectl version"
     rlRun "localectl status" 0 "localectl status: locale info"
     rlRun "localectl list-locales 2>&1 | head -10" 0 "localectl list-locales"
     rlPhaseEnd

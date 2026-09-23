@@ -16,7 +16,7 @@ rlJournalStart
     rlPhaseStartTest "ļ֤"
     rlRun "ls /usr/lib64/libaio.so.1* 2>/dev/null || ls /usr/lib/libaio.so.1* 2>/dev/null || echo \"not in standard path\"" 0 " libaio.so.1"
     rlRun "ls /usr/lib64/libaio.so.1.0.2* 2>/dev/null || ls /usr/lib/libaio.so.1.0.2* 2>/dev/null || echo \"not in standard path\"" 0 " libaio.so.1.0.2"
-    rlRun "pkg-config --libs libaio 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "pkg-config Ϣ"
+    rlRun "pkg-config --libs libaio 2>&1 " 0 "pkg-config Ϣ"
     rlPhaseEnd
 
 

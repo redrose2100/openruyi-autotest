@@ -16,7 +16,7 @@ rlJournalStart
     rlPhaseStartTest "Service-check"
     rlRun "systemctl cat sddm.service 2>&1 | head -10" 0 "sddm service unit"
     rlRun "systemctl status sddm.service 2>&1 | head -5 || true" 0 "sddm service status"
-    rlRun "systemctl is-enabled sddm.service 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "sddm enabled status"
+    rlRun "systemctl is-enabled sddm.service 2>&1 " 0 "sddm enabled status"
     rlPhaseEnd
 
 

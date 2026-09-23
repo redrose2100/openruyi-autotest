@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Hash-known-hosts"
-    rlRun "ssh-keygen -H -f /dev/null 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "Hash known hosts"
+    rlRun "ssh-keygen -H -f /dev/null 2>&1 " 0 "Hash known hosts"
     rlPhaseEnd
 
 

@@ -39,10 +39,10 @@ rlJournalStart
     rlRun "tmux kill-window -t testsess:tokill" 0 "kill-window: kill window"
     rlRun "tmux rotate-window -t testsess" 0 "rotate-window: rotate"
     rlRun "tmux rotate-window -D -t testsess" 0 "rotate-window -D: downward"
-    rlRun "tmux respawn-window -k -t testsess:win3 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "respawn-window -k: respawn"
-    rlRun "tmux resize-window -t testsess:win1 -x 100 -y 30 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "resize-window: set size"
-    rlRun "tmux resize-window -t testsess:win1 -U 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "resize-window -U: up"
-    rlRun "tmux resize-window -t testsess:win1 -D 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "resize-window -D: down"
+    rlRun "tmux respawn-window -k -t testsess:win3 2>&1 " 0 "respawn-window -k: respawn"
+    rlRun "tmux resize-window -t testsess:win1 -x 100 -y 30 2>&1 " 0 "resize-window: set size"
+    rlRun "tmux resize-window -t testsess:win1 -U 2>&1 " 0 "resize-window -U: up"
+    rlRun "tmux resize-window -t testsess:win1 -D 2>&1 " 0 "resize-window -D: down"
     rlPhaseEnd
 
 

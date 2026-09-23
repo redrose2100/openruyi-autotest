@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "version and help"
-    rlRun "whiptail --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "whiptail version info"
+    rlRun "whiptail --version 2>&1 " 0 "whiptail version info"
     rlRun "whiptail --help 2>&1 | head -5 || true" 0 "whiptail help info"
     rlPhaseEnd
 

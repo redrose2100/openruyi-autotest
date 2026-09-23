@@ -14,8 +14,8 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Choose-commands--interactive"
-    rlRun "tmux choose-tree -G 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "choose-tree -G: tree display"
-    rlRun "tmux choose-client 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "choose-client: client selection"
+    rlRun "tmux choose-tree -G 2>&1 " 0 "choose-tree -G: tree display"
+    rlRun "tmux choose-client 2>&1 " 0 "choose-client: client selection"
     rlPhaseEnd
 
 

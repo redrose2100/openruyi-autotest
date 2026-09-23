@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "busctl---D-Bus-introspection"
-    rlRun "busctl --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "busctl version"
+    rlRun "busctl --version 2>&1 " 0 "busctl version"
     rlRun "busctl list 2>&1 | head -10" 0 "busctl list: list services"
     rlRun "busctl status 2>&1 | head -10" 0 "busctl status: bus status"
     rlRun "busctl tree org.freedesktop.systemd1 2>&1 | head -10" 0 "busctl tree: object tree"

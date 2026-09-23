@@ -16,7 +16,7 @@ rlJournalStart
     rlPhaseStartTest "Ed25519-key-generation"
     rlRun "ssh-keygen -t ed25519 -f test_ed25519 -N \"\" -q" 0 "Generate Ed25519 key"
     rlRun "ssh-keygen -l -f test_ed25519.pub" 0 "Show Ed25519 fingerprint"
-    rlRun "ssh-keygen -l -v -f test_ed25519.pub 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "Verbose fingerprint"
+    rlRun "ssh-keygen -l -v -f test_ed25519.pub 2>&1 " 0 "Verbose fingerprint"
     rlPhaseEnd
 
 

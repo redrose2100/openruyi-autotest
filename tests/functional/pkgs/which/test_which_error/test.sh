@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "which --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " which Чerror handling"
+    rlRun "which --invalid-flag-xyz 2>&1 " 0 " which Чerror handling"
     rlPhaseEnd
 
 

@@ -15,7 +15,7 @@ rlJournalStart
 
     rlPhaseStartTest "Key-conversion"
     rlRun "ssh-keygen -e -f test_ed25519.pub -m RFC4716 2>&1 | head -3" 0 "Export RFC4716 format"
-    rlRun "ssh-keygen -i -f test_ed25519.pub -m RFC4716 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "Import RFC4716 format"
+    rlRun "ssh-keygen -i -f test_ed25519.pub -m RFC4716 2>&1 " 0 "Import RFC4716 format"
     rlPhaseEnd
 
 

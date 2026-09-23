@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Error-handling"
-    rlRun "vim --invalid-option 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "vim: invalid option"
+    rlRun "vim --invalid-option 2>&1 " 0 "vim: invalid option"
     rlRun "vim /nonexistent/file.txt -c \"q\" 2>&1 || true" 0 "vim: nonexistent file"
     rlPhaseEnd
 

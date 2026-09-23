@@ -11,6 +11,7 @@ rlJournalStart
     gccSetup
     TmpDir=$(mktemp -d)
     rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+    rlRun "echo 'int main() { int x = 1; if (x) return 0; else return 1; }' > gcov_test.c" 0 "Create gcov_test.c"
     rlPhaseEnd
 
     rlPhaseStartTest "Code-coverage--gcov"

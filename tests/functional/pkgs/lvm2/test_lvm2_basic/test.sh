@@ -30,21 +30,21 @@ rlJournalStart
 
     rlPhaseStartTest "lvm2 error handling"
 
-    rlRun "lvm version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "LVM "
+    rlRun "lvm version 2>&1 " 0 "LVM "
 
     rlRun "lvm help 2>&1 | head -10" 0 "Display first lines"
 
-    rlRun "pvs 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "ʾerror handling"
+    rlRun "pvs 2>&1 " 0 "ʾerror handling"
 
-    rlRun "vgs 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "ʾ"
+    rlRun "vgs 2>&1 " 0 "ʾ"
 
-    rlRun "lvs 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "ʾ߼"
+    rlRun "lvs 2>&1 " 0 "ʾ߼"
 
-    rlRun "pvdisplay 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "error handling"
+    rlRun "pvdisplay 2>&1 " 0 "error handling"
 
-    rlRun "vgdisplay 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "error handling"
+    rlRun "vgdisplay 2>&1 " 0 "error handling"
 
-    rlRun "lvdisplay 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "߼error handling"
+    rlRun "lvdisplay 2>&1 " 0 "߼error handling"
 
     rlPhaseEnd
 

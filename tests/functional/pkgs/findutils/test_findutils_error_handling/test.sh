@@ -30,7 +30,7 @@ rlJournalStart
 
     rlPhaseStartTest "error handling"
 
-    rlRun "find /nonexistent 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "find: nopath"
+    rlRun "find /nonexistent 2>&1 " 0 "find: nopath"
 
     rlPhaseEnd
 

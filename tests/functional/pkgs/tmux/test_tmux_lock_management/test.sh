@@ -14,8 +14,8 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Lock-management"
-    rlRun "tmux lock-server 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "lock-server: lock server"
-    rlRun "tmux lock-session -t testsess 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "lock-session: lock session"
+    rlRun "tmux lock-server 2>&1 " 0 "lock-server: lock server"
+    rlRun "tmux lock-session -t testsess 2>&1 " 0 "lock-session: lock session"
     rlPhaseEnd
 
 

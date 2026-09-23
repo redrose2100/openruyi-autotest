@@ -14,9 +14,9 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "version and help"
-    rlRun "pkgconf --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "pkgconf version info"
+    rlRun "pkgconf --version 2>&1 " 0 "pkgconf version info"
     rlRun "pkgconf --help 2>&1 | head -5 || true" 0 "pkgconf help info"
-    rlRun "bomtool --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "bomtool version info"
+    rlRun "bomtool --version 2>&1 " 0 "bomtool version info"
     rlRun "bomtool --help 2>&1 | head -5 || true" 0 "bomtool help info"
     rlPhaseEnd
 

@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "runtest --invalid 2>&1 | grep -qiE 'error|Error' || echo expected-error" 0 "dejagnu: invalid option"
+    rlRun "runtest --invalid 2>&1 | grep -qiE 'error|Error'" 0 "dejagnu: invalid option"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

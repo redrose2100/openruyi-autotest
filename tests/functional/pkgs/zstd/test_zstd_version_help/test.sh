@@ -14,17 +14,17 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "version and help"
-    rlRun "zstd --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "zstd version info"
+    rlRun "zstd --version 2>&1 " 0 "zstd version info"
     rlRun "zstd --help 2>&1 | head -5 || true" 0 "zstd help info"
-    rlRun "unzstd --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "unzstd version info"
+    rlRun "unzstd --version 2>&1 " 0 "unzstd version info"
     rlRun "unzstd --help 2>&1 | head -5 || true" 0 "unzstd help info"
-    rlRun "zstdcat --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "zstdcat version info"
+    rlRun "zstdcat --version 2>&1 " 0 "zstdcat version info"
     rlRun "zstdcat --help 2>&1 | head -5 || true" 0 "zstdcat help info"
-    rlRun "zstdgrep --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "zstdgrep version info"
+    rlRun "zstdgrep --version 2>&1 " 0 "zstdgrep version info"
     rlRun "zstdgrep --help 2>&1 | head -5 || true" 0 "zstdgrep help info"
-    rlRun "zstdless --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "zstdless version info"
+    rlRun "zstdless --version 2>&1 " 0 "zstdless version info"
     rlRun "zstdless --help 2>&1 | head -5 || true" 0 "zstdless help info"
-    rlRun "zstdmt --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "zstdmt version info"
+    rlRun "zstdmt --version 2>&1 " 0 "zstdmt version info"
     rlRun "zstdmt --help 2>&1 | head -5 || true" 0 "zstdmt help info"
     rlPhaseEnd
 

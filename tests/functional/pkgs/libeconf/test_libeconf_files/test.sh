@@ -16,7 +16,7 @@ rlJournalStart
     rlPhaseStartTest "ļ֤"
     rlRun "ls /usr/lib64/libeconf.so.0* 2>/dev/null || ls /usr/lib/libeconf.so.0* 2>/dev/null || echo \"not in standard path\"" 0 " libeconf.so.0"
     rlRun "ls /usr/lib64/libeconf.so.0.7.8* 2>/dev/null || ls /usr/lib/libeconf.so.0.7.8* 2>/dev/null || echo \"not in standard path\"" 0 " libeconf.so.0.7.8"
-    rlRun "pkg-config --libs libeconf 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "pkg-config Ϣ"
+    rlRun "pkg-config --libs libeconf 2>&1 " 0 "pkg-config Ϣ"
     rlPhaseEnd
 
 

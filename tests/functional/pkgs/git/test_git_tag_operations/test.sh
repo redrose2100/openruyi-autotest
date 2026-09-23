@@ -11,6 +11,10 @@ rlJournalStart
     gitSetup
     TmpDir=$(mktemp -d)
     rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+    rlRun "git init" 0 "Initialize git repository"
+    rlRun "echo test > file.txt" 0 "Create test file"
+    rlRun "git add file.txt" 0 "Stage test file"
+    rlRun "git commit -m initial" 0 "Create initial commit"
     rlPhaseEnd
 
     rlPhaseStartTest "Tag-operations"

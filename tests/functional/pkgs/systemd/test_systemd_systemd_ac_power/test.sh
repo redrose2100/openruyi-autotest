@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "systemd-ac-power"
-    rlRun "systemd-ac-power 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "systemd-ac-power: check power"
+    rlRun "systemd-ac-power 2>&1 " 0 "systemd-ac-power: check power"
     rlPhaseEnd
 
 

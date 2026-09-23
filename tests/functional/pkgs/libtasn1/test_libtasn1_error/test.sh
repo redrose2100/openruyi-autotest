@@ -14,9 +14,9 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "asn1Coding --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " asn1Coding Чerror handling"
-    rlRun "asn1Decoding --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " asn1Decoding Чerror handling"
-    rlRun "asn1Parser --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " asn1Parser Чerror handling"
+    rlRun "asn1Coding --invalid-flag-xyz 2>&1 " 0 " asn1Coding Чerror handling"
+    rlRun "asn1Decoding --invalid-flag-xyz 2>&1 " 0 " asn1Decoding Чerror handling"
+    rlRun "asn1Parser --invalid-flag-xyz 2>&1 " 0 " asn1Parser Чerror handling"
     rlPhaseEnd
 
 

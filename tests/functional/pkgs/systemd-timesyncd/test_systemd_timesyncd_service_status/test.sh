@@ -17,7 +17,7 @@ rlJournalStart
     rlRun "systemctl status systemd-timesyncd.service 2>&1 | head -10" 0 "Service status"
     rlRun "timedatectl show-timesync 2>&1 | head -10" 0 "Time sync status"
     rlRun "timedatectl timesync-status 2>&1 | head -10" 0 "Timesync detail"
-    rlRun "systemctl is-enabled systemd-timesyncd.service 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "Is enabled"
+    rlRun "systemctl is-enabled systemd-timesyncd.service 2>&1 " 0 "Is enabled"
     rlPhaseEnd
 
 

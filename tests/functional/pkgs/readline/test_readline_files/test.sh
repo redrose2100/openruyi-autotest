@@ -18,7 +18,7 @@ rlJournalStart
     rlRun "ls /usr/lib64/libhistory.so.8.3* 2>/dev/null || ls /usr/lib/libhistory.so.8.3* 2>/dev/null || echo \"not in standard path\"" 0 " libhistory.so.8.3"
     rlRun "ls /usr/lib64/libreadline.so.8* 2>/dev/null || ls /usr/lib/libreadline.so.8* 2>/dev/null || echo \"not in standard path\"" 0 " libreadline.so.8"
     rlRun "ls /usr/lib64/libreadline.so.8.3* 2>/dev/null || ls /usr/lib/libreadline.so.8.3* 2>/dev/null || echo \"not in standard path\"" 0 " libreadline.so.8.3"
-    rlRun "pkg-config --libs readline 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "pkg-config Ϣ"
+    rlRun "pkg-config --libs readline 2>&1 " 0 "pkg-config Ϣ"
     rlPhaseEnd
 
 

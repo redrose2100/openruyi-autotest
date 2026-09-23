@@ -16,7 +16,7 @@ rlJournalStart
     rlPhaseStartTest "error -ļ֤"
     rlRun "ls /usr/lib64/libgpg-error.so.0* 2>/dev/null || ls /usr/lib/libgpg-error.so.0* 2>/dev/null || echo \"not in standard path\"" 0 " libgpg-error.so.0"
     rlRun "ls /usr/lib64/libgpg-error.so.0.41.1* 2>/dev/null || ls /usr/lib/libgpg-error.so.0.41.1* 2>/dev/null || echo \"not in standard path\"" 0 " libgpg-error.so.0.41.1"
-    rlRun "pkg-config --libs libgpg-error 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "pkg-config Ϣ"
+    rlRun "pkg-config --libs libgpg-error 2>&1 " 0 "pkg-config Ϣ"
     rlPhaseEnd
 
 

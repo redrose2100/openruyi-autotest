@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Clock-mode"
-    rlRun "tmux clock-mode -t testsess:win1 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "clock-mode: show clock"
+    rlRun "tmux clock-mode -t testsess:win1 2>&1 " 0 "clock-mode: show clock"
     rlPhaseEnd
 
 

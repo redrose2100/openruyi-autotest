@@ -11,6 +11,10 @@ rlJournalStart
     gccSetup
     TmpDir=$(mktemp -d)
     rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+    rlRun "echo '#include <stdio.h>
+int main() { printf(\"Hello\\n\"); return 0; }' > hello.c" 0 "Create hello.c"
+    rlRun "echo 'int compute(int n) { int s=0; for(int i=0;i<n;i++) s+=i; return s; }
+int main() { return compute(100); }' > compute.c" 0 "Create compute.c"
     rlPhaseEnd
 
     rlPhaseStartTest "Compiler-optimization-flags"

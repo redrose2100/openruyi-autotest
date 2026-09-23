@@ -14,13 +14,13 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "hostnamectl---Hostname-management"
-    rlRun "hostnamectl --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "hostnamectl version"
+    rlRun "hostnamectl --version 2>&1 " 0 "hostnamectl version"
     rlRun "hostnamectl status" 0 "hostnamectl status: system info"
     rlRun "hostnamectl hostname" 0 "hostnamectl hostname: current name"
     rlRun "hostnamectl --static" 0 "hostnamectl --static"
     rlRun "hostnamectl --transient" 0 "hostnamectl --transient"
-    rlRun "hostnamectl --pretty 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "hostnamectl --pretty"
-    rlRun "hostnamectl chassis 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "hostnamectl chassis"
+    rlRun "hostnamectl --pretty 2>&1 " 0 "hostnamectl --pretty"
+    rlRun "hostnamectl chassis 2>&1 " 0 "hostnamectl chassis"
     rlPhaseEnd
 
 

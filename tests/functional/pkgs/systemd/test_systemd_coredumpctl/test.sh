@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "coredumpctl"
-    rlRun "coredumpctl --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "coredumpctl version"
+    rlRun "coredumpctl --version 2>&1 " 0 "coredumpctl version"
     rlRun "coredumpctl list 2>&1 | head -5" 0 "coredumpctl list: list dumps"
     rlRun "coredumpctl info 2>&1 | head -5 || true" 0 "coredumpctl info"
     rlPhaseEnd

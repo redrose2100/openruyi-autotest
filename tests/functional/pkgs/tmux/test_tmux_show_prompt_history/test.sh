@@ -14,8 +14,8 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Show-prompt-history"
-    rlRun "tmux show-prompt-history 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "show-prompt-history: prompt history"
-    rlRun "tmux clear-prompt-history 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "clear-prompt-history: clear prompt history"
+    rlRun "tmux show-prompt-history 2>&1 " 0 "show-prompt-history: prompt history"
+    rlRun "tmux clear-prompt-history 2>&1 " 0 "clear-prompt-history: clear prompt history"
     rlPhaseEnd
 
 

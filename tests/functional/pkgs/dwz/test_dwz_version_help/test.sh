@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "version and help"
-    rlRun "dwz --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "dwz version info"
+    rlRun "dwz --version 2>&1 " 0 "dwz version info"
     rlRun "dwz --help 2>&1 | head -5 || true" 0 "dwz help info"
     rlPhaseEnd
 

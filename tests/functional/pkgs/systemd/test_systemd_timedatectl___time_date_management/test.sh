@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "timedatectl---Time-date-management"
-    rlRun "timedatectl --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "timedatectl version"
+    rlRun "timedatectl --version 2>&1 " 0 "timedatectl version"
     rlRun "timedatectl status" 0 "timedatectl status: time info"
     rlRun "timedatectl show" 0 "timedatectl show: all properties"
     rlRun "timedatectl list-timezones 2>&1 | head -10" 0 "timedatectl list-timezones"

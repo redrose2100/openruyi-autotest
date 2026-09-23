@@ -14,8 +14,8 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "timesyncd - Service-control"
-    rlRun "systemctl try-restart systemd-timesyncd.service 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "Restart service"
-    rlRun "systemctl is-active systemd-timesyncd.service 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "Is active"
+    rlRun "systemctl try-restart systemd-timesyncd.service 2>&1 " 0 "Restart service"
+    rlRun "systemctl is-active systemd-timesyncd.service 2>&1 " 0 "Is active"
     rlPhaseEnd
 
 

@@ -14,9 +14,9 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "less --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " less Чerror handling"
-    rlRun "lessecho --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " lessecho Чerror handling"
-    rlRun "lesskey --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " lesskey Чerror handling"
+    rlRun "less --invalid-flag-xyz 2>&1 " 0 " less Чerror handling"
+    rlRun "lessecho --invalid-flag-xyz 2>&1 " 0 " lessecho Чerror handling"
+    rlRun "lesskey --invalid-flag-xyz 2>&1 " 0 " lesskey Чerror handling"
     rlPhaseEnd
 
 

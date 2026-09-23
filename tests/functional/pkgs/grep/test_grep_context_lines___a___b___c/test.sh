@@ -11,6 +11,7 @@ rlJournalStart
     grepSetup
     TmpDir=$(mktemp -d)
     rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+    rlRun "echo -e 'Hello World\nHello Linux\nThis is a test\nHello everyone\nLine with numbers 123\nSpecial chars: *.[]^$\nWorld is here' > test1.txt" 0 "Create test1.txt"
     rlPhaseEnd
 
     rlPhaseStartTest "Context-lines---A---B---C"

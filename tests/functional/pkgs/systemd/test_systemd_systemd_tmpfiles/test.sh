@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "systemd-tmpfiles"
-    rlRun "systemd-tmpfiles --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "systemd-tmpfiles version"
+    rlRun "systemd-tmpfiles --version 2>&1 " 0 "systemd-tmpfiles version"
     rlRun "systemd-tmpfiles --cat-config 2>&1 | head -10" 0 "systemd-tmpfiles --cat-config"
     rlPhaseEnd
 

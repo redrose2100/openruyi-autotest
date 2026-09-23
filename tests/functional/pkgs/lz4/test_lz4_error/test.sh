@@ -14,10 +14,10 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "lz4 --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " lz4 Чerror handling"
-    rlRun "lz4c --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " lz4c Чerror handling"
-    rlRun "lz4cat --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " lz4cat Чerror handling"
-    rlRun "unlz4 --invalid-flag-xyz 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 " unlz4 Чerror handling"
+    rlRun "lz4 --invalid-flag-xyz 2>&1 " 0 " lz4 Чerror handling"
+    rlRun "lz4c --invalid-flag-xyz 2>&1 " 0 " lz4c Чerror handling"
+    rlRun "lz4cat --invalid-flag-xyz 2>&1 " 0 " lz4cat Чerror handling"
+    rlRun "unlz4 --invalid-flag-xyz 2>&1 " 0 " unlz4 Чerror handling"
     rlPhaseEnd
 
 

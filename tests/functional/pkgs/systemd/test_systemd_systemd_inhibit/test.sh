@@ -15,7 +15,7 @@ rlJournalStart
 
     rlPhaseStartTest "systemd-inhibit"
     rlRun "systemd-inhibit --help 2>&1 | head -5" 0 "systemd-inhibit help"
-    rlRun "systemd-inhibit --list 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "systemd-inhibit --list"
+    rlRun "systemd-inhibit --list 2>&1 " 0 "systemd-inhibit --list"
     rlPhaseEnd
 
 

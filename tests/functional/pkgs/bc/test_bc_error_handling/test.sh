@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "echo '1/0' | bc 2>&1 | grep -qiE 'error|Error|Divide' || echo expected-error" 0 "bc: division by zero"
+    rlRun "echo '1/0' | bc 2>&1 | grep -qiE 'error|Error|Divide'" 0 "bc: division by zero"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

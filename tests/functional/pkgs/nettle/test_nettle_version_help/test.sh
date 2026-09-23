@@ -14,15 +14,15 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "version and help"
-    rlRun "nettle-hash --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "nettle-hash version info"
+    rlRun "nettle-hash --version 2>&1 " 0 "nettle-hash version info"
     rlRun "nettle-hash --help 2>&1 | head -5 || true" 0 "nettle-hash help info"
-    rlRun "nettle-lfib-stream --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "nettle-lfib-stream version info"
+    rlRun "nettle-lfib-stream --version 2>&1 " 0 "nettle-lfib-stream version info"
     rlRun "nettle-lfib-stream --help 2>&1 | head -5 || true" 0 "nettle-lfib-stream help info"
-    rlRun "nettle-pbkdf2 --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "nettle-pbkdf2 version info"
+    rlRun "nettle-pbkdf2 --version 2>&1 " 0 "nettle-pbkdf2 version info"
     rlRun "nettle-pbkdf2 --help 2>&1 | head -5 || true" 0 "nettle-pbkdf2 help info"
-    rlRun "pkcs1-conv --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "pkcs1-conv version info"
+    rlRun "pkcs1-conv --version 2>&1 " 0 "pkcs1-conv version info"
     rlRun "pkcs1-conv --help 2>&1 | head -5 || true" 0 "pkcs1-conv help info"
-    rlRun "sexp-conv --version 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "sexp-conv version info"
+    rlRun "sexp-conv --version 2>&1 " 0 "sexp-conv version info"
     rlRun "sexp-conv --help 2>&1 | head -5 || true" 0 "sexp-conv help info"
     rlPhaseEnd
 

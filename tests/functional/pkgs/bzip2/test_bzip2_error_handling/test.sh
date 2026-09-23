@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "bzip2 --invalid 2>&1 | grep -qiE 'error|Error' || echo expected-error" 0 "bzip2: invalid option"
+    rlRun "bzip2 --invalid 2>&1 | grep -qiE 'error|Error'" 0 "bzip2: invalid option"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

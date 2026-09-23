@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "diff --invalid-flag 2>&1 | grep -qiE 'error|Error' || echo expected-error" 0 "diff: invalid option"
+    rlRun "diff --invalid-flag 2>&1 | grep -qiE 'error|Error'" 0 "diff: invalid option"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

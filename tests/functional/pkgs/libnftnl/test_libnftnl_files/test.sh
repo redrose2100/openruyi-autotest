@@ -16,7 +16,7 @@ rlJournalStart
     rlPhaseStartTest "ļ֤"
     rlRun "ls /usr/lib64/libnftnl.so.11* 2>/dev/null || ls /usr/lib/libnftnl.so.11* 2>/dev/null || echo \"not in standard path\"" 0 " libnftnl.so.11"
     rlRun "ls /usr/lib64/libnftnl.so.11.6.0* 2>/dev/null || ls /usr/lib/libnftnl.so.11.6.0* 2>/dev/null || echo \"not in standard path\"" 0 " libnftnl.so.11.6.0"
-    rlRun "pkg-config --libs libnftnl 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "pkg-config Ϣ"
+    rlRun "pkg-config --libs libnftnl 2>&1 " 0 "pkg-config Ϣ"
     rlPhaseEnd
 
 

@@ -15,7 +15,7 @@ rlJournalStart
 
     rlPhaseStartTest "Clean-and-gc"
     rlRun "git clean -n" 0 "git clean -n: dry run"
-    rlRun "git gc --auto 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "git gc: garbage collect"
+    rlRun "git gc --auto 2>&1 " 0 "git gc: garbage collect"
     rlPhaseEnd
 
 

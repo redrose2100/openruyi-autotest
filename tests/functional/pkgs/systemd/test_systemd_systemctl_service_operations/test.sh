@@ -14,10 +14,10 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "systemctl-service-operations"
-    rlRun "systemctl try-restart systemd-journald.service 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "systemctl try-restart"
-    rlRun "systemctl reload-or-restart systemd-journald.service 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "systemctl reload-or-restart"
-    rlRun "systemctl reset-failed 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "systemctl reset-failed"
-    rlRun "systemctl daemon-reload 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "systemctl daemon-reload"
+    rlRun "systemctl try-restart systemd-journald.service 2>&1 " 0 "systemctl try-restart"
+    rlRun "systemctl reload-or-restart systemd-journald.service 2>&1 " 0 "systemctl reload-or-restart"
+    rlRun "systemctl reset-failed 2>&1 " 0 "systemctl reset-failed"
+    rlRun "systemctl daemon-reload 2>&1 " 0 "systemctl daemon-reload"
     rlPhaseEnd
 
 

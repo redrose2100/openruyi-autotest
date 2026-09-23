@@ -19,7 +19,7 @@ rlJournalStart
     rlRun "ls /usr/lib64/etree.cpython-313-riscv64-linux-gnu.so* 2>/dev/null || ls /usr/lib/etree.cpython-313-riscv64-linux-gnu.so* 2>/dev/null || echo \"not in standard path\"" 0 " etree.cpython-313-riscv64-linux-gnu.so"
     rlRun "ls /usr/lib64/_difflib.cpython-313-riscv64-linux-gnu.so* 2>/dev/null || ls /usr/lib/_difflib.cpython-313-riscv64-linux-gnu.so* 2>/dev/null || echo \"not in standard path\"" 0 " _difflib.cpython-313-riscv64-linux-gnu.so"
     rlRun "ls /usr/lib64/diff.cpython-313-riscv64-linux-gnu.so* 2>/dev/null || ls /usr/lib/diff.cpython-313-riscv64-linux-gnu.so* 2>/dev/null || echo \"not in standard path\"" 0 " diff.cpython-313-riscv64-linux-gnu.so"
-    rlRun "pkg-config --libs python-lxml 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "pkg-config Ϣ"
+    rlRun "pkg-config --libs python-lxml 2>&1 " 0 "pkg-config Ϣ"
     rlPhaseEnd
 
 

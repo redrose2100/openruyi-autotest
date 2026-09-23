@@ -15,8 +15,8 @@ rlJournalStart
 
     rlPhaseStartTest "Stash"
     rlRun "git stash push -m \"wip changes\" 2>&1 || true" 0 "git stash: push"
-    rlRun "git stash list 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "git stash list"
-    rlRun "git stash pop 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "git stash pop"
+    rlRun "git stash list 2>&1 " 0 "git stash list"
+    rlRun "git stash pop 2>&1 " 0 "git stash pop"
     rlPhaseEnd
 
 

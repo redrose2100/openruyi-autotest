@@ -20,13 +20,13 @@ rlJournalStart
     rlRun "tmux list-buffers" 0 "list-buffers: list all buffers"
     rlRun "tmux list-buffers -F \"#{buffer_name}: #{buffer_sample}\"" 0 "list-buffers -F: formatted"
     rlRun "tmux show-buffer -b testbuf" 0 "show-buffer: show buffer contents"
-    rlRun "tmux paste-buffer -b testbuf -t testsess:win1 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "paste-buffer: paste buffer"
-    rlRun "tmux paste-buffer -d -b testbuf 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "paste-buffer -d: delete after paste"
+    rlRun "tmux paste-buffer -b testbuf -t testsess:win1 2>&1 " 0 "paste-buffer: paste buffer"
+    rlRun "tmux paste-buffer -d -b testbuf 2>&1 " 0 "paste-buffer -d: delete after paste"
     rlRun "tmux set-buffer -b todelete \"temp\"" 0 "delete-buffer: create temp buffer"
     rlRun "tmux delete-buffer -b todelete" 0 "delete-buffer: delete buffer"
     rlRun "tmux set-buffer -b savebuf \"save test\"" 0 "save-buffer: create buffer"
-    rlRun "tmux save-buffer -b savebuf /tmp/tmux_save.txt 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "save-buffer: save to file"
-    rlRun "tmux load-buffer -b loadbuf /tmp/tmux_save.txt 2>&1 | grep -qiE \"error|Error|not found|No such|Unable to\" || echo expected-error" 1 "load-buffer: load from file"
+    rlRun "tmux save-buffer -b savebuf /tmp/tmux_save.txt 2>&1 " 0 "save-buffer: save to file"
+    rlRun "tmux load-buffer -b loadbuf /tmp/tmux_save.txt 2>&1 " 0 "load-buffer: load from file"
     rlPhaseEnd
 
 

@@ -11,6 +11,10 @@ rlJournalStart
     grepSetup
     TmpDir=$(mktemp -d)
     rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+    rlRun "mkdir -p subdir" 0 "Create subdir"
+    rlRun "echo 'nested content hello world' > subdir/file1.txt" 0 "Create file1 in subdir"
+    rlRun "echo 'hello from subdir' > subdir/file2.txt" 0 "Create file2 in subdir"
+    rlRun "echo 'hello no match' > topfile.txt" 0 "Create top-level test file"
     rlPhaseEnd
 
     rlPhaseStartTest "Recursive-search---r"
