@@ -64,18 +64,23 @@ jobs:
             python3 -m pip install --user paramiko 2>&1 | tail -3
 
       # --------------------------------------------------------
-      # Step 1: Collect ALL pkgs test.sh files
+      # Step 1: Collect only PR-changed test.sh files
       # --------------------------------------------------------
-      - name: Get ALL pkgs test files
+      - name: Get PR-changed test files
         id: changed
         run: |
-          find tests/functional/pkgs -name 'test.sh' | sort > changed_files.txt
-          echo "All pkgs test files:"
+          # Use git diff between PR base and head to find only changed files
+          git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" \
+            | grep '^tests/functional/pkgs/' \
+            | grep '/test\.sh$' \
+            | sort > changed_files.txt || true
+
+          echo "PR-changed test files:"
           cat changed_files.txt
           COUNT=$(wc -l < changed_files.txt)
           echo "count=$COUNT" >> "$GITHUB_OUTPUT"
           if [ "$COUNT" -eq 0 ]; then
-            echo "No pkgs test files found."
+            echo "No test files changed in PR."
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
