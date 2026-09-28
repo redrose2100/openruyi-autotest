@@ -1,26 +1,33 @@
 # ============================================================
-# PKGS Full Test Pipeline (via PR label trigger)
+# PKGS Full Test Pipeline (push + PR label trigger)
 #
-# Trigger: when label "run-pkgs-full" is added to a PR
+# Trigger:
+#   1. Push to dev branch when tests/functional/pkgs/ changes
+#   2. When label "run-pkgs-full" is added to a PR
 #
 # Workflow:
-#   1. Checkout PR merge commit
+#   1. Checkout code
 #   2. Collect ALL pkgs test.sh files (not just changed ones)
 #   3. Compute VM resource spec
 #   4. Acquire env from CI pre-provisioned pool
 #   5. Execute ALL tests in QEMU
 #   6. Release env back to pool
 #
-# Runner: self-hosted
+# Runner: self-hosted (10.20.238.253, openruyi-github-runner)
 # ============================================================
 name: PKGS Full Tests
 
 on:
+  push:
+    branches: [dev]
+    paths:
+      - 'tests/functional/pkgs/**'
+      - '.github/workflows/pkgs-full-test.yml'
   pull_request:
     types: [labeled]
 
 concurrency:
-  group: pkgs-full-${{ github.event.pull_request.number }}
+  group: pkgs-full-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 permissions:
@@ -28,12 +35,12 @@ permissions:
 
 jobs:
   run-pkgs-full:
-    if: ${{ github.event.label.name == 'run-pkgs-full' }}
+    # For push events: always run. For label events: only when label is 'run-pkgs-full'
+    if: ${{ github.event_name == 'push' || github.event.label.name == 'run-pkgs-full' }}
     runs-on: [self-hosted, Linux, X64, openEuler]
     timeout-minutes: 4320
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      PR_NUMBER: ${{ github.event.pull_request.number }}
       GITHUB_REPOSITORY: ${{ github.repository }}
       WORKSPACE: ${{ github.workspace }}
       CLOUDPODS_KEYSTONE_URL: ${{ secrets.CLOUDPODS_KEYSTONE_URL }}
@@ -41,10 +48,9 @@ jobs:
       CLOUDPODS_PASSWORD: ${{ secrets.CLOUDPODS_PASSWORD }}
 
     steps:
-      - name: Checkout PR
+      - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: refs/pull/${{ github.event.pull_request.number }}/merge
           fetch-depth: 0
 
       # --------------------------------------------------------
