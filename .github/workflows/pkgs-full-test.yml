@@ -1,0 +1,138 @@
+# ============================================================
+# PKGS Full Test Pipeline (via PR label trigger)
+#
+# Trigger: when label "run-pkgs-full" is added to a PR
+#
+# Workflow:
+#   1. Checkout PR merge commit
+#   2. Collect ALL pkgs test.sh files (not just changed ones)
+#   3. Compute VM resource spec
+#   4. Acquire env from CI pre-provisioned pool
+#   5. Execute ALL tests in QEMU
+#   6. Release env back to pool
+#
+# Runner: self-hosted
+# ============================================================
+name: PKGS Full Tests
+
+on:
+  pull_request:
+    types: [labeled]
+
+concurrency:
+  group: pkgs-full-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  run-pkgs-full:
+    if: ${{ github.event.label.name == 'run-pkgs-full' }}
+    runs-on: [self-hosted, Linux, X64, openEuler]
+    timeout-minutes: 4320
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      GITHUB_REPOSITORY: ${{ github.repository }}
+      WORKSPACE: ${{ github.workspace }}
+      CLOUDPODS_KEYSTONE_URL: ${{ secrets.CLOUDPODS_KEYSTONE_URL }}
+      CLOUDPODS_USER: ${{ secrets.CLOUDPODS_USER }}
+      CLOUDPODS_PASSWORD: ${{ secrets.CLOUDPODS_PASSWORD }}
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          fetch-depth: 0
+
+      # --------------------------------------------------------
+      # Step 0: Ensure paramiko on runner (idempotent)
+      # --------------------------------------------------------
+      - name: Ensure paramiko on runner
+        run: |
+          python3 -c "import paramiko" 2>/dev/null || \
+            python3 -m pip install --user paramiko 2>&1 | tail -3
+
+      # --------------------------------------------------------
+      # Step 1: Collect ALL pkgs test.sh files
+      # --------------------------------------------------------
+      - name: Get ALL pkgs test files
+        id: changed
+        run: |
+          find tests/functional/pkgs -name 'test.sh' | sort > changed_files.txt
+          echo "All pkgs test files:"
+          cat changed_files.txt
+          COUNT=$(wc -l < changed_files.txt)
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          if [ "$COUNT" -eq 0 ]; then
+            echo "No pkgs test files found."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # --------------------------------------------------------
+      # Step 2: Compute VM resource spec
+      # --------------------------------------------------------
+      - name: Compute VM requirements
+        id: compute
+        if: steps.changed.outputs.changed == 'true'
+        run: |
+          python3 .github/scripts/cli.py compute-requirements \
+            --repo "$GITHUB_WORKSPACE" \
+            --changed-files changed_files.txt \
+            --output vm_requirements.json
+          cat vm_requirements.json
+
+      # --------------------------------------------------------
+      # Step 3: Acquire env from CI pre-provisioned pool
+      # --------------------------------------------------------
+      - name: Acquire environment from CI pool
+        id: pool-acquire
+        if: steps.changed.outputs.changed == 'true'
+        run: |
+          set -o pipefail
+          python3 .github/scripts/cli.py pool-acquire \
+            --requirements vm_requirements.json \
+            --timeout 600 \
+            --output vm_info.json 2>&1 | tee pool_acquire.log
+          echo "vm_info:"
+          cat vm_info.json
+        env:
+          CLOUDPODS_KEYSTONE_URL: ${{ secrets.CLOUDPODS_KEYSTONE_URL }}
+          CLOUDPODS_USER: ${{ secrets.CLOUDPODS_USER }}
+          CLOUDPODS_PASSWORD: ${{ secrets.CLOUDPODS_PASSWORD }}
+
+      # --------------------------------------------------------
+      # Step 4: Execute ALL test scripts in QEMU
+      # --------------------------------------------------------
+      - name: Run tests in QEMU
+        id: run-tests
+        if: steps.changed.outputs.changed == 'true'
+        run: |
+          set -o pipefail
+          python3 .github/scripts/cli.py run-tests-in-qemu \
+            --vm-info vm_info.json \
+            --repo "$GITHUB_WORKSPACE" \
+            --requirements vm_requirements.json \
+            --output test_results.json 2>&1 | tee run_tests.log
+          echo "test_results:"
+          cat test_results.json || true
+
+      # --------------------------------------------------------
+      # Step 5: Release env back to pool (no VM delete, always runs)
+      # --------------------------------------------------------
+      - name: Release environment back to pool
+        if: always()
+        run: |
+          if [ -f vm_info.json ]; then
+            python3 .github/scripts/cli.py pool-release --pool-info vm_info.json || true
+          else
+            echo "No vm_info.json, skip release"
+          fi
+        env:
+          CLOUDPODS_KEYSTONE_URL: ${{ secrets.CLOUDPODS_KEYSTONE_URL }}
+          CLOUDPODS_USER: ${{ secrets.CLOUDPODS_USER }}
+          CLOUDPODS_PASSWORD: ${{ secrets.CLOUDPODS_PASSWORD }}
