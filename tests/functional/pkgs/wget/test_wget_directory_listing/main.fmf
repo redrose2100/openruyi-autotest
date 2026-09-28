@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/wget/test_wget_directory_listing
 require:
  - wget
  - beakerlib
+# pkgs-full-test-run v1

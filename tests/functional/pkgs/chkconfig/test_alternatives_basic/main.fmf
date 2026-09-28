@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/chkconfig/test_alternatives_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

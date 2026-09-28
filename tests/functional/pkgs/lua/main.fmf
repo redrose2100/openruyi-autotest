@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/lua
 require:
  - lua
  - beakerlib
+
+# pkgs-full-test-run v1

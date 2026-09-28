@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/gobject-introspection/test_gobject_introspection_go
 require:
  - beakerlib
  - gobject-introspection
+
+# pkgs-full-test-run v1

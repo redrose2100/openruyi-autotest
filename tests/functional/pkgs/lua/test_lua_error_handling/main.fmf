@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/lua/test_lua_error_handling
 require:
  - lua
  - beakerlib
+# pkgs-full-test-run v1

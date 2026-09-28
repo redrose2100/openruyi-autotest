@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/which
 require:
  - which
  - beakerlib
+
+# pkgs-full-test-run v1

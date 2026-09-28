@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/util-linux/test_util_linux_error_handling
 require:
  - util-linux
  - beakerlib
+# pkgs-full-test-run v1

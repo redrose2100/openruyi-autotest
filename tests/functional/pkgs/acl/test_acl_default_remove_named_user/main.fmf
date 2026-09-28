@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/acl/test_acl_default_remove_named_user
 require:
  - acl
  - beakerlib
+
+# pkgs-full-test-run v1

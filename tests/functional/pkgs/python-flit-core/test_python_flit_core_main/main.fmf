@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/python-flit-core/test_python_flit_core_main
 require:
  - beakerlib
  - python-flit-core
+
+# pkgs-full-test-run v1

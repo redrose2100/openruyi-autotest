@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/xmlto/test_xmlto_xmlto_version
 require:
  - beakerlib
  - xmlto
+
+# pkgs-full-test-run v1

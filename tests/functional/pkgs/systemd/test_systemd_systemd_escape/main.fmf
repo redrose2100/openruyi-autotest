@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/systemd/test_systemd_systemd_escape
 require:
  - systemd
  - beakerlib
+# pkgs-full-test-run v1

@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/iptables
 require:
  - iptables
  - beakerlib
+
+# pkgs-full-test-run v1

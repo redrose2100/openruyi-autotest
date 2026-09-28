@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/acl/test_acl_setfacl_invalid_acl_type
 require:
  - acl
  - beakerlib
+
+# pkgs-full-test-run v1

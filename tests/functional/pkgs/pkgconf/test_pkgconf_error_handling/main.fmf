@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/pkgconf/test_pkgconf_error_handling
 require:
  - pkgconf
  - beakerlib
+# pkgs-full-test-run v1

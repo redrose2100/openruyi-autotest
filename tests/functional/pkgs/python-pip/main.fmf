@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/python-pip
 require:
  - python3-pip
  - beakerlib
+
+# pkgs-full-test-run v1

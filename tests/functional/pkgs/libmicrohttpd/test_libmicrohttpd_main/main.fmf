@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/libmicrohttpd/test_libmicrohttpd_main
 require:
  - beakerlib
  - libmicrohttpd
+
+# pkgs-full-test-run v1

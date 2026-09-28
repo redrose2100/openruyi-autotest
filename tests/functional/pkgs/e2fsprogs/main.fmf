@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/e2fsprogs
 require:
  - e2fsprogs
  - beakerlib
+
+# pkgs-full-test-run v1

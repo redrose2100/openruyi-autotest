@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/patch/test_patch_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/ncurses/test_ncurses_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

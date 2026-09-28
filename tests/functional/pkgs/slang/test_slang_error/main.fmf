@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/slang/test_slang_error
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

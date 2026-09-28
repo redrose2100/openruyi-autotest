@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/gmp
 require:
  - gmp
  - beakerlib
+
+# pkgs-full-test-run v1

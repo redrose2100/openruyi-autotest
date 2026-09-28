@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/perl-rpm-packaging/test_perl_rpm_packaging_main
 require:
  - beakerlib
  - perl-rpm-packaging
+
+# pkgs-full-test-run v1

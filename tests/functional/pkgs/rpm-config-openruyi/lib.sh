@@ -94,3 +94,5 @@ rpmConfigOpenruyiCleanup() {
 
 }
 
+
+# pkgs-full-test-run v1

@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/perl/test_perl_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

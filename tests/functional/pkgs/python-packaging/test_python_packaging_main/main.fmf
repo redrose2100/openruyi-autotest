@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/python-packaging/test_python_packaging_main
 require:
  - beakerlib
  - python-packaging
+
+# pkgs-full-test-run v1

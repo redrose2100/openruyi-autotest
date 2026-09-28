@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/libbpf/test_libbpf_files
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

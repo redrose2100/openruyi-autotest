@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/psmisc/test_psmisc_peekfd
 require:
  - psmisc
  - beakerlib
+# pkgs-full-test-run v1

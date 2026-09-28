@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/systemd-timesyncd/test_systemd_timesyncd_systemd_ti
 require:
  - systemd-timesyncd
  - beakerlib
+# pkgs-full-test-run v1

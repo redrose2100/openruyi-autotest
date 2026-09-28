@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/openssl
 require:
  - openssl
  - beakerlib
+
+# pkgs-full-test-run v1

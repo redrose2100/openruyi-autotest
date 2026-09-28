@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/icu4c
 require:
  - icu4c
  - beakerlib
+
+# pkgs-full-test-run v1

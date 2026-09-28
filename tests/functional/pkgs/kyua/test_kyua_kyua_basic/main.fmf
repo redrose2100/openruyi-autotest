@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/kyua/test_kyua_kyua_basic
 require:
  - beakerlib
  - kyua
+
+# pkgs-full-test-run v1

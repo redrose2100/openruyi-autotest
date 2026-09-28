@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/acl/test_acl_getfacl_backup_file_acl
 require:
  - acl
  - beakerlib
+
+# pkgs-full-test-run v1

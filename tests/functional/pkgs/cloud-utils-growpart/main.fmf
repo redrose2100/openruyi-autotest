@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/cloud-utils-growpart
 require:
  - cloud-utils-growpart
  - beakerlib
+
+# pkgs-full-test-run v1

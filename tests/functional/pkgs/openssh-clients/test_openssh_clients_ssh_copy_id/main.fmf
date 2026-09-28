@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/openssh-clients/test_openssh_clients_ssh_copy_id
 require:
  - openssh-clients
  - beakerlib
+# pkgs-full-test-run v1

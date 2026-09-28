@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/mpc/test_mpc_version_help
 require:
  - mpc
  - beakerlib
+# pkgs-full-test-run v1

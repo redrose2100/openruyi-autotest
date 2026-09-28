@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/glibc
 require:
  - glibc
  - beakerlib
+
+# pkgs-full-test-run v1

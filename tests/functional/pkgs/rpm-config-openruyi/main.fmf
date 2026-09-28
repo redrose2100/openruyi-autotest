@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/rpm-config-openruyi
 require:
  - rpm-config-openruyi
  - beakerlib
+
+# pkgs-full-test-run v1

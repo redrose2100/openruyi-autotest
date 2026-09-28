@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/vim/test_vim_error_handling
 require:
  - vim
  - beakerlib
+# pkgs-full-test-run v1

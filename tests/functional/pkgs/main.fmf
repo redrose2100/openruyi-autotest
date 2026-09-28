@@ -2,3 +2,5 @@
 framework: shell
 duration: 5m
 tier: 1
+
+# pkgs-full-test-run v1

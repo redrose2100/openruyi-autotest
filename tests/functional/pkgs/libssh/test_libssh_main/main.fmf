@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/libssh/test_libssh_main
 require:
  - beakerlib
  - libssh
+
+# pkgs-full-test-run v1

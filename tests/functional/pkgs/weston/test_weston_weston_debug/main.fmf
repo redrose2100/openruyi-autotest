@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/weston/test_weston_weston_debug
 require:
  - weston
  - beakerlib
+# pkgs-full-test-run v1

@@ -94,3 +94,5 @@ rpmbuildCleanup() {
 
 }
 
+
+# pkgs-full-test-run v1

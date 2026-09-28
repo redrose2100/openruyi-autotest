@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/cpio/test_cpio_error
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

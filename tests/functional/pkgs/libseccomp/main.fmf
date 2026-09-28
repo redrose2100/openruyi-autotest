@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/libseccomp
 require:
  - libseccomp
  - beakerlib
+
+# pkgs-full-test-run v1

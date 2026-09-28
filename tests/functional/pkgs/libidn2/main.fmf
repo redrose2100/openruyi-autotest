@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/libidn2
 require:
  - libidn2
  - beakerlib
+
+# pkgs-full-test-run v1

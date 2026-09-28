@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/autoconf/test_autoconf_main
 require:
  - beakerlib
  - autoconf
+
+# pkgs-full-test-run v1

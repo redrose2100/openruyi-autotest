@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/python-srpm-macros
 require:
  - python-srpm-macros
  - beakerlib
+
+# pkgs-full-test-run v1

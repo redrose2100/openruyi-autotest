@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/e2fsprogs/test_e2fsprogs_error
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

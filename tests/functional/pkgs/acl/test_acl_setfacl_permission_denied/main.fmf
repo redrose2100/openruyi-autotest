@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/acl/test_acl_setfacl_permission_denied
 require:
  - acl
  - beakerlib
+
+# pkgs-full-test-run v1

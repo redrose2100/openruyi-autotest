@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/util-linux
 require:
  - util-linux
  - beakerlib
+
+# pkgs-full-test-run v1

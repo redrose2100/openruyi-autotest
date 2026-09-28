@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/tzdata/test_tzdata_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/tmux/test_tmux_find_window
 require:
  - tmux
  - beakerlib
+# pkgs-full-test-run v1

@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/ncurses
 require:
  - ncurses
  - beakerlib
+
+# pkgs-full-test-run v1

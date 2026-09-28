@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/openssl/test_openssl_x509
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

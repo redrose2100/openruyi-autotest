@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/openruyi-release/test_openruyi_release_main
 require:
  - beakerlib
  - openruyi-release
+
+# pkgs-full-test-run v1

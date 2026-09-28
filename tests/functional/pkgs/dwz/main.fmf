@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/dwz
 require:
  - dwz
  - beakerlib
+
+# pkgs-full-test-run v1

@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/wget/test_wget_user_agent
 require:
  - wget
  - beakerlib
+# pkgs-full-test-run v1

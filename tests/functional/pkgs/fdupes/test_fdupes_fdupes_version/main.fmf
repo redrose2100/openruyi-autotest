@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/fdupes/test_fdupes_fdupes_version
 require:
  - beakerlib
  - fdupes
+
+# pkgs-full-test-run v1

@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/meson
 require:
  - meson
  - beakerlib
+
+# pkgs-full-test-run v1

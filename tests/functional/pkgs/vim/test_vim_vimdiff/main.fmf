@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/vim/test_vim_vimdiff
 require:
  - vim
  - beakerlib
+# pkgs-full-test-run v1

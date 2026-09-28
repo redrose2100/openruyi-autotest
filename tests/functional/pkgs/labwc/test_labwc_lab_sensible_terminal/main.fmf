@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/labwc/test_labwc_lab_sensible_terminal
 require:
  - labwc
  - beakerlib
+# pkgs-full-test-run v1

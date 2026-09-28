@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/re2c
 require:
  - re2c
  - beakerlib
+
+# pkgs-full-test-run v1

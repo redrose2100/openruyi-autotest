@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/expect/test_expect_expect_version
 require:
  - beakerlib
  - expect
+
+# pkgs-full-test-run v1

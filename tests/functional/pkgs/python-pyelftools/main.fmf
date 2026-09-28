@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/python-pyelftools
 require:
  - python-pyelftools
  - beakerlib
+
+# pkgs-full-test-run v1

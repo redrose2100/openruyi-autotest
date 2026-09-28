@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/zstd/test_zstd_version_help
 require:
  - zstd
  - beakerlib
+# pkgs-full-test-run v1

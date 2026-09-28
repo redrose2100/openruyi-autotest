@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/openssh/test_openssh_error
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/ed/test_ed_error_nonexistent_file
 require:
  - ed
  - beakerlib
+
+# pkgs-full-test-run v1

@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/linux-headers/test_linux_headers_error_handling
 require:
  - linux-headers
  - beakerlib
+# pkgs-full-test-run v1

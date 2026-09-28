@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/scdoc/test_scdoc_scdoc_basic
 require:
  - beakerlib
  - scdoc
+
+# pkgs-full-test-run v1

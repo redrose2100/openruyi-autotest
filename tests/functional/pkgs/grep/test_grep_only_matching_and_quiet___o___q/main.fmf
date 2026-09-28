@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/grep/test_grep_only_matching_and_quiet___o___q
 require:
  - grep
  - beakerlib
+# pkgs-full-test-run v1

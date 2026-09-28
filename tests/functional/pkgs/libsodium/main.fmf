@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/libsodium
 require:
  - libsodium
  - beakerlib
+
+# pkgs-full-test-run v1

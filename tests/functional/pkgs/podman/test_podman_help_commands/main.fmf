@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/podman/test_podman_help_commands
 require:
  - podman
  - beakerlib
+# pkgs-full-test-run v1

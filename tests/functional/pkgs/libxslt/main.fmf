@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/libxslt
 require:
  - libxslt
  - beakerlib
+
+# pkgs-full-test-run v1

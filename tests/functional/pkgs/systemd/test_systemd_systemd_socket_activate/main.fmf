@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/systemd/test_systemd_systemd_socket_activate
 require:
  - systemd
  - beakerlib
+# pkgs-full-test-run v1

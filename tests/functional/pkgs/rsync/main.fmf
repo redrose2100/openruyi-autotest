@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/rsync
 require:
  - rsync
  - beakerlib
+
+# pkgs-full-test-run v1

@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/gnutls/test_certtool
 
 require:
   - beakerlib
+
+# pkgs-full-test-run v1

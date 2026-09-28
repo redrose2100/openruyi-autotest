@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/acl/test_acl_inheritance_file_inherits_default
 require:
  - acl
  - beakerlib
+
+# pkgs-full-test-run v1

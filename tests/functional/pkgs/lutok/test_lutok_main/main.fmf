@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/lutok/test_lutok_main
 require:
  - beakerlib
  - lutok
+
+# pkgs-full-test-run v1

@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/git/test_git_tag_operations
 require:
  - git
  - beakerlib
+# pkgs-full-test-run v1

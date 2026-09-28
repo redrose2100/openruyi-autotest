@@ -32,3 +32,5 @@ int main() { printf(\"Hello\\n\"); return 0; }' > hello.c" 0 "Create hello.c"
 
     rlJournalPrintText
 rlJournalEnd
+
+# pkgs-full-test-run v1

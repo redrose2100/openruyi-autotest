@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/ed/test_ed_basic_append_print
 require:
  - ed
  - beakerlib
+
+# pkgs-full-test-run v1

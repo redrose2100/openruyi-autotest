@@ -30,3 +30,5 @@ rlRun() { eval "$1" 2>&1; return $?; }
 
     rlJournalPrintText
 rlJournalEnd
+
+# pkgs-full-test-run v1

@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/uid_wrapper/test_uid_wrapper_main
 require:
  - beakerlib
  - uid_wrapper
+
+# pkgs-full-test-run v1

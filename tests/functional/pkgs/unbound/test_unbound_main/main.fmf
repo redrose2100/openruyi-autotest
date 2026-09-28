@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/unbound/test_unbound_main
 require:
  - beakerlib
  - unbound
+
+# pkgs-full-test-run v1

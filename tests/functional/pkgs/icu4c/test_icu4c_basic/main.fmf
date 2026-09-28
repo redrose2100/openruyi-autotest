@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/icu4c/test_icu4c_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

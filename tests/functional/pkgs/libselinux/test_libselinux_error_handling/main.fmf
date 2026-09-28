@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/libselinux/test_libselinux_error_handling
 require:
  - libselinux
  - beakerlib
+# pkgs-full-test-run v1

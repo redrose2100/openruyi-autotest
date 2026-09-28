@@ -6,3 +6,5 @@ tag:
 duration: 2m
 tier: 1
 path: /tests/functional/pkgs/beakerlib/test_beakerlib_basic
+
+# pkgs-full-test-run v1

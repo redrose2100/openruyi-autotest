@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/zstd/test_zstd_error_handling
 require:
  - zstd
  - beakerlib
+# pkgs-full-test-run v1

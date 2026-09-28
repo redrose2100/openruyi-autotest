@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/less/test_less_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/rpmbuild/test_rpmbuild_create_simple_spec_file
 require:
  - rpmbuild
  - beakerlib
+# pkgs-full-test-run v1

@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/tmux/test_tmux_session_creation_and_management
 require:
  - tmux
  - beakerlib
+# pkgs-full-test-run v1

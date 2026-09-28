@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/gdb/test_gdb_gdb_version
 require:
  - beakerlib
  - gdb
+
+# pkgs-full-test-run v1

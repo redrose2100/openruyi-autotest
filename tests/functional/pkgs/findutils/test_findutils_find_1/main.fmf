@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/findutils/test_findutils_find_1
 require:
  - findutils
  - beakerlib
+# pkgs-full-test-run v1

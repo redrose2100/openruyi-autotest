@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/tmux
 require:
  - tmux
  - beakerlib
+
+# pkgs-full-test-run v1

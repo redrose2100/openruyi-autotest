@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/libidn2/test_libidn2_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

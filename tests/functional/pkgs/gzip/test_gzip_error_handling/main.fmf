@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/gzip/test_gzip_error_handling
 require:
  - gzip
  - beakerlib
+# pkgs-full-test-run v1

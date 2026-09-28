@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/libnfnetlink/test_libnfnetlink_files
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

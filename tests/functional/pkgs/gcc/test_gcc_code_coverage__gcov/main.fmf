@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/gcc/test_gcc_code_coverage__gcov
 require:
  - gcc
  - beakerlib
+# pkgs-full-test-run v1

@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/nfs-utils/test_nfs_utils_main
 require:
  - beakerlib
  - nfs-utils
+
+# pkgs-full-test-run v1

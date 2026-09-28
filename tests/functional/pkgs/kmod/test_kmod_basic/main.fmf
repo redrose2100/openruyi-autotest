@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/kmod/test_kmod_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

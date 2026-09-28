@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/source-highlight/test_source_highlight_source_highl
 require:
  - beakerlib
  - source-highlight
+
+# pkgs-full-test-run v1

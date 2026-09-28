@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/tcl/test_tcl_tcl_version
 require:
  - beakerlib
  - tcl
+
+# pkgs-full-test-run v1

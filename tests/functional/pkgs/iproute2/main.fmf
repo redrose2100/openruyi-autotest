@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/iproute2
 require:
  - iproute2
  - beakerlib
+
+# pkgs-full-test-run v1

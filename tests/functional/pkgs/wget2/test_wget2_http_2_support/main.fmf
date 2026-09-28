@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/wget2/test_wget2_http_2_support
 require:
  - wget2
  - beakerlib
+# pkgs-full-test-run v1

@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/systemtap/test_systemtap_systemtap_basic
 require:
  - beakerlib
  - systemtap
+
+# pkgs-full-test-run v1

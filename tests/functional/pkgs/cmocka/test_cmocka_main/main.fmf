@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/cmocka/test_cmocka_main
 require:
  - beakerlib
  - cmocka
+
+# pkgs-full-test-run v1

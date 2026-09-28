@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/python-lxml
 require:
  - python-lxml
  - beakerlib
+
+# pkgs-full-test-run v1

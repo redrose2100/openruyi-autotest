@@ -9,3 +9,5 @@ require:
   - wget
   - coreutils
   - beakerlib
+
+# pkgs-full-test-run v1

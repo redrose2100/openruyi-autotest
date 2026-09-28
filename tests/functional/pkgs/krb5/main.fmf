@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/krb5
 require:
  - krb5
  - beakerlib
+
+# pkgs-full-test-run v1

@@ -35,3 +35,5 @@ int main() { return compute(100); }' > compute.c" 0 "Create compute.c"
 
     rlJournalPrintText
 rlJournalEnd
+
+# pkgs-full-test-run v1

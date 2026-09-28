@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/filesystem/test_filesystem_error_handling
 require:
  - filesystem
  - beakerlib
+# pkgs-full-test-run v1

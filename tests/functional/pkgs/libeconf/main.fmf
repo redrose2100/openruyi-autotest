@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/libeconf
 require:
  - libeconf
  - beakerlib
+
+# pkgs-full-test-run v1

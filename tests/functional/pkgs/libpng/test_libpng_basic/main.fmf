@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/libpng/test_libpng_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

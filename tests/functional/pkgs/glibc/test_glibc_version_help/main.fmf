@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/glibc/test_glibc_version_help
 require:
  - glibc
  - beakerlib
+# pkgs-full-test-run v1

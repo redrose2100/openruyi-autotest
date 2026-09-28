@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/pcre2
 require:
  - pcre2
  - beakerlib
+
+# pkgs-full-test-run v1

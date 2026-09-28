@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/debugedit/test_debugedit_error_handling
 require:
  - debugedit
  - beakerlib
+# pkgs-full-test-run v1

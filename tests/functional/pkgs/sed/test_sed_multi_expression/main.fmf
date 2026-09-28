@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/sed/test_sed_multi_expression
 require:
  - sed
  - beakerlib
+# pkgs-full-test-run v1

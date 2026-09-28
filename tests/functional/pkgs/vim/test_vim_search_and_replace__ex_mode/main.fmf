@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/vim/test_vim_search_and_replace__ex_mode
 require:
  - vim
  - beakerlib
+# pkgs-full-test-run v1

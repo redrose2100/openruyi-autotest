@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/systemd/test_systemd_systemd_cgls___cgroup_listing
 require:
  - systemd
  - beakerlib
+# pkgs-full-test-run v1

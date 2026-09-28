@@ -10,3 +10,4 @@ require:
   - podman
   - beakerlib
   - coreutils
+# pkgs-full-test-run v1

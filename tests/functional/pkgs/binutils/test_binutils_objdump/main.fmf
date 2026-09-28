@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/binutils/test_binutils_objdump
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

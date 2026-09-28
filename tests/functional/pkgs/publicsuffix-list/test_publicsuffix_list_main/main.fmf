@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/publicsuffix-list/test_publicsuffix_list_main
 require:
  - beakerlib
  - publicsuffix-list
+
+# pkgs-full-test-run v1

@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/audit/test_audit_error_handling
 require:
  - audit
  - beakerlib
+# pkgs-full-test-run v1

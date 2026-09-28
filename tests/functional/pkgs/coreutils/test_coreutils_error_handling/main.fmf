@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/coreutils/test_coreutils_error_handling
 require:
  - coreutils
  - beakerlib
+# pkgs-full-test-run v1

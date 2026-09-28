@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/systemd-timesyncd
 require:
  - systemd-timesyncd
  - beakerlib
+
+# pkgs-full-test-run v1

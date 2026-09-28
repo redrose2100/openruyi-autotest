@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/sddm/test_sddm_service_check
 require:
  - sddm
  - beakerlib
+# pkgs-full-test-run v1

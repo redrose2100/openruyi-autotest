@@ -35,3 +35,5 @@ int main() { printf(\"%f\", sin(1.0)); return 0; }' > math_test.c" 0 "Create mat
 
     rlJournalPrintText
 rlJournalEnd
+
+# pkgs-full-test-run v1

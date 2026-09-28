@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/libtool/test_libtool_libtool
 require:
  - beakerlib
  - libtool
+
+# pkgs-full-test-run v1

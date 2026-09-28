@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/iptables/test_iptables_iptables_basic
 require:
  - beakerlib
  - iptables
+
+# pkgs-full-test-run v1

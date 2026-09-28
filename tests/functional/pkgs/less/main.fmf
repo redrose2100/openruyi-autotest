@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/less
 require:
  - less
  - beakerlib
+
+# pkgs-full-test-run v1

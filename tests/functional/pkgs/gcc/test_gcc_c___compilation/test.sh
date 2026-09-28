@@ -31,3 +31,5 @@ int main() { std::cout << \"Hello C++\" << std::endl; return 0; }' > hello2.cpp"
 
     rlJournalPrintText
 rlJournalEnd
+
+# pkgs-full-test-run v1

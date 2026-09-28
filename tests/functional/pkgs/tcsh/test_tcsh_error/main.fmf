@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/tcsh/test_tcsh_error
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

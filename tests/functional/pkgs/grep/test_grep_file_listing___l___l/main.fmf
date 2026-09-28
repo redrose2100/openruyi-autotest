@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/grep/test_grep_file_listing___l___l
 require:
  - grep
  - beakerlib
+# pkgs-full-test-run v1

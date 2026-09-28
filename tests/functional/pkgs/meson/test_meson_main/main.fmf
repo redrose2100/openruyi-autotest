@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/meson/test_meson_main
 require:
  - beakerlib
  - meson
+
+# pkgs-full-test-run v1

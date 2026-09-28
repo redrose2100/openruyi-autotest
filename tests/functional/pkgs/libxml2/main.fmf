@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/libxml2
 require:
  - libxml2
  - beakerlib
+
+# pkgs-full-test-run v1

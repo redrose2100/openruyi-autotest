@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/systemtap
 require:
  - systemtap
  - beakerlib
+
+# pkgs-full-test-run v1

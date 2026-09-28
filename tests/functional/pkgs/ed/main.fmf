@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/ed
 require:
  - ed
  - beakerlib
+
+# pkgs-full-test-run v1

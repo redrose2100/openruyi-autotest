@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/dwz/test_dwz_version_help
 require:
  - dwz
  - beakerlib
+# pkgs-full-test-run v1

@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/libbpf
 require:
  - libbpf
  - beakerlib
+
+# pkgs-full-test-run v1

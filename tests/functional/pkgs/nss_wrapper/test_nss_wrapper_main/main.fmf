@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/nss_wrapper/test_nss_wrapper_main
 require:
  - beakerlib
  - nss_wrapper
+
+# pkgs-full-test-run v1

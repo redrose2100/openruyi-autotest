@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/nettle/test_nettle_error_handling
 require:
  - nettle
  - beakerlib
+# pkgs-full-test-run v1

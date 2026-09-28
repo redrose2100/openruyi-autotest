@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/libgpg-error/test_libgpg-error_files
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

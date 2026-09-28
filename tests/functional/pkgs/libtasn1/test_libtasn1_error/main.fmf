@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/libtasn1/test_libtasn1_error
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

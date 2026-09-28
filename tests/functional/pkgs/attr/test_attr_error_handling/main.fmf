@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/attr/test_attr_error_handling
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

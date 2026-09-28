@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/unzip
 require:
  - unzip
  - beakerlib
+
+# pkgs-full-test-run v1

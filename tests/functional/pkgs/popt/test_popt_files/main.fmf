@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/popt/test_popt_files
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

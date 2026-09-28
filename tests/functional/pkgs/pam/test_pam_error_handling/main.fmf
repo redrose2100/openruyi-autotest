@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/pam/test_pam_error_handling
 require:
  - pam
  - beakerlib
+# pkgs-full-test-run v1

@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/groff/test_groff_groff_basic
 require:
  - beakerlib
  - groff
+
+# pkgs-full-test-run v1

@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/libgcrypt
 require:
  - libgcrypt
  - beakerlib
+
+# pkgs-full-test-run v1

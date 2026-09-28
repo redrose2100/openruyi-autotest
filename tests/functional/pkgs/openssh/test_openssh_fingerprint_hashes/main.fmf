@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/openssh/test_openssh_fingerprint_hashes
 require:
  - openssh
  - beakerlib
+# pkgs-full-test-run v1

@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/weston/test_weston_headless_backend_test
 require:
  - weston
  - beakerlib
+# pkgs-full-test-run v1

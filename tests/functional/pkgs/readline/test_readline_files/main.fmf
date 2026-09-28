@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/readline/test_readline_files
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

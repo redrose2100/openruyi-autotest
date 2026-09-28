@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/curl
 require:
  - curl
  - beakerlib
+
+# pkgs-full-test-run v1

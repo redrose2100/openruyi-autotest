@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/nss_wrapper
 require:
  - nss_wrapper
  - beakerlib
+
+# pkgs-full-test-run v1

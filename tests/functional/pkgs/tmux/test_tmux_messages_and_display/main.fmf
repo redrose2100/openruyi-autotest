@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/tmux/test_tmux_messages_and_display
 require:
  - tmux
  - beakerlib
+# pkgs-full-test-run v1

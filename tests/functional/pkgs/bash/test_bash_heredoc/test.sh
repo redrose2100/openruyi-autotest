@@ -27,3 +27,5 @@ EOF'" 0 "bash heredoc: multi-line input"
 
     rlJournalPrintText
 rlJournalEnd
+
+# pkgs-full-test-run v1

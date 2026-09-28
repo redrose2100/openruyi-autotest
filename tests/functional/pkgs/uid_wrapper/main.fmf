@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/uid_wrapper
 require:
  - uid_wrapper
  - beakerlib
+
+# pkgs-full-test-run v1

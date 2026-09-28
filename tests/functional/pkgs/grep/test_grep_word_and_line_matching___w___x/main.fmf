@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/grep/test_grep_word_and_line_matching___w___x
 require:
  - grep
  - beakerlib
+# pkgs-full-test-run v1

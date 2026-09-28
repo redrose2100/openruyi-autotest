@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/perl-Locale-gettext
 require:
  - perl-Locale-gettext
  - beakerlib
+
+# pkgs-full-test-run v1

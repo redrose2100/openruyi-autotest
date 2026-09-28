@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/chrpath/test_chrpath_chrpath_basic
 require:
  - beakerlib
  - chrpath
+
+# pkgs-full-test-run v1

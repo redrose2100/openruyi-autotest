@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/psmisc/test_psmisc_fuser_basic
 require:
  - psmisc
  - beakerlib
+# pkgs-full-test-run v1

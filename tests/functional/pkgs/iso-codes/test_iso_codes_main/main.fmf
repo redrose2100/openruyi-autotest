@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/iso-codes/test_iso_codes_main
 require:
  - beakerlib
  - iso-codes
+
+# pkgs-full-test-run v1

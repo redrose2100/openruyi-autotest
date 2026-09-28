@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/libsepol
 require:
  - libsepol
  - beakerlib
+
+# pkgs-full-test-run v1

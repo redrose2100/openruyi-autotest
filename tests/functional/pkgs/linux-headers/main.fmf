@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/linux-headers
 require:
  - linux-headers
  - beakerlib
+
+# pkgs-full-test-run v1

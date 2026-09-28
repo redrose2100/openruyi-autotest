@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/isl/test_isl_version_help
 require:
  - isl
  - beakerlib
+# pkgs-full-test-run v1

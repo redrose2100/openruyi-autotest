@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/systemd/test_systemd_systemctl_service_operations
 require:
  - systemd
  - beakerlib
+# pkgs-full-test-run v1

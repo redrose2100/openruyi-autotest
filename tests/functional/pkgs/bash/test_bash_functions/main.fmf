@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/bash/test_bash_functions
 require:
  - bash
  - beakerlib
+# pkgs-full-test-run v1

@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/libaio
 require:
  - libaio
  - beakerlib
+
+# pkgs-full-test-run v1

@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/config/test_config_config
 require:
  - beakerlib
  - config
+
+# pkgs-full-test-run v1

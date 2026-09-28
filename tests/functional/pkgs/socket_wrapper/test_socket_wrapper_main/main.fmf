@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/socket_wrapper/test_socket_wrapper_main
 require:
  - beakerlib
  - socket_wrapper
+
+# pkgs-full-test-run v1

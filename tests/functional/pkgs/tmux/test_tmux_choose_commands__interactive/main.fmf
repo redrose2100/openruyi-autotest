@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/tmux/test_tmux_choose_commands__interactive
 require:
  - tmux
  - beakerlib
+# pkgs-full-test-run v1

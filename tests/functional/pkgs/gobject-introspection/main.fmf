@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/gobject-introspection
 require:
  - gobject-introspection
  - beakerlib
+
+# pkgs-full-test-run v1

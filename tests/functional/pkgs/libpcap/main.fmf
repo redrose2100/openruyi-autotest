@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/libpcap
 require:
  - libpcap
  - beakerlib
+
+# pkgs-full-test-run v1

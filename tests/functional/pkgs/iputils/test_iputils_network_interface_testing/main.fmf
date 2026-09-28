@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/iputils/test_iputils_network_interface_testing
 require:
  - iputils
  - beakerlib
+# pkgs-full-test-run v1

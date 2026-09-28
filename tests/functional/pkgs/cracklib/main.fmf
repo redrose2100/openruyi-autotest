@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/cracklib
 require:
  - cracklib
  - beakerlib
+
+# pkgs-full-test-run v1

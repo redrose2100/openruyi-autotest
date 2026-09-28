@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/dnf5-plugins/test_dnf5_plugins_dnf5_repolist
 require:
  - dnf5-plugins
  - beakerlib
+# pkgs-full-test-run v1

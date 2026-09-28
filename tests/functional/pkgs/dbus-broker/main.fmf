@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/dbus-broker
 require:
  - dbus-broker
  - beakerlib
+
+# pkgs-full-test-run v1

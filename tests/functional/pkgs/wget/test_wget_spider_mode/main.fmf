@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/wget/test_wget_spider_mode
 require:
  - wget
  - beakerlib
+# pkgs-full-test-run v1

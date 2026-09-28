@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/elfutils/test_elfutils_version_help
 require:
  - elfutils
  - beakerlib
+# pkgs-full-test-run v1

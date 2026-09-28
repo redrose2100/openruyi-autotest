@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/bash/test_bash_variables_loops
 require:
  - bash
  - beakerlib
+# pkgs-full-test-run v1

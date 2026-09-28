@@ -9,3 +9,5 @@ require:
   - iputils
   - coreutils
   - beakerlib
+
+# pkgs-full-test-run v1

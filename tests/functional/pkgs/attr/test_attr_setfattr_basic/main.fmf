@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/attr/test_attr_setfattr_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

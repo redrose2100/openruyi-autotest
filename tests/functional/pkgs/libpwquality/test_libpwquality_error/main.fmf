@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/libpwquality/test_libpwquality_error
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

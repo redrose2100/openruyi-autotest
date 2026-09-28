@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/gcc/test_gcc_linking_and_libraries
 require:
  - gcc
  - beakerlib
+# pkgs-full-test-run v1

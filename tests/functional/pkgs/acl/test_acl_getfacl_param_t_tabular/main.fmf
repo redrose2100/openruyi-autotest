@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/acl/test_acl_getfacl_param_t_tabular
 require:
  - acl
  - beakerlib
+
+# pkgs-full-test-run v1

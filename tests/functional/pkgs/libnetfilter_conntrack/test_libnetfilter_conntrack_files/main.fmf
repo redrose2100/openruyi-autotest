@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/libnetfilter_conntrack/test_libnetfilter_conntrack_
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

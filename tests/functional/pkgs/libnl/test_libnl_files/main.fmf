@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/libnl/test_libnl_files
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

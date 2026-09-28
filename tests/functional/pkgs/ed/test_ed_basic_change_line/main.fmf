@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/ed/test_ed_basic_change_line
 require:
  - ed
  - beakerlib
+
+# pkgs-full-test-run v1

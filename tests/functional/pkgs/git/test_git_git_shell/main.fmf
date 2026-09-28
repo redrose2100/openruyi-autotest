@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/git/test_git_git_shell
 require:
  - git
  - beakerlib
+# pkgs-full-test-run v1

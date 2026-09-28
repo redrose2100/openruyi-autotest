@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/jitterentropy
 require:
  - jitterentropy
  - beakerlib
+
+# pkgs-full-test-run v1

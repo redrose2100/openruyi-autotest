@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/rpmbuild/test_rpmbuild_install_and_test_rpm
 require:
  - rpmbuild
  - beakerlib
+# pkgs-full-test-run v1

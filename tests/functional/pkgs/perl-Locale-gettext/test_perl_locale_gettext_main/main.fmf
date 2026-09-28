@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/perl-Locale-gettext/test_perl_locale_gettext_main
 require:
  - beakerlib
  - perl-Locale-gettext
+
+# pkgs-full-test-run v1

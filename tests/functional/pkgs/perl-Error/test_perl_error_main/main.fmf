@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/perl-Error/test_perl_error_main
 require:
  - beakerlib
  - perl-Error
+
+# pkgs-full-test-run v1

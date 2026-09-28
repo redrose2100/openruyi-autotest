@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/openssh/test_openssh_ecdsa_key_generation
 require:
  - openssh
  - beakerlib
+# pkgs-full-test-run v1

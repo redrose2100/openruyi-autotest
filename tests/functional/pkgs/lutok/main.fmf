@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/lutok
 require:
  - lutok
  - beakerlib
+
+# pkgs-full-test-run v1

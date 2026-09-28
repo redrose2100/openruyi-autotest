@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/ca-certificates/test_ca_certificates_version_help
 require:
  - ca-certificates
  - beakerlib
+# pkgs-full-test-run v1

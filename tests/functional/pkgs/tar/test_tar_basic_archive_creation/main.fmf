@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/tar/test_tar_basic_archive_creation
 require:
  - tar
  - beakerlib
+# pkgs-full-test-run v1

@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/labwc
 require:
  - labwc
  - beakerlib
+
+# pkgs-full-test-run v1

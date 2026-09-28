@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/iproute2/test_iproute2_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

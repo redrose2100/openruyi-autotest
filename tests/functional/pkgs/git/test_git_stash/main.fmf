@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/git/test_git_stash
 require:
  - git
  - beakerlib
+# pkgs-full-test-run v1

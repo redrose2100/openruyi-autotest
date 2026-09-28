@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/swig/test_swig_swig_version
 require:
  - beakerlib
  - swig
+
+# pkgs-full-test-run v1

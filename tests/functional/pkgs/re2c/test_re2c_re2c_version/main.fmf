@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/re2c/test_re2c_re2c_version
 require:
  - beakerlib
  - re2c
+
+# pkgs-full-test-run v1

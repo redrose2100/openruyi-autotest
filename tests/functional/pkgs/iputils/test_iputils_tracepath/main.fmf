@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/iputils/test_iputils_tracepath
 require:
  - iputils
  - beakerlib
+# pkgs-full-test-run v1

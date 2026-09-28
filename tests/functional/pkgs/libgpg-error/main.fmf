@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/libgpg-error
 require:
  - libgpg-error
  - beakerlib
+
+# pkgs-full-test-run v1

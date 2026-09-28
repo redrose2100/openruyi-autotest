@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/ca-certificates-mozilla
 require:
  - ca-certificates-mozilla
  - beakerlib
+
+# pkgs-full-test-run v1

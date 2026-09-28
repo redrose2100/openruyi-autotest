@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/xz/test_xz_error_handling
 require:
  - xz
  - beakerlib
+# pkgs-full-test-run v1

@@ -8,3 +8,4 @@ path: /tests/functional/pkgs/grep
 require:
  - beakerlib
  - grep
+# pkgs-full-test-run v1

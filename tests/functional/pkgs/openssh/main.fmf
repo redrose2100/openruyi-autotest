@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/openssh
 require:
  - openssh
  - beakerlib
+
+# pkgs-full-test-run v1

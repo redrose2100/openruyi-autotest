@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/dos2unix
 require:
  - dos2unix
  - beakerlib
+
+# pkgs-full-test-run v1

@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/openssh/test_openssh_change_comment
 require:
  - openssh
  - beakerlib
+# pkgs-full-test-run v1

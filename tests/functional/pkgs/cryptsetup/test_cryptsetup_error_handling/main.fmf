@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/cryptsetup/test_cryptsetup_error_handling
 require:
  - cryptsetup
  - beakerlib
+# pkgs-full-test-run v1

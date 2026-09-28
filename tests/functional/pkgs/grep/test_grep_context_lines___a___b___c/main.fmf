@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/grep/test_grep_context_lines___a___b___c
 require:
  - grep
  - beakerlib
+# pkgs-full-test-run v1

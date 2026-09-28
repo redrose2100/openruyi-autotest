@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/rpm/test_rpm_error
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/bison/test_bison_bison_version
 require:
  - beakerlib
  - bison
+
+# pkgs-full-test-run v1

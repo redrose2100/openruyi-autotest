@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/source-highlight
 require:
  - source-highlight
  - beakerlib
+
+# pkgs-full-test-run v1

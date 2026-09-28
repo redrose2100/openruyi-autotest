@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/gpm
 require:
  - gpm
  - beakerlib
+
+# pkgs-full-test-run v1

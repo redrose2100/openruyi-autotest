@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/ca-certificates-mozilla/test_ca_certificates_mozill
 require:
  - ca-certificates-mozilla
  - beakerlib
+# pkgs-full-test-run v1

@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/libxml2/test_libxml2_error
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

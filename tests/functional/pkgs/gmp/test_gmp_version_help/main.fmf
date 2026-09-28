@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/gmp/test_gmp_version_help
 require:
  - gmp
  - beakerlib
+# pkgs-full-test-run v1

@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/time/test_time_error
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

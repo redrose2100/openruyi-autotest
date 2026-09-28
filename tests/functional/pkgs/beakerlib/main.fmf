@@ -7,3 +7,5 @@ tier: 1
 path: /tests/functional/pkgs/beakerlib
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

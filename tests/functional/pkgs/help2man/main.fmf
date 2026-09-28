@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/help2man
 require:
  - help2man
  - beakerlib
+
+# pkgs-full-test-run v1

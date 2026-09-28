@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/help2man/test_help2man_help2man_version
 require:
  - beakerlib
  - help2man
+
+# pkgs-full-test-run v1

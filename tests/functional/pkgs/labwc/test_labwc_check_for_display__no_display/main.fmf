@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/labwc/test_labwc_check_for_display__no_display
 require:
  - labwc
  - beakerlib
+# pkgs-full-test-run v1

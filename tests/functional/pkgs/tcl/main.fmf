@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/tcl
 require:
  - tcl
  - beakerlib
+
+# pkgs-full-test-run v1

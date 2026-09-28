@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/gcc/test_gcc_gcc_toolchain_utilities
 require:
  - gcc
  - beakerlib
+# pkgs-full-test-run v1

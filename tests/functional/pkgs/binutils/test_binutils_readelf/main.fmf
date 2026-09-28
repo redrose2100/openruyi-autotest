@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/binutils/test_binutils_readelf
 
 require:
   - beakerlib
+
+# pkgs-full-test-run v1

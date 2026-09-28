@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/p11-kit/test_p11kit_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

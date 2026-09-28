@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/rsync/test_rsync_rsync_basic
 require:
  - beakerlib
  - rsync
+
+# pkgs-full-test-run v1

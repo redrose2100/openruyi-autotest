@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/cloud-utils-growpart/test_cloud_utils_growpart_erro
 require:
  - cloud-utils-growpart
  - beakerlib
+# pkgs-full-test-run v1

@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/dbus-broker/test_dbus-broker_error
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

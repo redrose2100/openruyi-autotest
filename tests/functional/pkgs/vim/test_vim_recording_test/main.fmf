@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/vim/test_vim_recording_test
 require:
  - vim
  - beakerlib
+# pkgs-full-test-run v1

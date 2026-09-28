@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/xxhash/test_xxhash_xxhash_version
 require:
  - beakerlib
  - xxhash
+
+# pkgs-full-test-run v1

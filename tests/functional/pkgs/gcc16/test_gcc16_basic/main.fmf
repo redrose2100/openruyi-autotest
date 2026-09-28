@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/gcc16/test_gcc16_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

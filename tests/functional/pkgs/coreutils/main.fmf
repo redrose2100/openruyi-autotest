@@ -8,3 +8,4 @@ path: /tests/functional/pkgs/coreutils
 require:
  - beakerlib
  - coreutils
+# pkgs-full-test-run v1

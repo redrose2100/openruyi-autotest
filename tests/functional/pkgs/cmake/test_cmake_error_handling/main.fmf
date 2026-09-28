@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/cmake/test_cmake_error_handling
 require:
  - cmake
  - beakerlib
+# pkgs-full-test-run v1

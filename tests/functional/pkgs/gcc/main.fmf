@@ -10,3 +10,4 @@ require:
  - gcc-c++
  - beakerlib
  - glibc-devel
+# pkgs-full-test-run v1

@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/tmux/test_tmux_source_and_configuration
 require:
  - tmux
  - beakerlib
+# pkgs-full-test-run v1

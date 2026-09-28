@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/setup/test_setup_main
 require:
  - beakerlib
  - setup
+
+# pkgs-full-test-run v1

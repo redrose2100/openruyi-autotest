@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/systemd
 require:
  - systemd
  - beakerlib
+
+# pkgs-full-test-run v1

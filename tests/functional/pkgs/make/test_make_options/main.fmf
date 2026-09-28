@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/make/test_make_options
 require:
  - make
  - beakerlib
+# pkgs-full-test-run v1

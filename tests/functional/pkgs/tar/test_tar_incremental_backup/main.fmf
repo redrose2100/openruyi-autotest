@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/tar/test_tar_incremental_backup
 require:
  - tar
  - beakerlib
+# pkgs-full-test-run v1

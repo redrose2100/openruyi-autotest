@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/nettle
 require:
  - nettle
  - beakerlib
+
+# pkgs-full-test-run v1

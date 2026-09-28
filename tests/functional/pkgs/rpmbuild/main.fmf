@@ -10,3 +10,5 @@ require:
   - rpmdevtools
   - coreutils
   - beakerlib
+
+# pkgs-full-test-run v1

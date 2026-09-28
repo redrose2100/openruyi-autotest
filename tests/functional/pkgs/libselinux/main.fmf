@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/libselinux
 require:
  - libselinux
  - beakerlib
+
+# pkgs-full-test-run v1

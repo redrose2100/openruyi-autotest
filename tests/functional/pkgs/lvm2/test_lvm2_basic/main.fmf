@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/lvm2/test_lvm2_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

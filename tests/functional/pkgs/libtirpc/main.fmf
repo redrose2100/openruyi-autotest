@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/libtirpc
 require:
  - libtirpc
  - beakerlib
+
+# pkgs-full-test-run v1

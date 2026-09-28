@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/pyproject-rpm-macros
 require:
  - pyproject-rpm-macros
  - beakerlib
+
+# pkgs-full-test-run v1

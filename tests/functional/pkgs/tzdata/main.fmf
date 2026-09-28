@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/tzdata
 require:
  - tzdata
  - beakerlib
+
+# pkgs-full-test-run v1

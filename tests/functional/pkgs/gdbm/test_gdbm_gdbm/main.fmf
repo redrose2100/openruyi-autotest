@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/gdbm/test_gdbm_gdbm
 require:
  - beakerlib
  - gdbm
+
+# pkgs-full-test-run v1

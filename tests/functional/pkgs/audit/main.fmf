@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/audit
 require:
  - audit
  - beakerlib
+
+# pkgs-full-test-run v1

@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/procps-ng/test_procps_ng_pwdx_and_pmap
 require:
  - procps-ng
  - beakerlib
+# pkgs-full-test-run v1

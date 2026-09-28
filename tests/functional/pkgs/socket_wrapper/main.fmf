@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/socket_wrapper
 require:
  - socket_wrapper
  - beakerlib
+
+# pkgs-full-test-run v1

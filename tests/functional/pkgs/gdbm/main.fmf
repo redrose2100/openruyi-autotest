@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/gdbm
 require:
  - gdbm
  - beakerlib
+
+# pkgs-full-test-run v1

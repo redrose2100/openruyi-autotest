@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/libevent
 require:
  - libevent
  - beakerlib
+
+# pkgs-full-test-run v1

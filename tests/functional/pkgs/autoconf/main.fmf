@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/autoconf
 require:
  - autoconf
  - beakerlib
+
+# pkgs-full-test-run v1

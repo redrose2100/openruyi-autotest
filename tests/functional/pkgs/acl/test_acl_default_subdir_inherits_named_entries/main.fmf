@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/acl/test_acl_default_subdir_inherits_named_entries
 require:
  - acl
  - beakerlib
+
+# pkgs-full-test-run v1

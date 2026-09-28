@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/automake/test_automake_main
 require:
  - beakerlib
  - automake
+
+# pkgs-full-test-run v1

@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/openssh-clients/test_openssh_clients_ssh_keyscan
 require:
  - openssh-clients
  - beakerlib
+# pkgs-full-test-run v1

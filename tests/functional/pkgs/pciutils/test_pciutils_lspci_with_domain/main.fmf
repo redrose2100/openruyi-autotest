@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/pciutils/test_pciutils_lspci_with_domain
 require:
  - pciutils
  - beakerlib
+# pkgs-full-test-run v1

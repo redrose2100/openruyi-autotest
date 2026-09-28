@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/psmisc/test_psmisc_error_handling
 require:
  - psmisc
  - beakerlib
+# pkgs-full-test-run v1

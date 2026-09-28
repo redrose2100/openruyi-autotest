@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/boost/test_boost_main
 require:
  - beakerlib
  - boost
+
+# pkgs-full-test-run v1

@@ -9,3 +9,4 @@ require:
  - acl
  - coreutils
  - beakerlib
+# pkgs-full-test-run v1

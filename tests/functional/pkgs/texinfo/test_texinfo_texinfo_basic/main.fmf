@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/texinfo/test_texinfo_texinfo_basic
 require:
  - beakerlib
  - texinfo
+
+# pkgs-full-test-run v1

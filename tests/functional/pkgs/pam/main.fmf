@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/pam
 require:
  - pam
  - beakerlib
+
+# pkgs-full-test-run v1

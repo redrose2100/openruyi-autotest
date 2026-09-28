@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/psmisc/test_psmisc_killall_with_signals
 require:
  - psmisc
  - beakerlib
+# pkgs-full-test-run v1

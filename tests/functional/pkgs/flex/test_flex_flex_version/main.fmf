@@ -10,3 +10,5 @@ path: /tests/functional/pkgs/flex/test_flex_flex_version
 require:
  - beakerlib
  - flex
+
+# pkgs-full-test-run v1

@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/xxhash
 require:
  - xxhash
  - beakerlib
+
+# pkgs-full-test-run v1

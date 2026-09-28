@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/ed/test_ed_global_inverse
 require:
  - ed
  - beakerlib
+
+# pkgs-full-test-run v1

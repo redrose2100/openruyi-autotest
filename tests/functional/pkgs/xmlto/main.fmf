@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/xmlto
 require:
  - xmlto
  - beakerlib
+
+# pkgs-full-test-run v1

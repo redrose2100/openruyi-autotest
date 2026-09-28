@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/bash-completion
 require:
  - bash-completion
  - beakerlib
+
+# pkgs-full-test-run v1

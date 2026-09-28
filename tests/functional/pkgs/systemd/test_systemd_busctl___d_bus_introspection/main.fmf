@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/systemd/test_systemd_busctl___d_bus_introspection
 require:
  - systemd
  - beakerlib
+# pkgs-full-test-run v1

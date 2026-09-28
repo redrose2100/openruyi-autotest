@@ -9,3 +9,5 @@ path: /tests/functional/pkgs/authselect/test_authselect_basic
 
 require:
  - beakerlib
+
+# pkgs-full-test-run v1

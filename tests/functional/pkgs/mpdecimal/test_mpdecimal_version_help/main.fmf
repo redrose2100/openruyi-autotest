@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/mpdecimal/test_mpdecimal_version_help
 require:
  - mpdecimal
  - beakerlib
+# pkgs-full-test-run v1

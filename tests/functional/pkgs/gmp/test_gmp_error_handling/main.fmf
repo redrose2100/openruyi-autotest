@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/gmp/test_gmp_error_handling
 require:
  - gmp
  - beakerlib
+# pkgs-full-test-run v1

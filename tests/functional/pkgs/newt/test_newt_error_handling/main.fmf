@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/newt/test_newt_error_handling
 require:
  - newt
  - beakerlib
+# pkgs-full-test-run v1

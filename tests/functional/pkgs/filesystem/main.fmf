@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/filesystem
 require:
  - filesystem
  - beakerlib
+
+# pkgs-full-test-run v1

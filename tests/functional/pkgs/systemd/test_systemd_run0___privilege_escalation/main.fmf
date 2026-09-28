@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/systemd/test_systemd_run0___privilege_escalation
 require:
  - systemd
  - beakerlib
+# pkgs-full-test-run v1

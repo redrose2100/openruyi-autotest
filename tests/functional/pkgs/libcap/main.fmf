@@ -5,3 +5,5 @@ path: /tests/functional/pkgs/libcap
 require:
  - libcap
  - beakerlib
+
+# pkgs-full-test-run v1

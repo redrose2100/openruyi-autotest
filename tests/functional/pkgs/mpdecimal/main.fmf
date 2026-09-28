@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/mpdecimal
 require:
  - mpdecimal
  - beakerlib
+
+# pkgs-full-test-run v1

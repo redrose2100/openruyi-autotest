@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/mpfr/test_mpfr_version_help
 require:
  - mpfr
  - beakerlib
+# pkgs-full-test-run v1

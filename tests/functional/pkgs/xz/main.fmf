@@ -8,3 +8,5 @@ path: /tests/functional/pkgs/xz
 require:
  - xz
  - beakerlib
+
+# pkgs-full-test-run v1

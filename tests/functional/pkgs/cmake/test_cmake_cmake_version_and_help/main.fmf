@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/cmake/test_cmake_cmake_version_and_help
 require:
  - cmake
  - beakerlib
+# pkgs-full-test-run v1
