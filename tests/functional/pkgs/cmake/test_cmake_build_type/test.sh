@@ -30,4 +30,3 @@ add_executable(test main.c)' > ../CMakeLists.txt" 0 "Create CMakeLists.txt"
     rlJournalPrintText
 rlJournalEnd
 
-# pkgs-group-1-test v1

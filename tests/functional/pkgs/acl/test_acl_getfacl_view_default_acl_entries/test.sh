@@ -27,4 +27,3 @@ rlJournalStart
     rlJournalPrintText
 rlJournalEnd
 
-# pkgs-group-1-test v1
