@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "cpio --invalid-flag-xyz 2>&1 " 0 " cpio Чerror handling"
+rlRun "cpio --invalid-flag-xyz 2>&1" 0 "cpio: invalid flag error handling"
     rlPhaseEnd
 
 
