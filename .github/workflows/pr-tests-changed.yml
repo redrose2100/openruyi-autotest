@@ -38,7 +38,7 @@ jobs:
     # Only run when PR changes tests/ directory
     if: ${{ github.event.pull_request }}
     runs-on: [self-hosted, Linux, X64, openEuler]
-    timeout-minutes: 600
+    timeout-minutes: 1440
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
