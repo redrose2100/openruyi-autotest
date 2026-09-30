@@ -26,3 +26,5 @@ rlJournalStart
 
     rlJournalPrintText
 rlJournalEnd
+
+
