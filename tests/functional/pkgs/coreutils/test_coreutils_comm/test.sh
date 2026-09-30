@@ -33,4 +33,3 @@ rlJournalStart
 
     rlJournalPrintText
 rlJournalEnd
-

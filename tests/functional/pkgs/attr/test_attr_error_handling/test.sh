@@ -98,6 +98,3 @@ rlJournalStart
 
 
 rlJournalEnd
-
-
-

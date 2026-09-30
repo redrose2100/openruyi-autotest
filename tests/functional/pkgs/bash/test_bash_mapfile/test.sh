@@ -27,4 +27,3 @@ c
 
     rlJournalPrintText
 rlJournalEnd
-

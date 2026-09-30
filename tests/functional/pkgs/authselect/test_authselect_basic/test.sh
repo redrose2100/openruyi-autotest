@@ -92,6 +92,3 @@ rlJournalStart
 
 
 rlJournalEnd
-
-
-

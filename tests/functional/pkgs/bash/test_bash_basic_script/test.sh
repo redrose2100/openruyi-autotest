@@ -31,4 +31,3 @@ echo Hello from test script' > test.sh" 0 "Create test script"
 
     rlJournalPrintText
 rlJournalEnd
-

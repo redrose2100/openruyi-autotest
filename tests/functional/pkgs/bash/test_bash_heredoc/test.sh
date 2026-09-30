@@ -27,4 +27,3 @@ EOF'" 0 "bash heredoc: multi-line input"
 
     rlJournalPrintText
 rlJournalEnd
-

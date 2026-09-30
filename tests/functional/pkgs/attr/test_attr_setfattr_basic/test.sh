@@ -113,6 +113,3 @@ rlJournalStart
 
 
 rlJournalEnd
-
-
-

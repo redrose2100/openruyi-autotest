@@ -71,4 +71,3 @@ rlJournalStart
     rlJournalPrintText
 
 rlJournalEnd
-
