@@ -27,3 +27,5 @@ line3' > b.txt" 0 "Create test files"
 
     rlJournalPrintText
 rlJournalEnd
+
+# pkgs-group-2-test v1
