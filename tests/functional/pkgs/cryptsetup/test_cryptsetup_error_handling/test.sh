@@ -14,7 +14,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "cryptsetup --invalid 2>&1 | grep -qiE 'error|Error'" 0 "cryptsetup: invalid option"
+    rlRun "! cryptsetup --invalid >/dev/null 2>&1" 0 "cryptsetup: rejects invalid option"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

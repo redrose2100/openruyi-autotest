@@ -26,7 +26,6 @@
 | [chrpath](pkgs/chrpath.md) | 2 | 2 |
 | [clang](pkgs/clang.md) | 23 | 23 |
 | [cloud-utils-growpart](pkgs/cloud-utils-growpart.md) | 6 | 6 |
-| [cmake](pkgs/cmake.md) | 9 | 9 |
 | [cmocka](pkgs/cmocka.md) | 1 | 1 |
 | [config](pkgs/config.md) | 1 | 1 |
 | [coreutils](pkgs/coreutils.md) | 100 | 100 |
