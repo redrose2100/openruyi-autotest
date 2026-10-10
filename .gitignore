@@ -1,7 +1,4 @@
-﻿# Trellis 工具类目录（本地使用，不提交）
-.trellis/
-
-# GitHub 配置目录（本地使用，不提交）
+﻿# GitHub 配置目录（本地使用，不提交）
 .github/
 # 但流水线依赖的脚本/工作流需要入库（CI 直接调用），全部放开
 !.github/
@@ -13,6 +10,14 @@
 !.github/workflows/**
 .github/scripts/**/__pycache__/
 .github/workflows/scripts/*.fd
+
+# Trellis 平台钩子（本地缓存，由 trellis init/update 自动生成）
+.github/skills/
+.github/agents/
+.github/copilot/
+.github/hooks/
+.github/prompts/
+.github/copilot-instructions.md
 
 # Qoder 工具类目录（已废弃）
 .qoder/
