@@ -71,7 +71,7 @@ jobs:
           echo "OK: no 'openEuler' found in docs/"
 
   chinese-detect:
-    name: Chinese character detection (docs/, .github/, root .md)
+    name: Chinese character detection (docs/, .github/, root .md; excludes .trellis/)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -86,31 +86,31 @@ jobs:
 
           violations=0
 
-          # Check docs/ directory
+          # Check docs/ directory (exclude .trellis/)
           echo "::group::Scanning docs/"
           while IFS= read -r -d '' file; do
             if grep -Pn "$CHINESE_RE" "$file" 2>/dev/null; then
               violations=$((violations + 1))
             fi
-          done < <(find docs/ -type f \( -name "*.md" -o -name "*.txt" -o -name "*.sh" -o -name "*.py" \) -print0)
+          done < <(find docs/ -type f \( -name "*.md" -o -name "*.txt" -o -name "*.sh" -o -name "*.py" \) -not -path '.trellis/*' -print0)
           echo "::endgroup::"
 
-          # Check README.md and other root .md files
+          # Check README.md and other root .md files (exclude .trellis/)
           echo "::group::Scanning root *.md"
           while IFS= read -r -d '' file; do
             if grep -Pn "$CHINESE_RE" "$file" 2>/dev/null; then
               violations=$((violations + 1))
             fi
-          done < <(find . -maxdepth 1 -name "*.md" -print0)
+          done < <(find . -maxdepth 1 -name "*.md" -not -path '.trellis/*' -print0)
           echo "::endgroup::"
 
-          # Check .github/ directory (scripts, workflows)
+          # Check .github/ directory (scripts, workflows; exclude .trellis/)
           echo "::group::Scanning .github/"
           while IFS= read -r -d '' file; do
             if grep -Pn "$CHINESE_RE" "$file" 2>/dev/null; then
               violations=$((violations + 1))
             fi
-          done < <(find .github/ -type f \( -name "*.py" -o -name "*.sh" -o -name "*.yml" -o -name "*.yaml" -o -name "*.md" \) -print0)
+          done < <(find .github/ -type f \( -name "*.py" -o -name "*.sh" -o -name "*.yml" -o -name "*.yaml" -o -name "*.md" \) -not -path '.trellis/*' -print0)
           echo "::endgroup::"
 
           if [ "$violations" -gt 0 ]; then
