@@ -1011,11 +1011,19 @@ Only after CI passes (step 3.5):
 1. **Determine the PR target**:
    ```bash
    # Check if upstream remote exists
-   git remote get-url upstream 2>/dev/null && TARGET_BRANCH="upstream/main" || TARGET_BRANCH="origin/main"
+   if git remote get-url upstream &>/dev/null; then
+     UPSTREAM_REPO=$(git remote get-url upstream | sed 's#.*[:/]##; s#\.git$##')
+     TARGET_REPO="$UPSTREAM_REPO"
+     TARGET_BRANCH_REF="main"
+   else
+     TARGET_REPO=""
+     TARGET_BRANCH_REF="main"
+   fi
    ```
 
-2. **Create a Pull Request** to `${TARGET_BRANCH}`:
-   - Use `gh pr create` or the GitHub web UI
+2. **Create a Pull Request**:
+   - If upstream exists (fork scenario), use `gh pr create --repo "$TARGET_REPO" --base main` to target the upstream repository
+   - If no upstream (direct clone), use `gh pr create --base main` (defaults to origin)
    - PR title and body MUST be in English following Conventional Commits format
    - PR title: `feat(<scope>): <summary>` or `fix(<scope>): <summary>`
    - PR description requirements:
