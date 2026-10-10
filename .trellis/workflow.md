@@ -36,14 +36,14 @@ flowchart TD
     D -->|是| F
 
     F["📋 Phase 1: 规划"] --> H["1.0 创建任务<br/>task.py create"]
-    H --> I["1.1 需求探索<br/>trellis-brainstorm"]
+    H --> I["1.1 需求探索 + TDD<br/>需求点 & 测试点"]
     I --> J{需要研究?}
     J -->|是| K["1.2 调研<br/>trellis-research"]
     K --> I
     J -->|否| L{子代理平台?}
     L -->|是| M["1.3 配置上下文<br/>implement.jsonl / check.jsonl"]
     L -->|否| N
-    M --> N["1.35 🔒 规划评审门<br/>展示最终规划摘要"]
+    M --> N["1.35 🔒 规划评审门<br/>需求点 + 测试点 + 测试用例"]
     N --> O{用户确认?}
     O -->|否 / 需修改| I
     O -->|是| P["1.4 激活任务<br/>task.py start"]
@@ -68,7 +68,7 @@ flowchart TD
     AB --> AC["3.4 推送分支到 origin<br/>git push origin feat/fix"]
     AC --> CI["3.5 等待 CI 流水线<br/>检查 origin CI 状态"]
     CI --> CIP{CI 通过?}
-    CIP -->|是| CR["3.6 创建 PR<br/>feat/fix → upstream/main"]
+    CIP -->|是| CR["3.6 创建 PR<br/>feat/fix → upstream/main<br/>(无 upstream 则 origin/main)"]
     CIP -->|否| CIF{失败原因?}
     CIF -->|代码问题| FIXLOOP["修复代码<br/>返回 2.1 实现"]
     FIXLOOP --> AC
@@ -404,9 +404,10 @@ Every new task or feature MUST be developed on its own feature branch. Bug fixes
 
 3. When development and testing are complete (Phase 3):
    - Push the feature/fix branch to origin
-   - Create a Pull Request from `origin/feat-<slug>` (or `origin/fix-<issue-id>`) to `upstream/main`
+   - Create a Pull Request from `origin/feat-<slug>` (or `origin/fix-<issue-id>`) to `upstream/main` (fallback: `origin/main` if no `upstream` remote exists)
    - **Feature PR**: description MUST include changes scope, content summary, and test results
    - **Bug-fix PR**: description MUST reference the issue (e.g. `Closes #123`), include root cause analysis, fix description, and test results
+   - All commit messages and PR titles/descriptions MUST be written in English, following the [Conventional Commits](#commit-and-pr-format) format
    - Squash all commits on the branch into a single commit
    - Wait for the user to decide whether to merge
 
@@ -453,7 +454,8 @@ Load `trellis-brainstorm`; stay in planning.
 Lightweight: `prd.md` can be enough. Complex: finish `prd.md`, `design.md`, and `implement.md`.
 Multi-deliverable scope: consider a parent task plus independently verifiable child tasks; dependencies must be written in child artifacts, not implied by tree position.
 Sub-agent mode: curate `implement.jsonl` and `check.jsonl` as spec/research manifests.
-**Review gate (step 1.35)**: Before `task.py start`, present final planning summary and ask user to confirm. If user says NOT OK, return to 1.1 to revise. DO NOT proceed to 1.4 without explicit user approval.
+**TDD**: `prd.md` MUST include numbered requirements (R1, R2...) and a test case plan (positive, negative, edge-case, boundary) mapped to each requirement.
+**Review gate (step 1.35)**: Before `task.py start`, present final planning summary with requirements + test points and ask user to confirm. If user says NOT OK, return to 1.1 to revise. DO NOT proceed to 1.4 without explicit user approval.
 [/workflow-state:planning]
 
 <!-- Per-turn breadcrumb: shown throughout Phase 1 when codex.dispatch_mode=inline.
@@ -467,7 +469,8 @@ Load `trellis-brainstorm`; stay in planning.
 Lightweight: `prd.md` can be enough. Complex: finish `prd.md`, `design.md`, and `implement.md`.
 Multi-deliverable scope: consider a parent task plus independently verifiable child tasks; dependencies must be written in child artifacts, not implied by tree position.
 Inline mode: skip jsonl curation; Phase 2 reads artifacts/specs via `trellis-before-dev`.
-**Review gate (step 1.35)**: Before `task.py start`, present final planning summary and ask user to confirm. If user says NOT OK, return to 1.1 to revise. DO NOT proceed to 1.4 without explicit user approval.
+**TDD**: `prd.md` MUST include numbered requirements (R1, R2...) and a test case plan (positive, negative, edge-case, boundary) mapped to each requirement.
+**Review gate (step 1.35)**: Before `task.py start`, present final planning summary with requirements + test points and ask user to confirm. If user says NOT OK, return to 1.1 to revise. DO NOT proceed to 1.4 without explicit user approval.
 [/workflow-state:planning-inline]
 
 ### Phase 2: Execute
@@ -486,7 +489,8 @@ Sub-agent dispatch protocol applies to all platforms and all sub-agents, includi
 [workflow-state:in_progress]
 Tools: `trellis-implement` / `trellis-research` are sub-agent types only (Task/Agent tool, NOT Skill; there is no skill by these names). `trellis-update-spec` is a skill. `trellis-check` exists as both; prefer the Agent form when verifying after code changes.
 Flow: `trellis-implement` -> `trellis-check` -> `trellis-update-spec` -> push to origin (Phase 3.4) -> wait for CI (Phase 3.5) -> create PR (Phase 3.6) -> squash commits (Phase 3.7) -> `/trellis:finish-work`.
-**Branch**: All work happens on `feat-<slug>` branch from `upstream/main`. Push to origin, create PR to upstream/main with changes summary + test results.
+**Branch**: All work happens on `feat-<slug>` branch from `upstream/main`. Push to origin, create PR to upstream/main (or origin/main if no upstream remote) with changes summary + test results.
+**Commits & PR**: ALL messages in English, Conventional Commits format (`type(scope): summary`). See Guardrails for rules.
 Main-session default: dispatch implement/check sub-agents. Sub-agent self-exemption: if already running as `trellis-implement`, do NOT spawn another `trellis-implement` or `trellis-check`; if already running as `trellis-check`, do NOT spawn another `trellis-check` or `trellis-implement`. Dispatch is main session only.
 Dispatch prompt starts with `Active task: <task path from task.py current>`. Read context: jsonl entries -> `prd.md` -> `design.md if present` -> `implement.md if present`.
 [/workflow-state:in_progress]
@@ -498,7 +502,8 @@ Dispatch prompt starts with `Active task: <task path from task.py current>`. Rea
 
 [workflow-state:in_progress-inline]
 Flow: `trellis-before-dev` -> edit -> `trellis-check` -> validation -> `trellis-update-spec` -> push to origin (Phase 3.4) -> wait for CI (Phase 3.5) -> create PR (Phase 3.6) -> squash commits (Phase 3.7) -> `/trellis:finish-work`.
-**Branch**: All work happens on `feat-<slug>` branch from `upstream/main`. Push to origin, create PR to upstream/main with changes summary + test results.
+**Branch**: All work happens on `feat-<slug>` branch from `upstream/main`. Push to origin, create PR to upstream/main (or origin/main if no upstream remote) with changes summary + test results.
+**Commits & PR**: ALL messages in English, Conventional Commits format (`type(scope): summary`). See Guardrails for rules.
 Do not dispatch implement/check sub-agents in inline mode.
 Read context: `prd.md` -> `design.md if present` -> `implement.md if present`, plus relevant spec/research loaded by skills.
 [/workflow-state:in_progress-inline]
@@ -508,7 +513,7 @@ Read context: `prd.md` -> `design.md if present` -> `implement.md if present`, p
 - 3.3 Spec update `[required · once]`
 - 3.4 Push branch to origin `[required · once]` (push `feat-<slug>` or `fix-<issue-id>` to origin)
 - 3.5 CI pipeline check `[required · once]` (wait for origin CI to pass; if code issue → fix → re-push; if pipeline/infra issue → create issue → stop)
-- 3.6 Create PR `[required · once]` (create PR to `upstream/main` only after CI passes)
+- 3.6 Create PR `[required · once]` (create PR to `upstream/main`, or `origin/main` if no upstream remote; only after CI passes)
 - 3.7 Squash commits and PR review `[required · once]` (squash all commits into one, present PR for user merge decision)
 - 3.8 Wrap-up reminder
 
@@ -562,13 +567,54 @@ When a user request matches one of these intents inside an active task, route fi
 - Planning must be persisted to task artifacts; checks must run before reporting completion.
 - **Feature branch**: every task MUST be developed on a `feat-<slug>` branch from `upstream/main`.
 - **Bug-fix branch**: bug fixes from issues MUST be developed on a `fix-<issue-id>` branch from `upstream/main`.
-- **PR workflow**: push to origin, create PR to upstream/main with changes + test results, squash to 1 commit, user decides merge.
+- **PR workflow**: push to origin, create PR to upstream/main (fallback: origin/main if no upstream remote), with changes + test results, squash to 1 commit, user decides merge.
 - **Bug-fix PR**: MUST reference the issue (`Closes #<id>`), include root cause analysis and self-test report.
 - **Issue reply**: MUST prepare draft in the issue's original language (Chinese → 中文, English → English), present to user for confirmation before posting.
 - **CI pipeline gate**: after pushing to origin, MUST wait for CI to complete before creating a PR. CI failure → fix code (not pipeline) → push again. Pipeline/infra failure → create issue → stop and tell user.
 - DO NOT modify CI pipeline files under any circumstances. If the pipeline itself is broken, create an issue and let the user handle it.
 - DO NOT merge PRs yourself — the user makes the final merge decision.
 - **Bug analysis before code**: for bug fixes, present root cause + proposed fix to the user and get confirmation before writing any code.
+- **GitHub Token**: the GitHub token MUST be stored in a local environment variable (e.g. `GITHUB_TOKEN` or `GH_TOKEN`) and NEVER committed to the repository. Add token files to `.gitignore`. On first use, check if the token is available (`gh auth status`). If no token is found, ASK THE USER to provide one — do NOT attempt to obtain it through the browser, web login, or any other automated means.
+- **Commit and PR format**: ALL commit messages and PR titles/descriptions MUST be written in English, following Conventional Commits: `<type>(<scope>): <summary>` where type is one of feat|fix|docs|style|refactor|perf|test|chore|ci|build. Summary ≤ 100 chars, lowercase, no trailing period, ASCII only. See `.github/scripts/commit-lint.sh` for enforcement rules.
+- **TDD planning**: during Phase 1.1 (brainstorm), the `prd.md` MUST explicitly list (a) **Requirements** — each requirement as a testable item, and (b) **Test Points** — specific test cases mapped to each requirement. Follow TDD principles: write test cases BEFORE implementation. Maximize test coverage: include positive, negative, edge-case, and boundary tests for every requirement. In step 1.35 (review gate), present both the requirements list AND the test case plan for user confirmation.
+
+### Commit and PR Format
+
+ALL commit messages and PR titles/descriptions MUST follow these rules:
+
+**Format**: `<type>(<scope>): <summary>` (Conventional Commits)
+
+**Allowed types**: `feat` | `fix` | `docs` | `style` | `refactor` | `perf` | `test` | `chore` | `ci` | `build`
+
+**Rules**:
+- Summary in English only (ASCII), ≤ 100 characters
+- Lowercase first character, no trailing period
+- PR title: `feat(<scope>): <summary>` or `fix(<scope>): <summary>`
+- PR description: structured with ## Summary, ## Changes, ## Test Results
+- Bug-fix PRs: add `Closes #<id>` in description plus ## Root Cause and ## Verification
+
+**Examples**:
+- ✅ `feat(ci): add pool create --count flag`
+- ✅ `fix(http): propagate timeout to client`
+- ❌ `feat: release deletes and recreates CloudPods VM to ensure no residual state` (too long)
+- ❌ `feat: 添加日志功能` (non-English)
+
+See `.github/scripts/commit-lint.sh` for enforcement rules.
+
+### GitHub Token Setup
+
+The GitHub token is required for `gh` CLI operations (PR creation, issue fetching). Setup rules:
+
+1. **Token MUST be stored locally** as environment variable (`GITHUB_TOKEN` or `GH_TOKEN`) — NEVER in repo files
+2. **Verify token on first use**: run `gh auth status` to check if authenticated
+3. **If no token found**: ASK THE USER to provide one. Example prompt:
+   ```
+   GitHub CLI is not authenticated. Please provide your token:
+   Option A: Run `gh auth login` to login interactively
+   Option B: Set env var: `$env:GITHUB_TOKEN = "ghp_..."` (PowerShell)
+   ```
+4. **NEVER** attempt to obtain the token through browser automation, web login, or any automated means — tokens are user secrets
+5. Add token files (`.env`, `.token`, `*.token`) to `.gitignore`
 
 ### Loading Step Detail
 
@@ -615,6 +661,17 @@ The brainstorm skill will guide you to:
 - Split large scopes into a parent task plus child tasks when the deliverables can be verified independently
 - Keep `prd.md` focused on requirements and acceptance criteria
 - For complex tasks, produce `design.md` and `implement.md` before implementation starts
+
+**TDD requirement**: When writing `prd.md`, you MUST include:
+
+1. **Requirements section** — each requirement as a numbered testable item (e.g. "R1: The system shall..." "R2: When input is...")
+2. **Test points section** — specific test cases mapped to each requirement:
+   - **Positive tests**: verify correct behavior with valid inputs
+   - **Negative tests**: verify proper error handling with invalid inputs
+   - **Edge-case tests**: verify behavior at boundaries (empty, null, max values, etc.)
+   - **Boundary tests**: verify behavior at known threshold values
+
+Follow TDD principles strictly: write test cases BEFORE implementation code. Tests must cover every requirement — if a requirement has no corresponding test, it is not fully specified.
 
 When considering a parent/child split:
 - Use a parent task when one request contains several independently verifiable deliverables.
@@ -715,7 +772,8 @@ Skip this step. Context is loaded directly by the `trellis-before-dev` skill in 
 
 1. Present the final planning summary with:
    - Goal and scope summary
-   - Key requirements
+   - **Requirements** — each requirement as a testable item
+   - **Test points** — specific test cases mapped to each requirement (positive, negative, edge-case, boundary)
    - Acceptance criteria
    - Artifact status (which files exist)
    - Any open risks or deferred items
@@ -727,6 +785,8 @@ Skip this step. Context is loaded directly by the `trellis-before-dev` skill in 
 4. **If user says NOT OK / requests changes**: return to step 1.1, revise the relevant artifacts (`prd.md`, `design.md`, `implement.md`) based on user feedback, then repeat this gate.
 
 5. Do NOT run `task.py start` or create a feature branch until the user explicitly approves the planning summary.
+
+**TDD requirement**: Before approval, ensure `prd.md` includes (a) a numbered list of requirements and (b) a test case plan covering each requirement with positive, negative, edge-case, and boundary tests. Write tests before or alongside implementation code — never after.
 
 #### 1.4 Activate task `[required · once]`
 
@@ -948,9 +1008,16 @@ After pushing to origin, the origin repository's CI pipeline will trigger automa
 
 Only after CI passes (step 3.5):
 
-1. **Create a Pull Request** to `upstream/main`:
+1. **Determine the PR target**:
+   ```bash
+   # Check if upstream remote exists
+   git remote get-url upstream 2>/dev/null && TARGET_BRANCH="upstream/main" || TARGET_BRANCH="origin/main"
+   ```
+
+2. **Create a Pull Request** to `${TARGET_BRANCH}`:
    - Use `gh pr create` or the GitHub web UI
-   - PR title: `feat: <task title>` or `fix: <description>`
+   - PR title and body MUST be in English following Conventional Commits format
+   - PR title: `feat(<scope>): <summary>` or `fix(<scope>): <summary>`
    - PR description requirements:
 
    **For feature PRs:**

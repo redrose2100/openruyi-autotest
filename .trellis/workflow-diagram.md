@@ -38,14 +38,14 @@ flowchart TD
     D -->|是| F
 
     F["📋 Phase 1: 规划"] --> H["1.0 创建任务<br/>task.py create"]
-    H --> I["1.1 需求探索<br/>trellis-brainstorm"]
+    H --> I["1.1 需求探索 + TDD<br/>需求点 & 测试点"]
     I --> J{需要研究?}
     J -->|是| K["1.2 调研<br/>trellis-research"]
     K --> I
     J -->|否| L{子代理平台?}
     L -->|是| M["1.3 配置上下文<br/>implement.jsonl / check.jsonl"]
     L -->|否| N
-    M --> N["1.35 🔒 规划评审门<br/>展示最终规划摘要，用户确认"]
+    M --> N["1.35 🔒 规划评审门<br/>需求点 + 测试点 + 测试用例"]
     N --> O{用户确认?}
     O -->|否 / 需要修改| I
     O -->|是| P["1.4 激活任务<br/>task.py start"]
@@ -71,7 +71,7 @@ flowchart TD
     AB --> AC["3.4 推送分支到 origin<br/>git push origin feat/fix"]
     AC --> CI["3.5 等待 CI 流水线<br/>检查 origin CI 状态"]
     CI --> CIP{CI 通过?}
-    CIP -->|是| CR["3.6 创建 PR<br/>feat/fix → upstream/main"]
+    CIP -->|是| CR["3.6 创建 PR<br/>feat/fix → upstream/main<br/>(无 upstream 则 origin/main)"]
     CIP -->|否| CIF{失败原因?}
     CIF -->|代码问题| FIXLOOP["修复代码<br/>返回 2.1 实现"]
     FIXLOOP --> AC
@@ -105,9 +105,9 @@ flowchart TD
 | 阶段 | 状态 | 核心动作 |
 |------|------|---------|
 | **Issue 工作流** | — | 获取 Issue → 分类(Bug/Feature) → Bug: 根因分析→确认→修复→CI等待→PR→回复 |
-| **Phase 1: 规划** | `planning` | 创建任务 → 需求探索 → 评审门 → 激活任务 → 建分支 |
+| **Phase 1: 规划** | `planning` | 创建任务 → 需求探索(TDD) → 评审门(需求点+测试点) → 激活任务 → 建分支 |
 | **Phase 2: 执行** | `in_progress` | 实现 → 质量检查 → 循环直到完成 |
-| **Phase 3: 完成** | `in_progress` | Debug 回顾 → 更新 Spec → 推送 origin → **CI 等待** → 创建 PR → Squash → 用户合并 |
+| **Phase 3: 完成** | `in_progress` | Debug 回顾 → 更新 Spec → 推送 origin → **CI 等待** → 创建 PR(upstream/main 或 origin/main) → Squash → 用户合并 |
 
 ## 关键规则
 
@@ -118,5 +118,8 @@ flowchart TD
 5. 💬 **回复语言**：依 issue 原始语言（中文→中文，英文→英文），草稿需用户确认后再发布
 6. 🔒 **1.35 评审门**：用户必须确认规划产物后才能 `task.py start`
 7. 🌿 **分支策略**：Feature → `feat-<slug>`，Bug → `fix-<issue-id>`，均基于 `upstream/main`
-8. 📤 **PR 工作流**：推送到 origin → CI 等待 → 创建 PR → Squash → 用户决定合并
+8. 📤 **PR 工作流**：推送到 origin → CI 等待 → 创建 PR(upstream/main, 无 upstream 则 origin/main) → Squash → 用户决定合并
 9. 🚫 **禁止自行合并**：AI 绝不能自行合并 PR
+10. 🔑 **GitHub Token**：存本地环境变量，不提交仓库。无 token 时向用户索要，禁止自动化获取
+11. 📝 **Commit/PR 格式**：全部英文，Conventional Commits: `type(scope): summary`
+12. 🧪 **TDD 规划**：prd.md 必须包含需求点列表 + 测试用例计划(正向/负向/边界/异常)，测试先于实现
