@@ -289,7 +289,7 @@ Before any code changes, analyze the issue thoroughly:
 
 1. **Reproduce** if possible — understand the exact conditions that trigger the bug
 2. **Identify** the root cause with file:line anchors where applicable
-3. **Write analysis** to `{TASK_DIR}/bug-analysis.md` with:
+3. **Write analysis** to `{TASK_DIR}/bug-analysis.md` (使用中文编写) with:
    - Issue link and summary
    - Root cause (what code path, what went wrong)
    - Impact scope (what else could be affected)
@@ -454,6 +454,7 @@ Load `trellis-brainstorm`; stay in planning.
 Lightweight: `prd.md` can be enough. Complex: finish `prd.md`, `design.md`, and `implement.md`.
 Multi-deliverable scope: consider a parent task plus independently verifiable child tasks; dependencies must be written in child artifacts, not implied by tree position.
 Sub-agent mode: curate `implement.jsonl` and `check.jsonl` as spec/research manifests.
+**文档语言**: `prd.md`、`design.md`、`implement.md` 必须使用中文编写。
 **TDD**: `prd.md` MUST include numbered requirements (R1, R2...) and a test case plan (positive, negative, edge-case, boundary) mapped to each requirement.
 **Review gate (step 1.35)**: Before `task.py start`, present final planning summary with requirements + test points and ask user to confirm. If user says NOT OK, return to 1.1 to revise. DO NOT proceed to 1.4 without explicit user approval.
 [/workflow-state:planning]
@@ -469,6 +470,7 @@ Load `trellis-brainstorm`; stay in planning.
 Lightweight: `prd.md` can be enough. Complex: finish `prd.md`, `design.md`, and `implement.md`.
 Multi-deliverable scope: consider a parent task plus independently verifiable child tasks; dependencies must be written in child artifacts, not implied by tree position.
 Inline mode: skip jsonl curation; Phase 2 reads artifacts/specs via `trellis-before-dev`.
+**文档语言**: `prd.md`、`design.md`、`implement.md` 必须使用中文编写。
 **TDD**: `prd.md` MUST include numbered requirements (R1, R2...) and a test case plan (positive, negative, edge-case, boundary) mapped to each requirement.
 **Review gate (step 1.35)**: Before `task.py start`, present final planning summary with requirements + test points and ask user to confirm. If user says NOT OK, return to 1.1 to revise. DO NOT proceed to 1.4 without explicit user approval.
 [/workflow-state:planning-inline]
@@ -490,6 +492,7 @@ Sub-agent dispatch protocol applies to all platforms and all sub-agents, includi
 Tools: `trellis-implement` / `trellis-research` are sub-agent types only (Task/Agent tool, NOT Skill; there is no skill by these names). `trellis-update-spec` is a skill. `trellis-check` exists as both; prefer the Agent form when verifying after code changes.
 Flow: `trellis-implement` -> `trellis-check` -> `trellis-update-spec` -> push to origin (Phase 3.4) -> wait for CI (Phase 3.5) -> create PR (Phase 3.6) -> squash commits (Phase 3.7) -> `/trellis:finish-work`.
 **Branch**: All work happens on `feat-<slug>` branch from `upstream/main`. Push to origin, create PR to upstream/main (or origin/main if no upstream remote) with changes summary + test results.
+**文档语言**: `prd.md`、`design.md`、`implement.md`、`bug-analysis.md` 使用中文；commit 和 PR 使用英文。
 **Commits & PR**: ALL messages in English, Conventional Commits format (`type(scope): summary`). See Guardrails for rules.
 Main-session default: dispatch implement/check sub-agents. Sub-agent self-exemption: if already running as `trellis-implement`, do NOT spawn another `trellis-implement` or `trellis-check`; if already running as `trellis-check`, do NOT spawn another `trellis-check` or `trellis-implement`. Dispatch is main session only.
 Dispatch prompt starts with `Active task: <task path from task.py current>`. Read context: jsonl entries -> `prd.md` -> `design.md if present` -> `implement.md if present`.
@@ -503,6 +506,7 @@ Dispatch prompt starts with `Active task: <task path from task.py current>`. Rea
 [workflow-state:in_progress-inline]
 Flow: `trellis-before-dev` -> edit -> `trellis-check` -> validation -> `trellis-update-spec` -> push to origin (Phase 3.4) -> wait for CI (Phase 3.5) -> create PR (Phase 3.6) -> squash commits (Phase 3.7) -> `/trellis:finish-work`.
 **Branch**: All work happens on `feat-<slug>` branch from `upstream/main`. Push to origin, create PR to upstream/main (or origin/main if no upstream remote) with changes summary + test results.
+**文档语言**: `prd.md`、`design.md`、`implement.md`、`bug-analysis.md` 使用中文；commit 和 PR 使用英文。
 **Commits & PR**: ALL messages in English, Conventional Commits format (`type(scope): summary`). See Guardrails for rules.
 Do not dispatch implement/check sub-agents in inline mode.
 Read context: `prd.md` -> `design.md if present` -> `implement.md if present`, plus relevant spec/research loaded by skills.
@@ -576,6 +580,7 @@ When a user request matches one of these intents inside an active task, route fi
 - **Bug analysis before code**: for bug fixes, present root cause + proposed fix to the user and get confirmation before writing any code.
 - **GitHub Token**: the GitHub token MUST be stored in a local environment variable (e.g. `GITHUB_TOKEN` or `GH_TOKEN`) and NEVER committed to the repository. Add token files to `.gitignore`. On first use, check if the token is available (`gh auth status`). If no token is found, ASK THE USER to provide one — do NOT attempt to obtain it through the browser, web login, or any other automated means.
 - **Commit and PR format**: ALL commit messages and PR titles/descriptions MUST be written in English, following Conventional Commits: `<type>(<scope>): <summary>` where type is one of feat|fix|docs|style|refactor|perf|test|chore|ci|build. Summary ≤ 100 chars, lowercase, no trailing period, ASCII only. See `.github/scripts/commit-lint.sh` for enforcement rules.
+- **Documentation language**: ALL planning documents (`prd.md`, `design.md`, `implement.md`) and `bug-analysis.md` MUST be written in 中文 (Chinese). Commit messages and PR titles/descriptions remain in English per the rule above.
 - **TDD planning**: during Phase 1.1 (brainstorm), the `prd.md` MUST explicitly list (a) **Requirements** — each requirement as a testable item, and (b) **Test Points** — specific test cases mapped to each requirement. Follow TDD principles: write test cases BEFORE implementation. Maximize test coverage: include positive, negative, edge-case, and boundary tests for every requirement. In step 1.35 (review gate), present both the requirements list AND the test case plan for user confirmation.
 - **Git remote URL**: GitHub may occasionally have network instability — this is normal. NEVER modify `git remote` URLs to work around network issues. The user configured the remotes (`origin`, `upstream`) with specific URLs (SSH or HTTPS) for a reason. If a push/pull fails due to network timeout or SSH issues, simply retry or wait — do NOT switch between SSH and HTTPS, do NOT change remote URLs, do NOT add new remotes. The user's configuration is authoritative.
 

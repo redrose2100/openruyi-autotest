@@ -1,37 +1,33 @@
-# chore: remove temporary scripts and data files from repo root
+# chore: 删除仓库根目录下的临时脚本和数据文件
 
-## Goal
+## 目标
 
-Remove 18 temporary one-off scripts and data files from repository root. These were created during Round4 CI fixes (fe102b98a) and test-split work (68f97cfde) and have all served their purpose. Generated tests already live under `tests/functional/pkgs/`, and code fixes have been applied. None of these files are referenced by any other file in the repo.
+删除仓库根目录下 18 个一次性临时脚本和数据文件。这些文件创建于 Round4 CI 修复（fe102b98a）和测试拆分工作（68f97cfde）期间，均已完成其使命。生成的测试文件已落地到 `tests/functional/pkgs/` 目录，代码修复已应用。仓库中无任何其他文件引用这些文件。
 
-## Requirements
+## 需求
 
-### R1: Remove one-off Python analysis/fix scripts
-Delete 14 `.py` files used for one-time diagnosis and batch fixes:
-`_analyze_fails.py`, `_check_gcc.py`, `_check_tests.py`, `_fix_error_pattern.py`, `_fix_version_help.py`, `coverage_analyzer.py`, `coverage_analyzer_v2.py`, `fix_and_cleanup_coreutils.py`, `gen_curl_tests.py`, `gen_p0_tests.py`, `gen_p1_tests.py`, `gen_p3_tests.py`, `gen_p3b_tests.py`, `split_coreutils_tests.py`
+### R1：删除一次性 Python 分析/修复脚本
+删除 14 个 `.py` 文件，用于一次性诊断和批量修复：
+`_analyze_fails.py`、`_check_gcc.py`、`_check_tests.py`、`_fix_error_pattern.py`、`_fix_version_help.py`、`coverage_analyzer.py`、`coverage_analyzer_v2.py`、`fix_and_cleanup_coreutils.py`、`gen_curl_tests.py`、`gen_p0_tests.py`、`gen_p1_tests.py`、`gen_p3_tests.py`、`gen_p3b_tests.py`、`split_coreutils_tests.py`
 
-### R2: Remove one-off PowerShell analysis scripts
-Delete `analyze_libs.ps1` and `analyze_pkgs.ps1`.
+### R2：删除一次性 PowerShell 分析脚本
+删除 `analyze_libs.ps1` 和 `analyze_pkgs.ps1`。
 
-### R3: Remove one-off data files
-Delete `ci_log_round4.txt` and `pkg_list.txt`.
+### R3：删除一次性数据文件
+删除 `ci_log_round4.txt` 和 `pkg_list.txt`。
 
-### R4: Ensure no references remain
-Verify no other file in the repo imports or references any of the deleted files.
+### R4：确保无残留引用
+验证仓库中无任何其他文件引用被删除的文件。
 
-## Test Points
+## 测试点
 
-- TP1: All 18 files are removed from the working tree
-- TP2: `git status` confirms 18 deletions staged for commit
-- TP3: Repo grep confirms no remaining references to deleted file names outside `.venv/`
-- TP4: `tests/functional/pkgs/` tests remain intact (generated output unaffected)
+- TP1：18 个文件已从工作树中删除
+- TP2：`git status` 确认 18 个删除已提交
+- TP3：仓库 grep 确认 `.venv/` 之外无残留引用
+- TP4：`tests/functional/pkgs/` 中的测试保持完整（生成产物不受影响）
 
-## Acceptance Criteria
+## 验收标准
 
-- [ ] TBD
-
-## Notes
-
-- Keep `prd.md` focused on requirements, constraints, and acceptance criteria.
-- Lightweight tasks can remain PRD-only.
-- For complex tasks, add `design.md` for technical design and `implement.md` for execution planning before `task.py start`.
+- [x] 18 个临时文件已删除
+- [x] 无残留引用
+- [x] 现有测试不受影响
