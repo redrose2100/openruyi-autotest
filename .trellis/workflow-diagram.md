@@ -123,3 +123,4 @@ flowchart TD
 10. 🔑 **GitHub Token**：存本地环境变量，不提交仓库。无 token 时向用户索要，禁止自动化获取
 11. 📝 **Commit/PR 格式**：全部英文，Conventional Commits: `type(scope): summary`
 12. 🧪 **TDD 规划**：prd.md 必须包含需求点列表 + 测试用例计划(正向/负向/边界/异常)，测试先于实现
+13. 🔗 **Git 远程 URL**：GitHub 偶有网络不稳定属正常现象，禁止因此修改 remote URL。用户配置的 SSH/HTTPS 是权威的，禁止切换协议或修改地址
