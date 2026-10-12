@@ -1,0 +1,11 @@
+summary: Attr command basic operations (-s, -g, -l, -r)
+tag:
+ - functional
+ - attr
+duration: 3m
+tier: 1
+path: /tests/functional/pkgs/attr/test_attr_attr_basic
+require:
+ - attr
+ - beakerlib
+test: test.sh
