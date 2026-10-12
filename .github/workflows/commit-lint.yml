@@ -29,7 +29,7 @@ jobs:
             BEFORE="${{ github.event.before }}"
             AFTER="${{ github.event.after }}"
             if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
-              echo "range=$AFTER" >> "$GITHUB_OUTPUT"
+              echo "range=origin/dev..$AFTER" >> "$GITHUB_OUTPUT"
             else
               echo "range=$BEFORE..$AFTER" >> "$GITHUB_OUTPUT"
             fi
