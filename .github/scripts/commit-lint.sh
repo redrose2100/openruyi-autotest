@@ -26,7 +26,7 @@ while IFS= read -r subject; do
   total=$((total + 1))
   # Skip merge and revert commits whose messages are auto-generated.
   case "$subject" in
-    Merge*|Revert*) continue ;;
+    [Mm]erge*|Revert*) continue ;;
   esac
   checked=$((checked + 1))
 
