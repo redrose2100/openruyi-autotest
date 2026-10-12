@@ -1,0 +1,8 @@
+summary: Test beakerlib utility tools (rlMemAvg, rlMemPeak, testwatcher, journalling, journalcmp, deja-summarize)
+tag: [functional, pkgs]
+duration: 3m
+tier: 2
+path: tests/functional/pkgs/beakerlib/test_beakerlib_tools
+require:
+- beakerlib
+test: ./test.sh

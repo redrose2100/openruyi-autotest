@@ -1,0 +1,8 @@
+summary: Test beakerlib-lsb_release command with all options
+tag: [functional, pkgs]
+duration: 3m
+tier: 2
+path: tests/functional/pkgs/beakerlib/test_beakerlib_lsb_release
+require:
+- beakerlib
+test: ./test.sh
