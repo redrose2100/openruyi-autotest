@@ -54,27 +54,25 @@ max_journal_lines: 2000
 # Monorepo / Packages
 #-------------------------------------------------------------------------------
 
-# Declare packages for monorepo projects.
-# Trellis auto-detects workspaces during `trellis init`, but you can also
-# configure them manually here.
+# Declare packages for the automation test project.
+# These map to .trellis/spec/ subdirectories for context-aware coding guidance.
 #
-# packages:
-#   frontend:
-#     path: packages/frontend
-#   backend:
-#     path: packages/backend
-#   docs:
-#     path: docs-site
-#     type: submodule
-#   # For polyrepo / meta-repo layouts (independent .git in each subdir),
-#   # mark the package with `git: true`. The runtime treats it as an
-#   # independent repository for things like git-context display.
-#   webapp:
-#     path: ./webapp
-#     git: true
+packages:
+  test-authoring:
+    path: .
+    spec: .trellis/spec/test-authoring
+  ci-pipeline:
+    path: .
+    spec: .trellis/spec/ci-pipeline
+  tooling:
+    path: .
+    spec: .trellis/spec/tooling
+  guides:
+    path: .
+    spec: .trellis/spec/guides
 
 # Default package used when --package is not specified.
-# default_package: frontend
+# default_package: test-authoring
 
 #-------------------------------------------------------------------------------
 # Channel worker OOM guard

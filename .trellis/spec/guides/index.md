@@ -1,97 +1,53 @@
-# Thinking Guides
+# 思维指南
 
-> **Purpose**: Expand your thinking to catch things you might not have considered.
-
----
-
-## Why Thinking Guides?
-
-**Most bugs and tech debt come from "didn't think of that"**, not from lack of skill:
-
-- Didn't think about what happens at layer boundaries → cross-layer bugs
-- Didn't think about code patterns repeating → duplicated code everywhere
-- Didn't think about edge cases → runtime errors
-- Didn't think about future maintainers → unreadable code
-
-These guides help you **ask the right questions before coding**.
+> **用途**：在编写测试代码之前扩展思维，捕获可能忽略的问题。
 
 ---
 
-## Available Guides
+## 为什么需要思维指南？
 
-| Guide | Purpose | When to Use |
-|-------|---------|-------------|
-| [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md) | Identify patterns and reduce duplication | When you notice repeated patterns |
-| [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md) | Think through data flow across layers | Features spanning multiple layers |
+**大多数 Bug 源于"没想到"**，而非缺乏技能：
 
----
-
-## Quick Reference: Thinking Triggers
-
-### When to Think About Cross-Layer Issues
-
-- [ ] Feature touches 3+ layers (API, Service, Component, Database)
-- [ ] Data format changes between layers
-- [ ] Multiple consumers need the same data
-- [ ] You're not sure where to put some logic
-- [ ] You are adding an event kind, JSONL record, RPC payload, or config field
-- [ ] UI / command code starts casting raw payload fields directly
-
-→ Read [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md)
-
-### When to Think About Code Reuse
-
-- [ ] You're writing similar code to something that exists
-- [ ] You see the same pattern repeated 3+ times
-- [ ] You're adding a new field to multiple places
-- [ ] **You're modifying any constant or config**
-- [ ] **You're creating a new utility/helper function** ← Search first!
-- [ ] Two files read the same untyped payload field with local casts
-- [ ] Multiple branches update the same derived state from `kind` / `action`
-
-→ Read [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md)
-
-### When Verifying AI Cross-Review Results
-
-- [ ] Reviewer claims "user input can be malicious" → Check the actual data source (internal manifest? user config? external API?)
-- [ ] Reviewer flags "missing validation" → Is the data from a trusted internal source?
-- [ ] Reviewer says "behavior change" → Read the code comments — is it intentional design?
-- [ ] Reviewer identifies a "bug" in test → Mentally delete the feature being tested — does the test still pass? If yes → tautological test
-
-**Common AI reviewer false-positive patterns**:
-1. **Trust boundary confusion**: Treating internal data (bundled JSON manifests) as untrusted external input
-2. **Ignoring design comments**: Flagging intentional behavior documented in code comments as bugs
-3. **Variable misreading**: Not tracing a variable to its actual definition (e.g., Map keyed by path vs name)
-
-**Verification rule**: Every CRITICAL/WARNING finding must be verified against the actual code before prioritizing. Budget ~35% false-positive rate for AI reviews.
+- 没想到这个测试函数已经在别处实现了 → 重复代码
+- 没想到 CI 流水线和本地测试环境不同 → 环境相关 Bug
+- 没想到 FMF 元数据和测试脚本需要保持一致 → 元数据漂移
+- 没想到 shell 变量未引用会导致空格路径出错 → 兼容性 Bug
 
 ---
 
-## Pre-Modification Rule (CRITICAL)
+## 可用的指南
 
-> **Before changing ANY value, ALWAYS search first!**
-
-```bash
-# Search for the value you're about to change
-grep -r "value_to_change" .
-```
-
-This single habit prevents most "forgot to update X" bugs.
+| 指南 | 用途 | 何时使用 |
+|------|------|----------|
+| [代码复用思维指南](./code-reuse-thinking-guide.md) | 识别可复用的测试模式，减少重复 | 编写新测试、发现重复模式时 |
+| [跨层思维指南](./cross-layer-thinking-guide.md) | 理解测试框架各层间的数据流和契约 | 涉及多层的功能或调试时 |
 
 ---
 
-## How to Use This Directory
+## 快速参考：思维触发器
 
-1. **Before coding**: Skim the relevant thinking guide
-2. **During coding**: If something feels repetitive or complex, check the guides
-3. **After bugs**: Add new insights to the relevant guide (learn from mistakes)
+### 何时考虑跨层问题
+
+- [ ] 编写测试同时需要修改 FMF 元数据
+- [ ] 测试依赖 CI 流水线中的环境变量或配置
+- [ ] 测试运行在多种环境（QEMU / 物理机 / K8s）
+- [ ] 测试结果需要在 CI 中解析和汇总
+- [ ] 修改了 `lib/` 中的共享函数
+
+→ 阅读 [跨层思维指南](./cross-layer-thinking-guide.md)
+
+### 何时考虑代码复用
+
+- [ ] 编写的测试与其他已有测试结构相似
+- [ ] 同一个模式在 3+ 个测试中重复
+- [ ] 需要添加新的 Beakerlib 辅助函数
+- [ ] 修改 `tests/lib/` 或共享脚本
+- [ ] 创建新的 FMF 计划文件
+
+→ 阅读 [代码复用思维指南](./code-reuse-thinking-guide.md)
 
 ---
 
-## Contributing
+## 核心原则
 
-Found a new "didn't think of that" moment? Add it to the relevant guide.
-
----
-
-**Core Principle**: 30 minutes of thinking saves 3 hours of debugging.
+**30 分钟思考可以节省 3 小时的调试时间。**

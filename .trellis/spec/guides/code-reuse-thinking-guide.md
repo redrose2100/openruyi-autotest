@@ -1,223 +1,110 @@
-# Code Reuse Thinking Guide
+# 代码复用思维指南
 
-> **Purpose**: Stop and think before creating new code - does it already exist?
-
----
-
-## The Problem
-
-**Duplicated code is the #1 source of inconsistency bugs.**
-
-When you copy-paste or rewrite existing logic:
-- Bug fixes don't propagate
-- Behavior diverges over time
-- Codebase becomes harder to understand
+> **用途**：在创建新测试或工具代码之前——先想清楚是否已有可复用的实现。
 
 ---
 
-## Before Writing New Code
+## 核心问题
 
-### Step 1: Search First
+**重复代码是不一致 Bug 的头号来源。**
+
+在自动化测试项目中，当你复制粘贴或重写已有逻辑时：
+- Bug 修复不会自动传播到所有副本
+- 行为随时间推移逐渐分歧
+- 测试套件越来越难以维护
+
+---
+
+## 编写前：先搜索
+
+### 第一步：搜索已有实现
 
 ```bash
-# Search for similar function names
-grep -r "functionName" .
+# 搜索类似函数名
+grep -r "rlRun" tests/functional/pkgs/
 
-# Search for similar logic
-grep -r "keyword" .
+# 搜索类似逻辑
+grep -r "package_install" tests/
+
+# 搜索共享库
+grep -r "source.*lib/" tests/
 ```
 
-### Step 2: Ask These Questions
+### 第二步：问自己
 
-| Question | If Yes... |
-|----------|-----------|
-| Does a similar function exist? | Use or extend it |
-| Is this pattern used elsewhere? | Follow the existing pattern |
-| Could this be a shared utility? | Create it in the right place |
-| Am I copying code from another file? | **STOP** - extract to shared |
+| 问题 | 如果是…… |
+|------|-----------|
+| 类似的测试函数是否已存在？ | 复用或扩展它 |
+| 同一个模式是否在别处使用？ | 遵循已有模式 |
+| 是否可以提取到 `tests/lib/`？ | 放到正确的位置 |
+| 你是否在从另一个测试文件复制代码？ | **停手**——先提取共享 |
 
 ---
 
-## Common Duplication Patterns
+## 本项目常见重复模式
 
-### Pattern 1: Copy-Paste Functions
+### 模式 1：重复的包安装验证
 
-**Bad**: Copying a validation function to another file
+**坏做法**：每个包测试都自己写安装验证
 
-**Good**: Extract to shared utilities, import where needed
+**好做法**：使用 `lib/` 中的共享函数：
 
-### Pattern 2: Similar Components
-
-**Bad**: Creating a new component that's 80% similar to existing
-
-**Good**: Extend existing component with props/variants
-
-### Pattern 3: Repeated Constants
-
-**Bad**: Defining the same constant in multiple files
-
-**Good**: Single source of truth, import everywhere
-
-### Pattern 4: Repeated Payload Field Extraction
-
-**Bad**: Multiple consumers cast the same JSON/event fields locally:
-
-```typescript
-const description = (ev as { description?: string }).description;
-const context = (ev as { context?: ContextEntry[] }).context;
-```
-
-This is duplicated contract logic even when the code is only two lines. Each
-consumer now has its own definition of what a valid payload means.
-
-**Good**: Put the decoder, type guard, or projection next to the data owner:
-
-```typescript
-if (isThreadEvent(ev)) {
-  renderThreadEvent(ev);
+```bash
+# tests/lib/pkg_test.sh（共享）
+pkg_install_and_verify() {
+    local pkg="$1"
+    rlRun "dnf install -y $pkg" 0 "安装 $pkg"
+    rlRun "rpm -q $pkg" 0 "验证 $pkg 已安装"
 }
 ```
 
-**Rule**: If the same untyped payload field is read in 2+ places, create a
-shared type guard / normalizer / projection before adding a third reader.
+### 模式 2：重复的 FMF 元数据
 
----
+**坏做法**：每个 `main.fmf` 手动维护相同字段
 
-## When to Abstract
+**好做法**：在父级 `main.fmf` 中定义公共属性，子级继承：
 
-**Abstract when**:
-- Same code appears 3+ times
-- Logic is complex enough to have bugs
-- Multiple people might need this
-
-**Don't abstract when**:
-- Only used once
-- Trivial one-liner
-- Abstraction would be more complex than duplication
-
----
-
-## After Batch Modifications
-
-When you've made similar changes to multiple files:
-
-1. **Review**: Did you catch all instances?
-2. **Search**: Run grep to find any missed
-3. **Consider**: Should this be abstracted?
-
-### Reducers Should Use Exhaustive Structure
-
-When state is derived from action-like values (`action`, `kind`, `status`,
-`phase`), prefer a reducer with one `switch` over scattered `if/else` updates.
-
-```typescript
-// BAD - action-specific state transitions are hard to audit
-if (action === "opened") { ... }
-else if (action === "comment") { ... }
-else if (action === "status") { ... }
-
-// GOOD - one reducer owns the transition table
-switch (event.action) {
-  case "opened":
-    ...
-    return;
-  case "comment":
-    ...
-    return;
-}
+```yaml
+# tests/functional/pkgs/main.fmf（父级）
+tier: 2
+tag: [functional, pkgs]
+adjust:
+  - when: arch != riscv64
+    enabled: false
 ```
 
-This matters when the event log is the source of truth. A reducer is the
-documented replay model; display code and commands should not duplicate pieces
-of that replay model.
+### 模式 3：重复的 Shell 辅助逻辑
+
+**坏做法**：每个测试脚本都写自己的 `check_service` 函数
+
+**好做法**：提取到 `tests/lib/` 中统一维护
 
 ---
 
-## Checklist Before Commit
+## 何时抽象
 
-- [ ] Searched for existing similar code
-- [ ] No copy-pasted logic that should be shared
-- [ ] No repeated untyped payload field extraction outside a shared decoder
-- [ ] Constants defined in one place
-- [ ] Similar patterns follow same structure
-- [ ] Reducer/action transitions live in one reducer or command dispatcher
+**应抽象时**：
+- 同一代码出现 3 次以上
+- 逻辑复杂到容易出错
+- 多个包/测试需要相同功能
 
----
-
-## Gotcha: Python if/elif/else Exhaustive Check
-
-**Problem**: Python's if/elif/else chains have no compile-time exhaustive check. When you add a new value to a `Literal` type (e.g., `Platform`), existing if/elif/else chains silently fall through to `else` with wrong defaults.
-
-**Symptom**: New platform works partially — some methods return Claude defaults instead of platform-specific values. No error is raised.
-
-**Example** (`cli_adapter.py`):
-```python
-# BAD: "gemini" falls through to else, returns "claude"
-@property
-def cli_name(self) -> str:
-    if self.platform == "opencode":
-        return "opencode"
-    else:
-        return "claude"  # gemini silently gets "claude"!
-
-# GOOD: explicit branch for every platform
-@property
-def cli_name(self) -> str:
-    if self.platform == "opencode":
-        return "opencode"
-    elif self.platform == "gemini":
-        return "gemini"
-    else:
-        return "claude"
-```
-
-**Prevention**: When adding a new value to a Python `Literal` type, search for ALL if/elif/else chains that switch on that type and add explicit branches. Don't rely on `else` being correct for new values.
+**不应抽象时**：
+- 仅使用一次
+- 简单的一行命令
+- 抽象比重复更复杂
 
 ---
 
-## Gotcha: Asymmetric Mechanisms Producing Same Output
+## 批量修改后的检查
 
-**Problem**: When two different mechanisms must produce the same file set (e.g., recursive directory copy for init vs. manual `files.set()` for update), structural changes (renaming, moving, adding subdirectories) only propagate through the automatic mechanism. The manual one silently drifts.
-
-**Symptom**: Init works perfectly, but update creates files at wrong paths or misses files entirely.
-
-**Prevention**:
-- **Best**: Eliminate the asymmetry — have the manual path call the automatic one (e.g., `collectTemplateFiles()` calls `getAllScripts()` instead of maintaining its own list)
-- **If asymmetry is unavoidable**: Add a regression test that compares outputs from both mechanisms
-- When migrating directory structures, search for ALL code paths that reference the old structure
-
-**Real example**: `trellis update` had a manual `files.set()` list for 11 scripts that `getAllScripts()` already tracked. Fix: replaced the manual list with a `for..of getAllScripts()` loop. See `update.ts` refactor in v0.4.0-beta.3.
+1. **审查**：是否遗漏了某些实例？
+2. **搜索**：`grep` 确认没有遗漏
+3. **考虑**：现在是否应该抽象？
 
 ---
 
-## Template File Registration (Trellis-specific)
+## 禁止事项
 
-When adding new files to `src/templates/trellis/scripts/`:
-
-**Single registration point**: `src/templates/trellis/index.ts`
-
-1. Add `export const xxxScript = readTemplate("scripts/path/file.py");`
-2. Add to `getAllScripts()` Map
-
-That's it. `commands/update.ts` uses `getAllScripts()` directly — no manual sync needed.
-
-**Why this matters**: Without registration in `getAllScripts()`, `trellis update` won't sync the file to user projects. Bug fixes and features won't propagate.
-
-**History**: Before v0.4.0-beta.3, `update.ts` had its own hand-maintained file list that frequently fell out of sync with `getAllScripts()`. This caused 11 Python files to be silently skipped during `trellis update`. The fix was to eliminate the duplicate list and use `getAllScripts()` as the single source of truth.
-
-### Quick Checklist for New Scripts
-
-```bash
-# After adding a new .py file, verify it's in getAllScripts():
-grep -l "newFileName" src/templates/trellis/index.ts  # Should match
-```
-
-### Template Sync Convention
-
-`.trellis/scripts/` (dogfooded) and `packages/cli/src/templates/trellis/scripts/` (template) must stay identical. After editing `.trellis/scripts/`, always sync:
-
-```bash
-rsync -av --delete --exclude='__pycache__' .trellis/scripts/ packages/cli/src/templates/trellis/scripts/
-```
-
-**Gotcha**: Running rsync with wrong source/destination paths can create nested garbage directories (e.g., `.trellis/scripts/packages/cli/...`). Always double-check paths before running.
+- ❌ 在多个测试中复制粘贴 Beakerlib 阶段
+- ❌ 在多个 `main.fmf` 中重复定义相同的 tag/tier
+- ❌ 复制共享函数到本地却不改进原函数
