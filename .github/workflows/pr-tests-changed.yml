@@ -24,7 +24,7 @@ name: PR Tests Changed Verification
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    branches: [main]
+    branches: [main, dev]
 
 concurrency:
   group: pr-tests-${{ github.event.pull_request.number }}
