@@ -1,0 +1,10 @@
+summary: Test autotools full workflow including autoscan, aclocal, autoconf, autoheader, automake, configure, and make
+tag: [functional, pkgs]
+duration: 5m
+tier: 2
+path: tests/functional/pkgs/automake/test_automake_autotools_workflow
+require:
+- automake
+- gcc
+- make
+test: ./test.sh
