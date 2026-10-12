@@ -14,8 +14,8 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "awk --invalid-flag-xyz 2>&1 " 0 " awk Чerror handling"
-    rlRun "gawk --invalid-flag-xyz 2>&1 " 0 " gawk Чerror handling"
+    rlRun "awk --invalid-flag-xyz 2>&1" 0 "awk - error handling"
+    rlRun "gawk --invalid-flag-xyz 2>&1" 0 "gawk - error handling"
     rlPhaseEnd
 
 

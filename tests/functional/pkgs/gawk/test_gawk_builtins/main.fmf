@@ -1,4 +1,4 @@
-summary: gawk - built-in functions: FIELDWIDTHS, arrays, asort, toupper, printf
+summary: "gawk - built-in functions: FIELDWIDTHS, arrays, asort, toupper, printf"
 tag: [functional, pkgs]
 duration: 2m
 tier: 2

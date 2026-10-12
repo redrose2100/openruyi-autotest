@@ -1,4 +1,4 @@
-summary: gawk - control flow: while, for, do-while, if/break
+summary: "gawk - control flow: while, for, do-while, if/break"
 tag: [functional, pkgs]
 duration: 2m
 tier: 2

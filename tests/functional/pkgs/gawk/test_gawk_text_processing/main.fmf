@@ -1,4 +1,4 @@
-summary: gawk - text processing: columns, substitutions, BEGIN/END, separators
+summary: "gawk - text processing: columns, substitutions, BEGIN/END, separators"
 tag: [functional, pkgs]
 duration: 2m
 tier: 2
