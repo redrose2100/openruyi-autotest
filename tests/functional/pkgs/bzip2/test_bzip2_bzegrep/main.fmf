@@ -1,0 +1,8 @@
+summary: Test bzegrep command for searching compressed bzip2 files
+tag: [functional, pkgs]
+duration: 2m
+tier: 2
+path: tests/functional/pkgs/bzip2/test_bzip2_bzegrep
+require:
+- bzip2
+test: ./test.sh

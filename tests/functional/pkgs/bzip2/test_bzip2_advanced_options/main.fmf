@@ -1,0 +1,8 @@
+summary: Test bzip2 advanced compression options (-z, -d, -c, -L, -s, -t, --fast, --best, --small)
+tag: [functional, pkgs]
+duration: 3m
+tier: 2
+path: tests/functional/pkgs/bzip2/test_bzip2_advanced_options
+require:
+- bzip2
+test: ./test.sh
