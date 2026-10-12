@@ -1,4 +1,4 @@
-summary: gdb - breakpoints: set, info, enable, disable, delete
+summary: "gdb - breakpoints: set, info, enable, disable, delete"
 tag: [functional, pkgs]
 duration: 2m
 tier: 2

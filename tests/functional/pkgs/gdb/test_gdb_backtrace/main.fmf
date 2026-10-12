@@ -1,4 +1,4 @@
-summary: gdb - backtrace: bt, bt full, info frame, info registers
+summary: "gdb - backtrace: bt, bt full, info frame, info registers"
 tag: [functional, pkgs]
 duration: 2m
 tier: 2
