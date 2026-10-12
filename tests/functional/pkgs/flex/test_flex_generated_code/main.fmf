@@ -1,0 +1,9 @@
+summary: flex - generated code options
+tag: [functional, pkgs]
+duration: 2m
+tier: 2
+path: tests/functional/pkgs/flex
+require:
+  - flex
+  - gcc
+test: ./test.sh
