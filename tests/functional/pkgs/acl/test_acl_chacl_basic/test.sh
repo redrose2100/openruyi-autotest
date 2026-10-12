@@ -17,7 +17,7 @@ rlJournalStart
 
     rlPhaseStartTest "chacl without options"
         # Basic ACL: set user::rw-, group::r--, other::r--
-        rlRun "getfacl f | grep -qE '^user::rw-.*^group::r--.*^other::r--'" 0 "Verify base ACL on f"
+        rlRun "getfacl f | grep -qE '^user::rw-' && getfacl f | grep -qE '^group::r--' && getfacl f | grep -qE '^other::r--'" 0 "Verify base ACL on f"
         rlRun "chacl u::rwx,g::r-x,o::r--,u:$uid:r--,g:$gid:r--,m::r-x f" 0 "Apply ACL via chacl"
         rlRun "getfacl f | grep -q '^user::rwx'" 0 "Check user ACL applied"
         rlRun "getfacl f | grep -q '^group::r-x'" 0 "Check group ACL applied"

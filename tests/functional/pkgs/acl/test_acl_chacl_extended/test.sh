@@ -8,6 +8,7 @@ rlJournalStart
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
         uid=$(whoami)
+        touch f
         mkdir -p dir/subdir
         touch f-R f-l dir/subfile
         rlRun "setfacl -m user:${uid}:rwx f-R" 0 "Set ACL on f-R"
@@ -22,15 +23,16 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "chacl -D (remove default ACL)"
-        rlRun "getfacl dir | grep '^default' | grep -c '' | grep -q '5'" 0 "Default ACL entries exist"
+        rlRun "getfacl dir | grep -c '^default' | grep -q 5" 0 "Default ACL entries exist"
         rlRun "chacl -D dir" 0 "Remove default ACL via chacl -D"
         rlRun "getfacl dir | grep -c '^default' | grep -q 0" 0 "Default ACL entries removed"
     rlPhaseEnd
 
     rlPhaseStartTest "chacl -B (restore base ACL)"
+        rlRun "chacl u::rwx,g::r-x,o::r--,m::r-x f" 0 "Set ACL first"
         rlRun "chacl -B f" 0 "Restore base ACL via chacl -B"
-        rlRun "getfacl f | grep -q '^user::rwx'" 0 "Base user ACL restored"
-        rlRun "getfacl f | grep -q '^group::r-x'" 0 "Base group ACL restored"
+        rlRun "getfacl f | grep -q '^user::rw-'" 0 "Base user ACL restored"
+        rlRun "getfacl f | grep -q '^group::r--'" 0 "Base group ACL restored"
         rlRun "getfacl f | grep -q '^other::r--'" 0 "Base other ACL restored"
     rlPhaseEnd
 
