@@ -1,0 +1,8 @@
+summary: Test dbus-monitor command for various monitoring modes
+tag: [functional, pkgs]
+duration: 2m
+tier: 2
+path: tests/functional/pkgs/dbus/test_dbus_monitor
+require:
+- dbus
+test: ./test.sh
