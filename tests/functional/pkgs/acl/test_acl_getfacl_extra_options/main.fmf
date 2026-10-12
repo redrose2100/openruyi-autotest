@@ -1,0 +1,11 @@
+summary: ACL getfacl skip base and recursive/ symlink options (-s, -R, -L, -P)
+tag:
+ - functional
+ - acl
+duration: 3m
+tier: 1
+path: /tests/functional/pkgs/acl/test_acl_getfacl_extra_options
+require:
+ - acl
+ - beakerlib
+test: test.sh
