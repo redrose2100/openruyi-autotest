@@ -4,7 +4,10 @@ duration: 5m
 tier: 2
 path: /tests/functional/pkgs/automake/test_automake_autotools_workflow
 require:
+- autoconf
 - automake
+- m4
+- perl
 - gcc
 - make
 test: ./test.sh
