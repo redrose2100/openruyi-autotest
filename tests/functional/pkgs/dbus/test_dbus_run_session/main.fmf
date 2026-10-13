@@ -1,0 +1,8 @@
+summary: Test dbus-run-session, dbus-cleanup-sockets, and dbus-test-tool commands
+tag: [functional, pkgs]
+duration: 3m
+tier: 2
+path: /tests/functional/pkgs/dbus/test_dbus_run_session
+require:
+- dbus
+test: ./test.sh

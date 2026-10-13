@@ -1,0 +1,8 @@
+summary: Test dbus service and socket activation
+tag: [functional, pkgs]
+duration: 2m
+tier: 2
+path: /tests/functional/pkgs/dbus/test_dbus_service_socket
+require:
+- dbus
+test: ./test.sh

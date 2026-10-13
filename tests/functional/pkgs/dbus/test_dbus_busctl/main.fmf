@@ -1,0 +1,8 @@
+summary: Test busctl command for D-Bus introspection
+tag: [functional, pkgs]
+duration: 3m
+tier: 2
+path: /tests/functional/pkgs/dbus/test_dbus_busctl
+require:
+- dbus
+test: ./test.sh
