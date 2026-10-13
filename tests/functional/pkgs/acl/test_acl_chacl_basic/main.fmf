@@ -1,0 +1,11 @@
+summary: ACL chacl basic operations (no options, -b, -d)
+tag:
+ - functional
+ - acl
+duration: 5m
+tier: 1
+path: /tests/functional/pkgs/acl/test_acl_chacl_basic
+require:
+ - acl
+ - beakerlib
+test: test.sh

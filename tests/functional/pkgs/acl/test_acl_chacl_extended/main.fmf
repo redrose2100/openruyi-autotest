@@ -1,0 +1,11 @@
+summary: ACL chacl recursive and extended options (-R, -D, -B, -l, -r)
+tag:
+ - functional
+ - acl
+duration: 5m
+tier: 1
+path: /tests/functional/pkgs/acl/test_acl_chacl_extended
+require:
+ - acl
+ - beakerlib
+test: test.sh
