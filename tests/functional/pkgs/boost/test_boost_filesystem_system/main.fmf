@@ -2,7 +2,7 @@ summary: Test Boost filesystem and system libraries by compiling and running sam
 tag: [functional, pkgs]
 duration: 5m
 tier: 2
-path: tests/functional/pkgs/boost/test_boost_filesystem_system
+path: /tests/functional/pkgs/boost/test_boost_filesystem_system
 require:
 - boost-devel
 - gcc-c++
