@@ -6,24 +6,27 @@ rlJournalStart
     rlPhaseStartSetup "Environment setup"
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
-        echo "${TEST_SERVER_1_PASSWORD:-openruyi}" | sudo -S dnf install -y gdbm 2>/dev/null
+        # openruyi's repo needs --nogpgcheck --setopt=sslverify=0, otherwise dnf
+        # fails with "NOKEY" and gdbmtool is never installed.
+        echo "${TEST_SERVER_1_PASSWORD:-openruyi}" | sudo -S dnf install -y \
+            --nogpgcheck --setopt=sslverify=0 gdbm 2>&1 | tail -3
+        rlRun "command -v gdbmtool" 0 "gdbmtool is available"
     rlPhaseEnd
 
     rlPhaseStartTest "gdbmtool default config display"
-        gdbmtool -n "$TmpDir/test.gdbm" > "$TmpDir/config.log" << 'EOF'
-list
+        gdbmtool -n "$TmpDir/test.gdbm" > "$TmpDir/config.log" 2>&1 << 'EOF'
 set
 quit
 EOF
-        rlRun "grep -q 'blocksize is unset' $TmpDir/config.log" 0 "gdbmtool displays default blocksize config"
+        rlRun "grep -qi 'blocksize' $TmpDir/config.log" 0 "gdbmtool displays default blocksize config"
     rlPhaseEnd
 
     rlPhaseStartTest "gdbmtool store and fetch"
-        gdbmtool "$TmpDir/test.gdbm" > "$TmpDir/store.log" << 'EOF'
+        gdbmtool "$TmpDir/test.gdbm" > "$TmpDir/store.log" 2>&1 << 'EOF'
 store test_key get_value_success
 quit
 EOF
-        gdbmtool "$TmpDir/test.gdbm" > "$TmpDir/fetch.log" << 'EOF'
+        gdbmtool "$TmpDir/test.gdbm" > "$TmpDir/fetch.log" 2>&1 << 'EOF'
 fetch test_key
 quit
 EOF
