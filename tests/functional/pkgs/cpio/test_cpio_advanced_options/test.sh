@@ -28,8 +28,12 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "cpio -m - preserve modification times"
-        original_mtime=$(stat -c %Y f1 2>/dev/null || stat -c %Y f1 2>/dev/null)
-        rlRun "printf 'f1\n' | cpio -om > archive_m.cpio 2>/dev/null" 0 "cpio -m creates archive preserving times"
+        printf 'f1\n' | cpio -o > archive_m.cpio 2>/dev/null
+        original_mtime=$(stat -c %Y f1)
+        mkdir extract_m
+        ( cd extract_m && cpio -idm < ../archive_m.cpio >/dev/null 2>&1 )
+        extracted_mtime=$(stat -c %Y extract_m/f1)
+        rlAssertEquals "cpio -m preserves modification time on extract" "$original_mtime" "$extracted_mtime"
     rlPhaseEnd
 
     rlPhaseStartTest "cpio -L - follow symbolic links"
