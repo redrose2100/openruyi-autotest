@@ -1,0 +1,11 @@
+summary: Test Boost asio, date_time, string_algo, optional, and variant libraries
+tag: [functional, pkgs]
+duration: 5m
+tier: 2
+path: /tests/functional/pkgs/boost/test_boost_asio_datetime_stringalgo
+require:
+- beakerlib
+- boost
+- boost-devel
+- gcc-c++
+test: ./test.sh
