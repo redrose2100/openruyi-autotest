@@ -1,0 +1,9 @@
+summary: "gdb - backtrace: bt, bt full, info frame, info registers"
+tag: [functional, pkgs]
+duration: 2m
+tier: 2
+path: /tests/functional/pkgs/gdb/test_gdb_backtrace
+require:
+  - gdb
+  - gcc
+test: ./test.sh

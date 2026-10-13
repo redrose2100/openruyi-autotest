@@ -1,0 +1,9 @@
+summary: gdb - list source and disassemble
+tag: [functional, pkgs]
+duration: 2m
+tier: 2
+path: /tests/functional/pkgs/gdb/test_gdb_list
+require:
+  - gdb
+  - gcc
+test: ./test.sh
