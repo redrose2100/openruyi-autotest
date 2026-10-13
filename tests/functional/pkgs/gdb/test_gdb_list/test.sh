@@ -6,7 +6,12 @@ rlJournalStart
     rlPhaseStartSetup "Environment setup"
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
-        echo "${TEST_SERVER_1_PASSWORD:-openruyi}" | sudo -S dnf install -y gdb gcc 2>/dev/null
+        # openruyi's repo needs --nogpgcheck --setopt=sslverify=0, otherwise dnf
+        # fails with "NOKEY" and gdb is never installed. The CI test environment
+        # only pre-installs gcc, so install gdb here.
+        echo "${TEST_SERVER_1_PASSWORD:-openruyi}" | sudo -S dnf install -y \
+            --nogpgcheck --setopt=sslverify=0 gdb gcc 2>&1 | tail -3
+        rlRun "command -v gdb" 0 "gdb is available"
         cat > add.c << 'CEOF'
 #include <stdio.h>
 int add(int x, int y) { return x + y; }
@@ -20,14 +25,10 @@ CEOF
     rlPhaseEnd
 
     rlPhaseStartTest "gdb list and disassemble"
-        gdb ./a.out << 'GDBEOF' > gdb.log 2>&1
-list 4
-l main
-disassemble add
-disassemble main
-q
-GDBEOF
-        rlRun "grep -qiE '0x|add|push|ret' gdb.log" 0 "gdb disassemble shows assembly instructions"
+        gdb -batch -ex 'list 4' -ex 'list main' -ex 'disassemble add' -ex 'disassemble main' ./a.out > gdb.log 2>&1
+        rlRun "grep -q 'int add' gdb.log" 0 "gdb list shows source lines"
+        rlRun "grep -qE '0x[0-9a-f]+' gdb.log" 0 "gdb disassemble shows assembly addresses"
+        rlRun "grep -qiE '<(add|main)>:' gdb.log" 0 "gdb disassemble names the function"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

@@ -6,7 +6,12 @@ rlJournalStart
     rlPhaseStartSetup "Environment setup"
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
-        echo "${TEST_SERVER_1_PASSWORD:-openruyi}" | sudo -S dnf install -y gdb gcc 2>/dev/null
+        # openruyi's repo needs --nogpgcheck --setopt=sslverify=0, otherwise dnf
+        # fails with "NOKEY" and gdb is never installed. The CI test environment
+        # only pre-installs gcc, so install gdb here.
+        echo "${TEST_SERVER_1_PASSWORD:-openruyi}" | sudo -S dnf install -y \
+            --nogpgcheck --setopt=sslverify=0 gdb gcc 2>&1 | tail -3
+        rlRun "command -v gdb" 0 "gdb is available"
         cat > test.c << 'CEOF'
 #include <stdio.h>
 int add(int a, int b) { return a + b; }
@@ -22,16 +27,12 @@ CEOF
     rlPhaseEnd
 
     rlPhaseStartTest "gdb backtrace: start, bt, bt full, info frame, info registers"
-        gdb ./test << 'GDBEOF' > gdb.log 2>&1
-start
-bt
-bt full
-info f
-info registers
-q
-GDBEOF
-        # Verify stack frame keywords appear
-        rlRun "grep -qiE 'main|stack|frame' gdb.log" 0 "gdb backtrace shows stack frames"
+        # -batch makes gdb exit after the last -ex command, which is far more
+        # deterministic than feeding an interactive session via a heredoc.
+        gdb -batch -ex 'start' -ex 'bt' -ex 'bt full' -ex 'info frame' -ex 'info registers' ./test > gdb.log 2>&1
+        rlRun "grep -q '#0' gdb.log" 0 "gdb backtrace shows stack frame #0"
+        rlRun "grep -q 'main' gdb.log" 0 "gdb backtrace shows main frame"
+        rlRun "grep -qiE 'rax|eax|rip|pc' gdb.log" 0 "info registers shows register values"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"
