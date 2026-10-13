@@ -6,6 +6,13 @@ rlJournalStart
     rlPhaseStartSetup "Environment setup"
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+        # The CI environment does not pre-install the packages listed in `require:`,
+        # so install the compiler and the boost development files here. openRuyi
+        # ships the linker symlinks in `boost` and the headers in `boost-devel`,
+        # and its repository needs --nogpgcheck --setopt=sslverify=0.
+        echo "${TEST_SERVER_1_PASSWORD:-openruyi}" | sudo -S dnf install -y \
+            --nogpgcheck --setopt=sslverify=0 gcc-c++ boost boost-devel 2>&1 | tail -5
+        rlRun "command -v g++" 0 "g++ is available"
         cat > boost_test.cpp <<'CPPEOF'
 #include <iostream>
 #include <string>
@@ -61,7 +68,9 @@ CPPEOF
     rlPhaseEnd
 
     rlPhaseStartTest "Compile and run thread test"
-        rlRun "g++ -std=c++11 boost_test.cpp -o boost_test_thread -lboost_thread -lboost_system -lboost_chrono -lpthread" 0 "Compile thread test"
+        # Boost.System is header-only since boost 1.87 (openRuyi ships no
+        # libboost_system.so) and modern glibc provides pthreads in libc.
+        rlRun "g++ -std=c++11 boost_test.cpp -o boost_test_thread -lboost_thread -lboost_chrono" 0 "Compile thread test"
         rlRun "./boost_test_thread thread | grep BOOST_THREAD_SYNC_OK" 0 "Thread mutex sync works"
         rlRun "./boost_test_thread thread | grep BOOST_THREAD_ID_OK" 0 "Thread id works"
         rlRun "./boost_test_thread thread | grep BOOST_THREAD_SLEEP_OK" 0 "Thread sleep works"

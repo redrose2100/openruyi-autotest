@@ -6,6 +6,13 @@ rlJournalStart
     rlPhaseStartSetup "Environment setup"
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
+        # The CI environment does not pre-install the packages listed in `require:`,
+        # so install the compiler and the boost development files here. openRuyi
+        # ships the linker symlinks in `boost` and the headers in `boost-devel`,
+        # and its repository needs --nogpgcheck --setopt=sslverify=0.
+        echo "${TEST_SERVER_1_PASSWORD:-openruyi}" | sudo -S dnf install -y \
+            --nogpgcheck --setopt=sslverify=0 gcc-c++ boost boost-devel 2>&1 | tail -5
+        rlRun "command -v g++" 0 "g++ is available"
         cat > boost_test.cpp <<'CPPEOF'
 #include <iostream>
 #include <string>
@@ -65,7 +72,9 @@ CPPEOF
     rlPhaseEnd
 
     rlPhaseStartTest "Compile and run asio test"
-        rlRun "g++ -std=c++11 boost_test.cpp -o boost_test_asio -lboost_system" 0 "Compile asio test"
+        # Boost.Asio only needs libstdc++/libpthread. Boost.System is header-only
+        # since boost 1.87, so openRuyi ships no libboost_system.so to link with.
+        rlRun "g++ -std=c++11 boost_test.cpp -o boost_test_asio" 0 "Compile asio test"
         rlRun "./boost_test_asio asio | grep BOOST_ASIO_TIMER_OK" 0 "Asio timer works"
         rlRun "./boost_test_asio asio | grep BOOST_ASIO_SOCKET_OK" 0 "Asio socket works"
     rlPhaseEnd
