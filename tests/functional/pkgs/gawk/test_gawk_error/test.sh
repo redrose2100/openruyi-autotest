@@ -14,8 +14,12 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "error handling"
-    rlRun "awk --invalid-flag-xyz 2>&1 " 0 " awk Чerror handling"
-    rlRun "gawk --invalid-flag-xyz 2>&1 " 0 " gawk Чerror handling"
+    # An invalid option must make awk/gawk exit with a non-zero status and
+    # print an error message.
+    rlRun "awk --invalid-flag-xyz 2>&1" 2 "awk - error handling"
+    rlRun "awk --invalid-flag-xyz 2>&1 | grep -qi 'invalid\\|unknown\\|unrecognized\\|usage'" 0 "awk - error message is printed"
+    rlRun "gawk --invalid-flag-xyz 2>&1" 2 "gawk - error handling"
+    rlRun "gawk --invalid-flag-xyz 2>&1 | grep -qi 'invalid\\|unknown\\|unrecognized\\|usage'" 0 "gawk - error message is printed"
     rlPhaseEnd
 
 

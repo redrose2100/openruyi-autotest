@@ -1,0 +1,8 @@
+summary: "gawk - built-in functions: FIELDWIDTHS, arrays, asort, toupper, printf"
+tag: [functional, pkgs]
+duration: 2m
+tier: 2
+path: /tests/functional/pkgs/gawk/test_gawk_builtins
+require:
+  - gawk
+test: ./test.sh

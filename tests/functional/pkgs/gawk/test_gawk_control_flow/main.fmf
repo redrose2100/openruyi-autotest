@@ -1,0 +1,8 @@
+summary: "gawk - control flow: while, for, do-while, if/break"
+tag: [functional, pkgs]
+duration: 2m
+tier: 2
+path: /tests/functional/pkgs/gawk/test_gawk_control_flow
+require:
+  - gawk
+test: ./test.sh
