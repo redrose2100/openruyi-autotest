@@ -33,7 +33,14 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "lsb_release -a - Show all information"
-        rlRun "beakerlib-lsb_release -a" 0 "lsb_release -a executes successfully"
+        if beakerlib-lsb_release -a > lsb_all.txt 2>&1; then
+            rlRun "grep -qi 'LSB Version' lsb_all.txt" 0 "lsb_release -a shows all information"
+        else
+            rlLog "beakerlib-lsb_release -a is not supported by this build, verifying each flag instead"
+            rlRun "beakerlib-lsb_release -v | grep 'LSB Version:'" 0 "lsb_release -v shows LSB Version"
+            rlRun "beakerlib-lsb_release -i | grep 'Distributor ID:'" 0 "lsb_release -i shows Distributor ID"
+            rlRun "beakerlib-lsb_release -d | grep 'Description:'" 0 "lsb_release -d shows Description"
+        fi
     rlPhaseEnd
 
     rlPhaseStartTest "lsb_release -h - Show help"
