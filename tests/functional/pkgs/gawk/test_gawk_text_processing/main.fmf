@@ -2,7 +2,7 @@ summary: "gawk - text processing: columns, substitutions, BEGIN/END, separators"
 tag: [functional, pkgs]
 duration: 2m
 tier: 2
-path: tests/functional/pkgs/gawk
+path: /tests/functional/pkgs/gawk/test_gawk_text_processing
 require:
   - gawk
 test: ./test.sh
