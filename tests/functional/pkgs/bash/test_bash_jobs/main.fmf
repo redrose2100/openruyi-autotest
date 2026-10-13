@@ -2,7 +2,7 @@ summary: Test bash jobs builtin command for job control
 tag: [functional, pkgs]
 duration: 3m
 tier: 2
-path: tests/functional/pkgs/bash/test_bash_jobs
+path: /tests/functional/pkgs/bash/test_bash_jobs
 require:
 - bash
 test: ./test.sh
