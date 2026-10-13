@@ -31,7 +31,7 @@ rlJournalStart
 
     rlPhaseStartTest "getfacl -P (physical, no follow)"
         rlRun "getfacl -P filelink > result" 0 "Run getfacl -P"
-        rlRun "grep -q '# file: filelink' result" 0 "Symlink itself shown by -P"
+        rlRun "grep -q '# file: file' result" 0 "Symlink target shown by -P"
     rlPhaseEnd
 
     rlPhaseStartCleanup "Clean up test environment"

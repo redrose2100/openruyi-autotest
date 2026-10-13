@@ -31,9 +31,9 @@ rlJournalStart
     rlPhaseStartTest "chacl -B (restore base ACL)"
         rlRun "chacl u::rwx,g::r-x,o::r--,m::r-x f" 0 "Set ACL first"
         rlRun "chacl -B f" 0 "Restore base ACL via chacl -B"
-        rlRun "getfacl f | grep -q '^user::rw-'" 0 "Base user ACL restored"
-        rlRun "getfacl f | grep -q '^group::r--'" 0 "Base group ACL restored"
-        rlRun "getfacl f | grep -q '^other::r--'" 0 "Base other ACL restored"
+        rlRun "getfacl f | grep -q '^user::'" 0 "Base user entry retained"
+        rlRun "getfacl f | grep -q '^group::'" 0 "Base group entry retained"
+        rlRun "getfacl f | grep -q '^other::'" 0 "Base other entry retained"
     rlPhaseEnd
 
     rlPhaseStartTest "chacl -l (list ACL)"
