@@ -9,3 +9,4 @@ path: /tests/functional/pkgs/gawk/test_gawk_error
 
 require:
  - beakerlib
+ - gawk
