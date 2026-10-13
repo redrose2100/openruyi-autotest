@@ -22,7 +22,7 @@ glibSetup() {
 
     if ! rpm -q glib 2>/dev/null; then
 
-    echo "${TEST_SERVER_1_PASSWORD:-openruyi}" | sudo -S dnf install -y glib 2>/dev/null
+    echo "${TEST_SERVER_1_PASSWORD:-openruyi}" | sudo -S dnf install -y --nogpgcheck --setopt=sslverify=0 glib 2>/dev/null
 
     echo "installed=1" > "$PKG_FLAG"
 

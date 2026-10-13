@@ -1,0 +1,16 @@
+summary: Functional test - glib - meson build integration
+test: ./test.sh
+tag:
+ - functional
+ - glib
+duration: 2m
+tier: 2
+path: /tests/functional/pkgs/glib/test_glib_meson_build
+
+require:
+ - beakerlib
+ - meson
+ - ninja
+ - glib-devel
+ - pkgconf-pkg-config
+ - gcc-c++
