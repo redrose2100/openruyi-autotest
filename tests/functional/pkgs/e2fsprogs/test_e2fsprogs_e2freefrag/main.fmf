@@ -1,0 +1,8 @@
+summary: e2fsprogs - e2freefrag free space fragmentation report
+tag: [functional, pkgs]
+duration: 3m
+tier: 2
+path: /tests/functional/pkgs/e2fsprogs/test_e2fsprogs_e2freefrag
+require:
+  - e2fsprogs
+test: ./test.sh

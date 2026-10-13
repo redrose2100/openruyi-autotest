@@ -1,0 +1,8 @@
+summary: e2fsprogs - e2image metadata image creation
+tag: [functional, pkgs]
+duration: 3m
+tier: 2
+path: /tests/functional/pkgs/e2fsprogs/test_e2fsprogs_e2image
+require:
+  - e2fsprogs
+test: ./test.sh
