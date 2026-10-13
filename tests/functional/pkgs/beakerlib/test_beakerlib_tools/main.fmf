@@ -2,7 +2,7 @@ summary: Test beakerlib utility tools (rlMemAvg, rlMemPeak, testwatcher, journal
 tag: [functional, pkgs]
 duration: 3m
 tier: 2
-path: tests/functional/pkgs/beakerlib/test_beakerlib_tools
+path: /tests/functional/pkgs/beakerlib/test_beakerlib_tools
 require:
 - beakerlib
 test: ./test.sh
