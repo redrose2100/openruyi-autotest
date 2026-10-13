@@ -1,0 +1,8 @@
+summary: Test cpio format and I/O options (-c, -F, file redirection)
+tag: [functional, pkgs]
+duration: 3m
+tier: 2
+path: /tests/functional/pkgs/cpio/test_cpio_format_io
+require:
+- cpio
+test: ./test.sh

@@ -1,0 +1,8 @@
+summary: Test cpio advanced options (-v, -d, -m, -a, -L, -n)
+tag: [functional, pkgs]
+duration: 3m
+tier: 2
+path: /tests/functional/pkgs/cpio/test_cpio_advanced_options
+require:
+- cpio
+test: ./test.sh
