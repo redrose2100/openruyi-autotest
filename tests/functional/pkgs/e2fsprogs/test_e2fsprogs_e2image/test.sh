@@ -6,6 +6,7 @@
 rlJournalStart
     rlPhaseStartSetup "Environment setup"
         e2fsprogsSetup
+        SUDO_PW="${TEST_SERVER_1_PASSWORD:-openruyi}"
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
         TestImg="$TmpDir/test_disk.img"
@@ -13,7 +14,9 @@ rlJournalStart
         mkdir -p "$MountPt"
         dd if=/dev/zero of="$TestImg" bs=1M count=100 2>/dev/null
         rlRun "mkfs.ext4 -F $TestImg 2>/dev/null" 0 "Create ext4 filesystem image"
-        rlRun "mount -o loop $TestImg $MountPt" 0 "Mount loop device"
+        # mount -o loop needs CAP_SYS_ADMIN, so run it via sudo.
+        rlRun "echo '$SUDO_PW' | sudo -S mount -o loop $TestImg $MountPt" 0 "Mount loop device"
+        rlRun "echo '$SUDO_PW' | sudo -S chown -R $(whoami) $MountPt" 0 "Take ownership of mount point"
         echo "test file content" > "$MountPt/testfile.txt"
         mkdir "$MountPt/testdir"
         echo "subdir file" > "$MountPt/testdir/subfile.txt"
@@ -21,7 +24,7 @@ rlJournalStart
             echo "data $i" > "$MountPt/file_$i.txt"
         done
         sync
-        rlRun "umount $MountPt" 0 "Unmount filesystem"
+        rlRun "echo '$SUDO_PW' | sudo -S umount $MountPt" 0 "Unmount filesystem"
     rlPhaseEnd
 
     rlPhaseStartTest "e2image create metadata image"
