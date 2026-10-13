@@ -1,0 +1,8 @@
+summary: 'gdbm - gdbmtool CRUD: store, fetch, delete'
+tag: [functional, pkgs]
+duration: 2m
+tier: 2
+path: /tests/functional/pkgs/gdbm/test_gdbm_crud
+require:
+  - gdbm
+test: ./test.sh
