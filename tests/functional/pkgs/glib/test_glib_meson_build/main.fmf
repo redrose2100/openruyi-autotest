@@ -10,7 +10,7 @@ path: /tests/functional/pkgs/glib/test_glib_meson_build
 require:
  - beakerlib
  - meson
- - ninja-build
- - glib2-devel
+ - ninja
+ - glib-devel
  - pkgconf-pkg-config
- - gcc
+ - gcc-c++

@@ -14,11 +14,12 @@ rlJournalStart
         TmpDir=$(mktemp -d)
         rlRun "cd $TmpDir" 0 "Enter temporary test directory"
         # glibSetup only installs the glib runtime package; this test also needs
-        # the build toolchain and the devel packages that provide the
-        # pkg-config files. openruyi's repo needs --nogpgcheck --setopt=sslverify=0.
+        # the build toolchain and the devel package that provides the pkg-config
+        # file. openRuyi names are ninja (not ninja-build) and glib-devel
+        # (not glib2-devel). Its repo needs --nogpgcheck --setopt=sslverify=0.
         echo "${TEST_SERVER_1_PASSWORD:-openruyi}" | sudo -S dnf install -y \
             --nogpgcheck --setopt=sslverify=0 \
-            meson ninja-build glib2-devel pkgconf-pkg-config gcc 2>&1 | tail -5
+            meson ninja glib-devel pkgconf-pkg-config gcc-c++ 2>&1 | tail -5
         rlRun "command -v meson" 0 "meson is available"
         rlRun "pkg-config --exists glib-2.0" 0 "glib-2.0 pkg-config file is available"
     rlPhaseEnd
